@@ -1,7 +1,18 @@
-import { Home, Bot, FolderKanban, CheckSquare, BookOpen, BarChart3, Settings, Search, Bell, Mail, Sun, Leaf, CheckCircle2, Users, Lightbulb, Send, ShieldCheck, HeartHandshake } from 'lucide-react';
+'use client';
+import { useState } from 'react';
 import Link from 'next/link';
+import { Home, Bot, FolderKanban, CheckSquare, BookOpen, BarChart3, Settings, Search, Bell, Mail, Sun, Leaf, CheckCircle2, Users, Lightbulb, Send, ShieldCheck, HeartHandshake } from 'lucide-react';
 
 export default function Dashboard() {
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      alert(`أنت تبحث عن: ${searchQuery} (هذه نتيجة تجريبية)`);
+    }
+  };
+
   return (
     <div className="ho-shell">
       {/* الشريط الجانبي */}
@@ -15,20 +26,23 @@ export default function Dashboard() {
           <div><b>أحمد محمد</b><small>مستخدم مميز</small></div>
         </div>
         <div className="ho-nav-label">القائمة الرئيسية</div>
+        
+        {/* القائمة المحدثة بالروابط */}
         <nav className="ho-nav">
-          <button className="active"><Home size={18} /> الرئيسية</button>
-          <button><Bot size={18} /> المساعد الذكي</button>
-          <button><FolderKanban size={18} /> المشاريع</button>
-          <button><CheckSquare size={18} /> المهام</button>
-          <button><BookOpen size={18} /> محرك المعرفة</button>
-          <button><BarChart3 size={18} /> التقارير</button>
+          <Link href="/" className="active"><Home size={18} /> الرئيسية</Link>
+          <Link href="/assistant"><Bot size={18} /> المساعد الذكي</Link>
+          <Link href="/projects"><FolderKanban size={18} /> المشاريع</Link>
+          <Link href="/tasks"><CheckSquare size={18} /> المهام</Link>
+          <Link href="/knowledge"><BookOpen size={18} /> محرك المعرفة</Link>
+          <Link href="/analytics"><BarChart3 size={18} /> التقارير</Link>
         </nav>
+
         <div className="ho-sidebar-bottom">
           <div className="ho-trust">
             <ShieldCheck size={18} />
             <div><b>بيانات محمية</b><small>خصوصيتك أولويتنا</small></div>
           </div>
-          <button className="ho-settings"><Settings size={18} /> الإعدادات</button>
+          <Link href="/settings" className="ho-settings"><Settings size={18} /> الإعدادات</Link>
           <div className="ho-version"><span>الإصدار 1.0.0</span><span>2026</span></div>
         </div>
       </aside>
@@ -40,10 +54,14 @@ export default function Dashboard() {
             <div className="ho-breadcrumb">الرئيسية <b>لوحة التحكم</b></div>
           </div>
           <div className="ho-top-actions">
-            <div className="ho-search">
+            <form className="ho-search" onSubmit={handleSearch}>
               <Search size={16} />
-              <input placeholder="البحث في المنظومة..." />
-            </div>
+              <input 
+                placeholder="البحث في المنظومة..." 
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </form>
             <button className="ho-icon-btn"><Bell size={18} /><i></i></button>
             <button className="ho-icon-btn"><Mail size={18} /></button>
             <button className="ho-icon-btn"><Sun size={18} /></button>
@@ -59,7 +77,7 @@ export default function Dashboard() {
               <h1>المنظومة الرقمية المستقلة <em>للذكاء الاصطناعي</em></h1>
               <p>معاً.. نبني مستقبلاً أكثر إشراقاً للبشرية. منصة تجمع المعرفة، الأدوات، والوكلاء الذكيين في مكان واحد.</p>
               <div className="ho-welcome-actions">
-                <button className="ho-primary">استكشاف المنصة</button>
+                <Link href="/projects" className="ho-primary">استكشاف المنصة</Link>
                 <button className="ho-secondary">دليل الاستخدام</button>
               </div>
             </div>
@@ -163,4 +181,4 @@ export default function Dashboard() {
       </main>
     </div>
   );
-      }
+                }
