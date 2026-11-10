@@ -32,7 +32,7 @@ function makeSession(): ChatSession {
 }
 
 export default function AICorePage() {
-  const [sessions, setSessions] = useState<ChatSession[]>([makeSession()]);
+  const [sessions, setSessions] = useState<ChatSession[]>(() => [makeSession()]);
   const [activeId, setActiveId] = useState("");
   const [role, setRole] = useState<(typeof roles)[number]["id"]>("coordinator");
   const [input, setInput] = useState("");
