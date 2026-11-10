@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Bot, BookOpen, HeartHandshake, GraduationCap, Sprout, ShieldCheck, Send, Trash2 } from "lucide-react";
 import "./ai-core.css";
 
@@ -16,7 +16,8 @@ export default function AICorePage(){
  const [messages,setMessages]=useState<Msg[]>([]);
  const [input,setInput]=useState("");
  const [busy,setBusy]=useState(false);
- const [status,setStatus]=useState("جاهز — يلزم ضبط مفتاح مزود الذكاء الاصطناعي");
+ const [status,setStatus]=useState("جاهز — يمكن تجهيز المحادثة وربط مزود الذكاء لاحقًا");
+ useEffect(()=>{const prompt=new URLSearchParams(window.location.search).get("prompt");if(prompt)setInput(prompt);},[]);
  async function send(e?:React.FormEvent){
   e?.preventDefault(); const text=input.trim(); if(!text||busy)return;
   const next=[...messages,{role:"user" as const,content:text}];setMessages(next);setInput("");setBusy(true);setStatus("جارٍ الاتصال");
