@@ -1,16 +1,22 @@
 'use client';
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Home, Bot, FolderKanban, CheckSquare, BookOpen, BarChart3, Settings, Search, Bell, Mail, Sun, Leaf, CheckCircle2, Users, Lightbulb, Send, ShieldCheck, HeartHandshake } from 'lucide-react';
 
 export default function Dashboard() {
+  const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
+  const [assistantQuery, setAssistantQuery] = useState('');
+
+  const openAssistant = (query: string) => {
+    const value = query.trim();
+    router.push(value ? `/ai-core?prompt=${encodeURIComponent(value)}` : '/ai-core');
+  };
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    if (searchQuery.trim()) {
-      alert(`أنت تبحث عن: ${searchQuery} (هذه نتيجة تجريبية)`);
-    }
+    openAssistant(searchQuery);
   };
 
   return (
@@ -31,6 +37,7 @@ export default function Dashboard() {
         <nav className="ho-nav">
           <Link href="/" className="active"><Home size={18} /> الرئيسية</Link>
           <Link href="/assistant"><Bot size={18} /> المساعد الذكي</Link>
+          <Link href="/ai-core"><Bot size={18} /> مركز الذكاء والعمل الإنساني</Link>
           <Link href="/projects"><FolderKanban size={18} /> المشاريع</Link>
           <Link href="/tasks"><CheckSquare size={18} /> المهام</Link>
           <Link href="/knowledge"><BookOpen size={18} /> محرك المعرفة</Link>
@@ -149,11 +156,13 @@ export default function Dashboard() {
                 <span className="ho-beta">BETA</span>
               </div>
               <div className="ho-prompt-box">
-                <textarea placeholder="اكتب طلبك هنا..."></textarea>
-                <div className="ho-prompt-tools">
-                  <span>أدوات مساعدة</span>
-                  <button className="ho-send"><Send size={14} /></button>
-                </div>
+                <form onSubmit={(e) => { e.preventDefault(); openAssistant(assistantQuery); }}>
+                  <textarea value={assistantQuery} onChange={(e) => setAssistantQuery(e.target.value)} placeholder="اكتب طلبك هنا..." />
+                  <div className="ho-prompt-tools">
+                    <span>سيتم فتح مساحة المحادثة الذكية</span>
+                    <button className="ho-send" type="submit" aria-label="ابدأ المحادثة" disabled={!assistantQuery.trim()}><Send size={14} /></button>
+                  </div>
+                </form>
               </div>
             </section>
 
