@@ -154,9 +154,9 @@ export default function AICorePage() {
   function exportCurrentChat() {
     if (!active || !active.messages.length) return;
     const transcript = active.messages.map((message) =>
-      (message.role === "user" ? "أنت" : "HUMANITY ONE") + ":\\n" + message.content
-    ).join("\\n\\n------------------------------\\n\\n");
-    const blob = new Blob(["HUMANITY ONE — " + active.title + "\\n\\n" + transcript], { type: "text/plain;charset=utf-8" });
+      (message.role === "user" ? "أنت" : "HUMANITY ONE") + ":\n" + message.content
+    ).join("\n\n------------------------------\n\n");
+    const blob = new Blob(["HUMANITY ONE — " + active.title + "\n\n" + transcript], { type: "text/plain;charset=utf-8" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
