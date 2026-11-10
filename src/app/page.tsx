@@ -29,7 +29,7 @@ export default function Dashboard() {
         </div>
         <div className="ho-workspace">
           <div className="ho-avatar">أ</div>
-          <div><b>أحمد محمد</b><small>مستخدم مميز</small></div>
+          <div><b>مساحة العمل</b><small>ابدأ مبادرتك الإنسانية</small></div>
         </div>
         <div className="ho-nav-label">القائمة الرئيسية</div>
         
@@ -85,7 +85,7 @@ export default function Dashboard() {
               <p>معاً.. نبني مستقبلاً أكثر إشراقاً للبشرية. منصة تجمع المعرفة، الأدوات، والوكلاء الذكيين في مكان واحد.</p>
               <div className="ho-welcome-actions">
                 <Link href="/projects" className="ho-primary">استكشاف المنصة</Link>
-                <button className="ho-secondary">دليل الاستخدام</button>
+                <Link href="/projects" className="ho-secondary">ابدأ مبادرة إنسانية</Link>
               </div>
             </div>
             <div className="ho-orbit">
@@ -95,19 +95,19 @@ export default function Dashboard() {
             </div>
           </section>
 
-          {/* الإحصائيات */}
+          {/* ركائز العمل الإنساني */}
           <section className="ho-stats">
             <article>
               <div className="stat-icon blue"><Leaf size={20} /></div>
-              <div><small>مشاريع نشطة</small><b>3</b></div>
+              <div><small>الاستدامة</small><b>أثر طويل الأمد</b></div>
             </article>
             <article>
-              <div className="stat-icon violet"><CheckCircle2 size={20} /></div>
-              <div><small>مهام مكتملة</small><b>10</b></div>
+              <div className="stat-icon violet"><ShieldCheck size={20} /></div>
+              <div><small>السلامة والكرامة</small><b>الإنسان أولًا</b></div>
             </article>
             <article>
               <div className="stat-icon mint"><Users size={20} /></div>
-              <div><small>مستخدمون نشطون</small><b>125K</b></div>
+              <div><small>التعاون</small><b>العمل معًا</b></div>
             </article>
           </section>
 
@@ -117,7 +117,7 @@ export default function Dashboard() {
               <div className="ho-section-kicker">الخدمات الأساسية</div>
               <h2>ماذا تريد أن تنجز اليوم؟</h2>
             </div>
-            <button className="ho-link-btn">عرض الكل ←</button>
+            <Link href="/projects" className="ho-link-btn">عرض كل المبادرات ←</Link>
           </div>
 
           <section className="ho-services">
