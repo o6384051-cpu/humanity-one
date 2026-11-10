@@ -31,6 +31,7 @@ export default function Dashboard() {
         <nav className="ho-nav">
           <Link href="/" className="active"><Home size={18} /> الرئيسية</Link>
           <Link href="/assistant"><Bot size={18} /> المساعد الذكي</Link>
+          <Link href="/ai-core"><Bot size={18} /> مركز الذكاء والعمل الإنساني</Link>
           <Link href="/projects"><FolderKanban size={18} /> المشاريع</Link>
           <Link href="/tasks"><CheckSquare size={18} /> المهام</Link>
           <Link href="/knowledge"><BookOpen size={18} /> محرك المعرفة</Link>
