@@ -121,30 +121,30 @@ export default function Dashboard() {
           </div>
 
           <section className="ho-services">
-            <button className="ho-service-card">
+            <Link href="/projects" className="ho-service-card">
               <div className="ho-service-icon tone-0"><Leaf size={20} /></div>
               <h3>الطاقة النظيفة</h3>
-              <p>حلول مبتكرة لمستقبل مستدام</p>
+              <p>خطط مبادرات للاستدامة والبيئة</p>
               <span className="ho-card-arrow">←</span>
-            </button>
-            <button className="ho-service-card">
+            </Link>
+            <Link href="/projects" className="ho-service-card">
               <div className="ho-service-icon tone-1"><Lightbulb size={20} /></div>
               <h3>الزراعة الذكية</h3>
-              <p>أنظمة ري ذكية ومستدامة</p>
+              <p>مبادرات زراعية ومائية مستدامة</p>
               <span className="ho-card-arrow">←</span>
-            </button>
-            <button className="ho-service-card">
+            </Link>
+            <Link href="/projects" className="ho-service-card">
               <div className="ho-service-icon tone-2"><HeartHandshake size={20} /></div>
               <h3>الخدمات الإنسانية</h3>
-              <p>مبادرات لدعم المجتمع</p>
+              <p>خطط لدعم المجتمع وحفظ الكرامة</p>
               <span className="ho-card-arrow">←</span>
-            </button>
-            <button className="ho-service-card">
+            </Link>
+            <Link href="/knowledge" className="ho-service-card">
               <div className="ho-service-icon tone-3"><BookOpen size={20} /></div>
               <h3>محرك المعرفة</h3>
-              <p>مصادر موثقة وموثوقة</p>
+              <p>مساحة للمعرفة والتعلم</p>
               <span className="ho-card-arrow">←</span>
-            </button>
+            </Link>
           </section>
 
           {/* المساعد الذكي */}
