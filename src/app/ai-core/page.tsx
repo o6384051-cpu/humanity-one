@@ -164,12 +164,13 @@ export default function AICorePage() {
     document.body.appendChild(link);
     link.click();
     link.remove();
-    URL.revokeObjectURL(url);
+    window.setTimeout(() => URL.revokeObjectURL(url), 1000);
     setStatus("تم تجهيز نسخة المحادثة");
   }
 
   function deleteChat(id: string) {
     if (busy && active?.id === id) return;
+    if (!window.confirm("هل تريد حذف هذه المحادثة نهائيًا من هذا المتصفح؟")) return;
     const remaining = sessions.filter((session) => session.id !== id);
     const next = remaining.length ? remaining : [makeSession()];
     setSessions(next);
