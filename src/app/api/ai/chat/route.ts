@@ -45,7 +45,7 @@ export async function POST(req: NextRequest) {
     }
 
     const base = (process.env.AI_BASE_URL || "https://api.openai.com/v1").replace(
-      /\\/+$/,
+      /\/+$/,
       "",
     );
     const model = process.env.AI_MODEL || "gpt-4o-mini";
