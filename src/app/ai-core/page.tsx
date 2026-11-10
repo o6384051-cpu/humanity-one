@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Bot, BookOpen, HeartHandshake, GraduationCap, Sprout, ShieldCheck,
-  Send, Trash2, Plus, MessageSquare, Sparkles, Copy, Check, Menu,
+  Send, Trash2, Plus, MessageSquare, Sparkles, Copy, Check, Menu, Download,
   X, PanelRightClose, ChevronDown, RotateCcw
 } from "lucide-react";
 import "./ai-core.css";
@@ -150,6 +150,34 @@ export default function AICorePage() {
     }
   }
 
+
+  function exportCurrentChat() {
+    if (!active || !active.messages.length) return;
+    const transcript = active.messages.map((message) =>
+      (message.role === "user" ? "أنت" : "HUMANITY ONE") + ":\n" + message.content
+    ).join("\n\n------------------------------\n\n");
+    const blob = new Blob(["HUMANITY ONE — " + active.title + "\n\n" + transcript], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "humanity-one-chat-" + new Date().toISOString().slice(0, 10) + ".txt";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+    setStatus("تم تجهيز نسخة المحادثة");
+  }
+
+  function deleteChat(id: string) {
+    if (busy && active?.id === id) return;
+    if (!window.confirm("هل تريد حذف هذه المحادثة نهائيًا من هذا المتصفح؟")) return;
+    const remaining = sessions.filter((session) => session.id !== id);
+    const next = remaining.length ? remaining : [makeSession()];
+    setSessions(next);
+    if (activeId === id) setActiveId(next[0].id);
+    setStatus("تم حذف المحادثة");
+  }
+
   function clearCurrent() {
     if (!active || busy) return;
     updateActive((session) => ({ ...session, title: "محادثة جديدة", messages: [], updatedAt: Date.now() }));
@@ -167,9 +195,12 @@ export default function AICorePage() {
         <div className="hc-history-label">محادثاتك</div>
         <div className="hc-history">
           {sessions.map((session) => (
-            <button key={session.id} className={`hc-history-item ${active?.id === session.id ? "active" : ""}`} onClick={() => chooseChat(session.id)}>
-              <MessageSquare size={16} /><span>{session.title || "محادثة جديدة"}</span>
-            </button>
+            <div key={session.id} className={`hc-history-row ${active?.id === session.id ? "active" : ""}`}>
+              <button className="hc-history-item" onClick={() => chooseChat(session.id)}>
+                <MessageSquare size={16} /><span>{session.title || "محادثة جديدة"}</span>
+              </button>
+              <button className="hc-history-delete" onClick={() => deleteChat(session.id)} disabled={busy && active?.id === session.id} aria-label="حذف المحادثة" title="حذف المحادثة"><X size={14} /></button>
+            </div>
           ))}
         </div>
         <div className="hc-side-bottom">
@@ -188,6 +219,7 @@ export default function AICorePage() {
           </div>
           <div className="hc-topbar-actions">
             <span className="hc-status"><i /> {status}</span>
+            <button className="hc-export" onClick={exportCurrentChat} disabled={!messages.length} title="تصدير المحادثة"><Download size={16} /><span>تصدير</span></button>
             <button className="hc-icon-button" onClick={newChat} title="محادثة جديدة" aria-label="محادثة جديدة"><Plus size={18} /></button>
           </div>
         </header>
