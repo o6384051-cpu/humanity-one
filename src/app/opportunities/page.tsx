@@ -104,7 +104,7 @@ function OpportunityMatches({ items }: { items: Resource[] }) {
   const matches = useMemo(() => {
     if (!profile) return [];
     const skillText = (profile.skills || "").toLocaleLowerCase("ar");
-    const tokens = skillText.split(/[،,؛;\\s]+/).map((word) => word.trim()).filter((word) => word.length >= 3);
+    const tokens = skillText.split(/[،,؛;\s]+/).map((word) => word.trim()).filter((word) => word.length >= 3);
     const preferred: Resource["category"] | null =
       profile.interest === "عمل رقمي" ? "learning" :
       profile.interest === "حرفة أو عمل يدوي" ? "work" :
