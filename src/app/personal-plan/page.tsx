@@ -69,6 +69,7 @@ export default function PersonalPlanPage() {
     <div style={{ maxWidth: 1000, margin: "0 auto" }}>
       <Link href="/" style={{ display: "inline-flex", alignItems: "center", gap: 8, color: "#8bded2", textDecoration: "none", marginBottom: 24 }}><ArrowRight size={17} /> العودة إلى HUMANITY ONE</Link>
       <Link href="/resume" style={{ display: "inline-flex", alignItems: "center", gap: 8, color: "#8bded2", textDecoration: "none", marginBottom: 18 }}>إنشاء سيرتي الذاتية ←</Link>
+      <Link href="/small-business" style={{ display: "inline-flex", alignItems: "center", gap: 8, color: "#8bded2", textDecoration: "none", marginBottom: 18 }}>مساعد المشروعات الصغيرة ←</Link>
       <header style={{ marginBottom: 22 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 9, color: "#83d9ce", fontSize: 13 }}><Target size={18} /> خطوات عملية تناسب ظروفك</div>
         <h1 style={{ fontSize: "clamp(27px,4vw,39px)", margin: "9px 0" }}>خطتي لتحسين حياتي</h1>
