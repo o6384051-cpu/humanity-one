@@ -125,6 +125,10 @@ export default function OpportunitiesPage() {
           <p style={{ color: "#a9bdc8", lineHeight: 1.9, maxWidth: 760, margin: "10px 0 0" }}>
             ابدأ من بوابات رسمية ومصادر معروفة للعمل والتعلم وبناء مشروع صغير. نعرض هنا روابط الجهات نفسها، لا إعلانات وظائف غير متحقق منها.
           </p>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 10, marginTop: 16 }}>
+            <Link href="/jobs" style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "11px 15px", borderRadius: 10, background: "#174c49", color: "#eafff9", textDecoration: "none", fontSize: 14 }}>تصفح الوظائف المنشورة ←</Link>
+            <Link href="/jobs/post" style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "11px 15px", borderRadius: 10, border: "1px solid #4a9d91", color: "#bfe9e3", textDecoration: "none", fontSize: 14 }}>صاحب عمل؟ أضف فرصة مجانًا</Link>
+          </div>
         </header>
 
         <section style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(190px,1fr))", gap: 12, marginBottom: 22 }}>
