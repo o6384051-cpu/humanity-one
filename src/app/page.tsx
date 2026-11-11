@@ -147,6 +147,12 @@ export default function Dashboard() {
               <p>خطة شخصية من خطوات عملية للتعلم والعمل</p>
               <span className="ho-card-arrow">←</span>
             </Link>
+            <Link href="/small-business" className="ho-service-card">
+              <div className="ho-service-icon tone-1"><Lightbulb size={20} /></div>
+              <h3>مساعد المشروعات الصغيرة</h3>
+              <p>خطط تجربة المشروع واحسب تكاليفك بأرقامك</p>
+              <span className="ho-card-arrow">←</span>
+            </Link>
             <Link href="/knowledge" className="ho-service-card">
               <div className="ho-service-icon tone-3"><BookOpen size={20} /></div>
               <h3>محرك المعرفة</h3>
