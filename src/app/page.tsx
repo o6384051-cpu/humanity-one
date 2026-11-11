@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Home, Bot, FolderKanban, CheckSquare, BookOpen, BarChart3, Settings, Search, Bell, Mail, Sun, Leaf, CheckCircle2, Users, Lightbulb, Send, ShieldCheck, HeartHandshake } from 'lucide-react';
+import { Home, Bot, FolderKanban, CheckSquare, BookOpen, BarChart3, Settings, Search, Bell, Mail, Sun, Leaf, CheckCircle2, Users, Lightbulb, Send, ShieldCheck, HeartHandshake, BriefcaseBusiness } from 'lucide-react';
 
 export default function Dashboard() {
   const router = useRouter();
@@ -38,6 +38,7 @@ export default function Dashboard() {
           <Link href="/" className="active"><Home size={18} /> الرئيسية</Link>
           <Link href="/assistant"><Bot size={18} /> المساعد الذكي</Link>
           <Link href="/ai-core"><Bot size={18} /> مركز الذكاء والعمل الإنساني</Link>
+          <Link href="/opportunities"><BriefcaseBusiness size={18} /> مركز الفرص الإنسانية</Link>
           <Link href="/projects"><FolderKanban size={18} /> المشاريع</Link>
           <Link href="/tasks"><CheckSquare size={18} /> المهام</Link>
           <Link href="/knowledge"><BookOpen size={18} /> محرك المعرفة</Link>
