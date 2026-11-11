@@ -8,6 +8,9 @@ export default function Dashboard() {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
   const [assistantQuery, setAssistantQuery] = useState('');
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [messagesOpen, setMessagesOpen] = useState(false);
+  const [lightMode, setLightMode] = useState(false);
 
   const openAssistant = (query: string) => {
     const value = query.trim();
@@ -20,7 +23,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="ho-shell">
+    <div className={`ho-shell${lightMode ? " ho-light" : ""}`}>
       {/* الشريط الجانبي */}
       <aside className="ho-sidebar">
         <div className="ho-brand">
@@ -36,7 +39,7 @@ export default function Dashboard() {
         {/* القائمة المحدثة بالروابط */}
         <nav className="ho-nav">
           <Link href="/" className="active"><Home size={18} /> الرئيسية</Link>
-          <Link href="/assistant"><Bot size={18} /> المساعد الذكي</Link>
+          <Link href="/ai-core"><Bot size={18} /> المساعد الذكي</Link>
           <Link href="/ai-core"><Bot size={18} /> مركز الذكاء والعمل الإنساني</Link>
           <Link href="/projects"><FolderKanban size={18} /> المشاريع</Link>
           <Link href="/tasks"><CheckSquare size={18} /> المهام</Link>
@@ -69,9 +72,15 @@ export default function Dashboard() {
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </form>
-            <button className="ho-icon-btn"><Bell size={18} /><i></i></button>
-            <button className="ho-icon-btn"><Mail size={18} /></button>
-            <button className="ho-icon-btn"><Sun size={18} /></button>
+            <div className="ho-top-control">
+              <button type="button" className="ho-icon-btn" aria-label="الإشعارات" aria-expanded={notificationsOpen} onClick={() => { setNotificationsOpen((open) => !open); setMessagesOpen(false); }}><Bell size={18} />{!notificationsOpen && <i />}</button>
+              {notificationsOpen && <div className="ho-top-popover"><b>الإشعارات</b><p>لا توجد إشعارات جديدة حاليًا.</p><small>ستظهر هنا التنبيهات الفعلية عند تفعيل نظام الإشعارات.</small></div>}
+            </div>
+            <div className="ho-top-control">
+              <button type="button" className="ho-icon-btn" aria-label="الرسائل" aria-expanded={messagesOpen} onClick={() => { setMessagesOpen((open) => !open); setNotificationsOpen(false); }}><Mail size={18} /></button>
+              {messagesOpen && <div className="ho-top-popover"><b>الرسائل</b><p>صندوق الرسائل المباشر لم يتم تفعيله بعد.</p><Link href="/ai-core" onClick={() => setMessagesOpen(false)}>افتح المساعد الذكي للتواصل الآن</Link></div>}
+            </div>
+            <button type="button" className="ho-icon-btn" aria-label={lightMode ? "تفعيل الوضع الداكن" : "تفعيل الوضع الفاتح"} title={lightMode ? "الوضع الداكن" : "الوضع الفاتح"} onClick={() => setLightMode((mode) => !mode)}>{lightMode ? <Sun size={18} /> : <Sun size={18} />}</button>
             <div className="ho-user">أ</div>
           </div>
         </header>
