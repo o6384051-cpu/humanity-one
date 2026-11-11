@@ -83,6 +83,7 @@ model JobListing {
   area               String?
   contactPhone       String
   contactEmail       String?
+  employerAccessHash String?
   jobTitle           String
   description        String   @db.Text
   skills             String?
