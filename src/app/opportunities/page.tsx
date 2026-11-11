@@ -16,60 +16,12 @@ type Resource = {
 };
 
 const resources: Resource[] = [
-  {
-    title: "منصة العمل المصرية",
-    description: "بوابة وزارة العمل لفرص العمل داخل مصر وخارجها، والتدريب المهني والخدمات الإلكترونية.",
-    category: "work",
-    keywords: ["وظائف حكومية","مؤهل","اختبارات","إدارة","حاسب","محاسبة","هندسة","تعليم","government","administration"],
-    keywords: ["وظائف","عمل","مبيعات","خدمة عملاء","قيادة","حرف","صيانة","إدارة","محاسبة","تسويق","توصيل","warehouse","sales","customer service","driving","maintenance"],
-    provider: "وزارة العمل المصرية",
-    url: "https://egywork.labour.gov.eg/",
-    note: "تحقق من توافر الفرص وشروط كل إعلان قبل التقديم.",
-  },
-  {
-    title: "بوابة الوظائف الحكومية",
-    description: "الإعلانات الرسمية لوظائف الجهات الحكومية ومتابعة إجراءات التقديم.",
-    category: "work",
-    provider: "الجهاز المركزي للتنظيم والإدارة",
-    url: "https://jobs.caoa.gov.eg/",
-    note: "راجع مواعيد التقديم والمستندات المطلوبة في الإعلان الرسمي.",
-  },
-  {
-    title: "مهارة-تك",
-    description: "تعلم مهارات تكنولوجيا المعلومات بالعربية والإنجليزية، مع محتوى يراعي إتاحة التعلم.",
-    category: "learning",
-    keywords: ["حرفة","صيانة","كهرباء","سباكة","خياطة","تدريب مهني","صناعة","vocational","technical","craft"],
-    keywords: ["تعلم","لغة","مهارات","إدارة","تسويق","تواصل","تعليم","تعلم ذاتي","language","communication","learning"],
-    keywords: ["برمجة","حاسب","تقنية","تصميم","بيانات","ذكاء اصطناعي","تسويق رقمي","مهارات رقمية","programming","technology","design","data","digital"],
-    provider: "معهد تكنولوجيا المعلومات ITI",
-    url: "https://maharatech.gov.eg/",
-    note: "راجع صفحة الدورة لمعرفة الرسوم والشروط والشهادة.",
-  },
-  {
-    title: "إدراك",
-    description: "دورات تعليمية مفتوحة عبر الإنترنت في مجالات متنوعة، ويمكن دراسة الدورات مجانًا.",
-    category: "learning",
-    provider: "منصة إدراك",
-    url: "https://www.edraak.org/",
-    note: "تحقق من متطلبات كل دورة وشروط الحصول على الشهادة.",
-  },
-  {
-    title: "منصة المشروعات الصغيرة",
-    description: "خدمات تدريب وتأسيس وتمويل وتسويق ودعم وتطوير المشروعات الصغيرة والمتوسطة.",
-    category: "business",
-    keywords: ["مشروع","بيع","تجارة","إنتاج","تصنيع","تسويق","تمويل","حساب تكاليف","entrepreneurship","business","marketing","production"],
-    provider: "جهاز تنمية المشروعات",
-    url: "https://www.msme.eg/",
-    note: "التمويل ليس مضمونًا؛ راجع الشروط والتكلفة ومقدم الخدمة مباشرة.",
-  },
-  {
-    title: "خدمات التدريب المهني",
-    description: "تابع برامج التدريب المهني والمبادرات التي تعلنها وزارة العمل.",
-    category: "learning",
-    provider: "وزارة العمل المصرية",
-    url: "https://www.labour.gov.eg/",
-    note: "تختلف الدورات ومواعيدها حسب الإعلان والمحافظة.",
-  },
+  { title: "منصة العمل المصرية", description: "بوابة وزارة العمل لفرص العمل داخل مصر وخارجها، والتدريب المهني والخدمات الإلكترونية.", category: "work", keywords: ["وظائف","عمل","مبيعات","خدمة عملاء","قيادة","حرف","صيانة","إدارة","محاسبة","تسويق","توصيل","مخازن","warehouse","sales","customer service","driving","maintenance"], provider: "وزارة العمل المصرية", url: "https://egywork.labour.gov.eg/", note: "تحقق من توافر الفرص وشروط كل إعلان قبل التقديم." },
+  { title: "بوابة الوظائف الحكومية", description: "الإعلانات الرسمية لوظائف الجهات الحكومية ومتابعة إجراءات التقديم.", category: "work", keywords: ["وظائف حكومية","مؤهل","اختبارات","إدارة","حاسب","محاسبة","هندسة","تعليم","government","administration"], provider: "الجهاز المركزي للتنظيم والإدارة", url: "https://jobs.caoa.gov.eg/", note: "راجع مواعيد التقديم والمستندات المطلوبة في الإعلان الرسمي." },
+  { title: "مهارة-تك", description: "تعلم مهارات تكنولوجيا المعلومات بالعربية والإنجليزية، مع محتوى يراعي إتاحة التعلم.", category: "learning", keywords: ["برمجة","حاسب","تقنية","تصميم","بيانات","ذكاء اصطناعي","تسويق رقمي","مهارات رقمية","programming","technology","design","data","digital"], provider: "معهد تكنولوجيا المعلومات ITI", url: "https://maharatech.gov.eg/", note: "راجع صفحة الدورة لمعرفة الرسوم والشروط والشهادة." },
+  { title: "إدراك", description: "دورات تعليمية مفتوحة عبر الإنترنت في مجالات متنوعة، ويمكن دراسة الدورات مجانًا.", category: "learning", keywords: ["تعلم","لغة","مهارات","إدارة","تسويق","تواصل","تعليم","تعلم ذاتي","language","communication","learning"], provider: "منصة إدراك", url: "https://www.edraak.org/", note: "تحقق من متطلبات كل دورة وشروط الحصول على الشهادة." },
+  { title: "منصة المشروعات الصغيرة", description: "خدمات تدريب وتأسيس وتمويل وتسويق ودعم وتطوير المشروعات الصغيرة والمتوسطة.", category: "business", keywords: ["مشروع","بيع","تجارة","إنتاج","تصنيع","تسويق","تمويل","حساب تكاليف","ريادة","entrepreneurship","business","marketing","production"], provider: "جهاز تنمية المشروعات", url: "https://www.msme.eg/", note: "التمويل ليس مضمونًا؛ راجع الشروط والتكلفة ومقدم الخدمة مباشرة." },
+  { title: "خدمات التدريب المهني", description: "تابع برامج التدريب المهني والمبادرات التي تعلنها وزارة العمل.", category: "learning", keywords: ["حرفة","صيانة","كهرباء","سباكة","خياطة","تدريب مهني","صناعة","vocational","technical","craft"], provider: "وزارة العمل المصرية", url: "https://www.labour.gov.eg/", note: "تختلف الدورات ومواعيدها حسب الإعلان والمحافظة." },
 ];
 
 const filters: { value: Category; label: string }[] = [
@@ -103,20 +55,20 @@ function OpportunityMatches({ items }: { items: Resource[] }) {
 
   const matches = useMemo(() => {
     if (!profile) return [];
-    const skillText = (profile.skills || "").toLocaleLowerCase("ar");
-    const tokens = skillText.split(/[،,؛;\s]+/).map((word) => word.trim()).filter((word) => word.length >= 3);
+    const normalize = (value: string) => value.toLocaleLowerCase("ar").replace(/[\\u064B-\\u065F\\u0670]/g, "").replace(/[أإآ]/g, "ا").replace(/ة/g, "ه").trim();
+    const tokens = normalize(profile.skills || "").split(/[،,؛;\\s]+/).filter((word) => word.length >= 3);
     const preferred: Resource["category"] | null =
       profile.interest === "عمل رقمي" ? "learning" :
       profile.interest === "حرفة أو عمل يدوي" ? "work" :
       profile.interest === "مشروع صغير" || profile.goal === "بدء مشروع صغير" ? "business" :
       profile.goal === "تعلم مهارة جديدة" ? "learning" : null;
     return items.map((item) => {
-      const matched = tokens.filter((token) => item.keywords.some((word) => word.toLocaleLowerCase("ar").includes(token) || token.includes(word.toLocaleLowerCase("ar"))));
+      const matched = tokens.filter((token) => item.keywords.some((word) => { const keyword = normalize(word); return keyword.length >= 3 && (keyword.includes(token) || token.includes(keyword)); }));
       let score = matched.length * 2;
       if (preferred === item.category) score += 3;
       if (profile.goal === "الحصول على عمل أو دخل" && item.category === "work") score += 2;
       if (profile.goal === "زيادة دخلي الحالي" && (item.category === "business" || item.category === "learning")) score += 1;
-      if (profile.goal === "العودة إلى سوق العمل" && item.category === "work") score += 2;
+      if (profile.goal === "العودة إلى سوق العمل" && item.category === "work") score += 2;\n      if (profile.education === "دبلوم فني" && item.category === "learning") score += 1;
       const reasons: string[] = [];
       if (preferred === item.category) reasons.push("يتوافق مع المجال الذي اخترته");
       if (matched.length) reasons.push("يرتبط بمهاراتك: " + matched.slice(0, 3).join("، "));
