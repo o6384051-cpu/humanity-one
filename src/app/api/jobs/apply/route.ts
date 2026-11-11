@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 const applicationSchema = z.object({
   jobId: z.string().min(1).max(100),
   applicantName: z.string().trim().min(2).max(100),
-  phone: z.string().trim().regex(/^[+0-9٠-٩\\s()-]{8,22}$/),
+  phone: z.string().trim().regex(/^[+0-9٠-٩\s()-]{8,22}$/),
   experience: z.string().trim().max(1200).optional().default(""),
   message: z.string().trim().max(1200).optional().default(""),
   website: z.string().optional().default(""),
