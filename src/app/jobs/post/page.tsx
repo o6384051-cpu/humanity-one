@@ -21,6 +21,7 @@ export default function PostJobPage() {
   const [busy,setBusy] = useState(false);
   const [message,setMessage] = useState("");
   const [success,setSuccess] = useState(false);
+  const [managementUrl,setManagementUrl] = useState("");
   function change(key:string,value:string) { setValues(old => ({...old,[key]:value})); }
   async function submit(event:React.FormEvent) {
     event.preventDefault(); setBusy(true); setMessage(""); setSuccess(false);
@@ -32,6 +33,7 @@ export default function PostJobPage() {
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || "تعذر إرسال الإعلان.");
       setSuccess(true); setMessage(data.message || "تم استلام إعلانك للمراجعة.");
+      if (data.id && data.employerAccessToken) setManagementUrl(`${window.location.origin}/jobs/manage/${data.id}#${data.employerAccessToken}`);
     } catch(error) { setMessage(error instanceof Error ? error.message : "حدث خطأ غير متوقع."); }
     finally { setBusy(false); }
   }
@@ -41,7 +43,7 @@ export default function PostJobPage() {
       <Link href="/jobs" style={{ color:"#8bded2", display:"inline-flex", gap:8, alignItems:"center", textDecoration:"none", marginBottom:22 }}><ArrowRight size={17}/> العودة إلى الوظائف</Link>
       <h1 style={{ color:"#f3fbfc", fontSize:"clamp(27px,4vw,38px)" }}>أضف فرصة عمل حقيقية</h1>
       <p style={{ color:"#a9bdc8", lineHeight:1.9 }}>أعلن عن احتياج مصنعك أو ورشتك أو نشاطك مجانًا. كل إعلان يُراجع قبل ظهوره للباحثين عن عمل. لا توجد نقاط أو رسوم نشر.</p>
-      {success ? <section role="status" style={{ padding:22, background:"#112f31", borderRadius:14, lineHeight:1.9 }}><strong style={{ color:"#9ce4d6" }}>{message}</strong><p>سيظهر الإعلان في سوق العمل بعد مراجعته. شكرًا لمساعدتك في إتاحة فرصة عمل حقيقية.</p><Link href="/jobs" style={{ color:"#8bded2" }}>العودة إلى الوظائف ←</Link></section> :
+      {success ? <section role="status" style={{ padding:22, background:"#112f31", borderRadius:14, lineHeight:1.9 }}><strong style={{ color:"#9ce4d6" }}>{message}</strong><p>سيظهر الإعلان في سوق العمل بعد مراجعته. شكرًا لمساعدتك في إتاحة فرصة عمل حقيقية.</p>{managementUrl ? <div style={{ margin:"16px 0", padding:14, borderRadius:10, background:"#0a1b27" }}><strong>رابط متابعة المتقدمين (خاص بك)</strong><p style={{ color:"#ffdf9c", fontSize:13 }}>احفظ هذا الرابط الآن. هو مفتاح الدخول الوحيد، ولن نستطيع استعادته إذا فقدته. لا تشاركه مع أي شخص.</p><Link href={managementUrl} style={{ color:"#8bded2", overflowWrap:"anywhere" }}>فتح لوحة متابعة المتقدمين ←</Link><button type="button" onClick={()=>navigator.clipboard.writeText(managementUrl)} style={{ display:"block", marginTop:12, border:0, borderRadius:8, padding:10, background:"#17645b", color:"white", font:"inherit" }}>نسخ رابط المتابعة</button></div> : <p>لم يتم إنشاء رابط متابعة تلقائيًا لهذا الإعلان.</p>}<Link href="/jobs" style={{ color:"#8bded2" }}>العودة إلى الوظائف ←</Link></section> :
       <form onSubmit={submit} style={{ display:"grid", gap:15, padding:18, background:"rgba(17,38,52,.92)", border:"1px solid rgba(132,177,190,.2)", borderRadius:16 }}>
         <h2 style={{ margin:0, color:"#82d9cd" }}>بيانات صاحب العمل والمنشأة</h2>
         <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(220px,1fr))", gap:12 }}>
