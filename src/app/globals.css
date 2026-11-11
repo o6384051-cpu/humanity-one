@@ -81,3 +81,24 @@ button{cursor:pointer}
 @media(max-width:1100px){.ho-content{padding:25px 24px}.ho-topbar{padding:0 24px}.ho-orbit{left:2%;opacity:.5}.ho-services{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:760px){.ho-sidebar{transform:translateX(105%);transition:transform .25s;width:275px}.ho-sidebar.is-open{transform:translateX(0)}.ho-overlay{display:block;position:fixed;inset:0;background:#020813b8;border:0;z-index:25}.ho-close,.ho-menu{display:grid;place-items:center}.ho-main{margin-right:0}.ho-topbar{height:60px;padding:0 15px}.ho-breadcrumb{font-size:10px}.ho-search{width:38px;height:36px;padding:0;justify-content:center;border:0;background:transparent}.ho-search input{display:none}.ho-top-actions{gap:8px}.ho-content{padding:18px 14px}.ho-welcome{padding:25px 20px;min-height:260px}.ho-welcome h1{font-size:23px}.ho-welcome p{font-size:10px;max-width:90%}.ho-orbit{left:-75px;top:25%;opacity:.22}.ho-welcome-copy{max-width:100%}.ho-welcome-actions{flex-wrap:wrap}.ho-primary,.ho-secondary{font-size:10px;padding:0 11px}.ho-stats{grid-template-columns:1fr;gap:8px;margin:12px 0 24px}.ho-stats article{min-height:66px}.ho-section-head{align-items:start}.ho-section-head h2{font-size:16px}.ho-section-head p{max-width:250px;line-height:1.8}.ho-link-btn{font-size:9px;white-space:nowrap}.ho-services{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.ho-service-card{min-height:165px;padding:13px}.ho-service-card h3{font-size:12px}.ho-service-card p{font-size:9px}.ho-card-tag{font-size:7px;left:8px;top:13px}.ho-lower-grid{grid-template-columns:1fr}.ho-assistant-panel,.ho-principles{padding:15px}.ho-beta{display:none}.ho-footer{font-size:8px;gap:10px;flex-wrap:wrap}.ho-footer>span:last-child{gap:4px}}
 @media(max-width:380px){.ho-services{grid-template-columns:1fr}.ho-service-card{min-height:140px}.ho-welcome h1{font-size:20px}.ho-welcome-actions{gap:7px}}
+
+
+/* Header controls and accessible feedback panels */
+.ho-top-control{position:relative;display:flex;align-items:center}
+.ho-top-popover{position:absolute;top:45px;left:0;width:min(290px,calc(100vw - 32px));z-index:80;padding:15px;border:1px solid rgba(111,210,205,.25);border-radius:12px;background:#111e30;color:#e8edf7;box-shadow:0 14px 38px #0008;text-align:right}
+.ho-top-popover b{font-size:12px;color:#f0f7ff}
+.ho-top-popover p{font-size:11px;color:#c0cedd;margin:10px 0 5px}
+.ho-top-popover small{font-size:9px;line-height:1.8;color:#8398b0}
+.ho-top-popover a{display:inline-block;margin-top:8px;color:#69dcd3;font-size:10px;text-decoration:none}
+.ho-shell.ho-light{background:#f3f7fb;color:#18283a}
+.ho-shell.ho-light .ho-main{color:#18283a}
+.ho-shell.ho-light .ho-topbar{background:rgba(255,255,255,.94);border-color:#dbe4ed}
+.ho-shell.ho-light .ho-breadcrumb b{color:#24364b}
+.ho-shell.ho-light .ho-search,.ho-shell.ho-light .ho-icon-btn{background:#fff;border-color:#d7e1eb;color:#52677e}
+.ho-shell.ho-light .ho-search input{color:#24364b}
+.ho-shell.ho-light .ho-stats article,.ho-shell.ho-light .ho-service-card,.ho-shell.ho-light .ho-assistant-panel,.ho-shell.ho-light .ho-principles{background:#fff;border-color:#dce5ed;color:#24364b}
+.ho-shell.ho-light .ho-section-head h2,.ho-shell.ho-light .ho-service-card h3,.ho-shell.ho-light .ho-panel-head h3,.ho-shell.ho-light .ho-principles-title h3,.ho-shell.ho-light .ho-principle b{color:#20334a}
+.ho-shell.ho-light .ho-stats small,.ho-shell.ho-light .ho-service-card p,.ho-shell.ho-light .ho-panel-head p,.ho-shell.ho-light .ho-principle small{color:#60748b}
+.ho-shell.ho-light .ho-top-popover{background:#fff;color:#20334a;border-color:#d7e1eb}
+.ho-shell.ho-light .ho-top-popover b{color:#20334a}
+.ho-shell.ho-light .ho-top-popover p{color:#52677e}
