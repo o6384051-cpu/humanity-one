@@ -140,7 +140,7 @@ export default function Dashboard() {
               <p>خطط لدعم المجتمع وحفظ الكرامة</p>
               <span className="ho-card-arrow">←</span>
             </Link>
-            <Link href="/knowledge" className="ho-service-card">
+            <Link href="/opportunities" className="ho-service-card">\n              <div className="ho-service-icon tone-2"><BriefcaseBusiness size={20} /></div>\n              <h3>فرص العمل والدخل</h3>\n              <p>بوابات توظيف وتدريب ومصادر موثوقة</p>\n              <span className="ho-card-arrow">←</span>\n            </Link>\n            <Link href="/knowledge" className="ho-service-card">
               <div className="ho-service-icon tone-3"><BookOpen size={20} /></div>
               <h3>محرك المعرفة</h3>
               <p>مساحة للمعرفة والتعلم</p>
