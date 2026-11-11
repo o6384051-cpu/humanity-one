@@ -55,8 +55,8 @@ function OpportunityMatches({ items }: { items: Resource[] }) {
 
   const matches = useMemo(() => {
     if (!profile) return [];
-    const normalize = (value: string) => value.toLocaleLowerCase("ar").replace(/[\\u064B-\\u065F\\u0670]/g, "").replace(/[أإآ]/g, "ا").replace(/ة/g, "ه").trim();
-    const tokens = normalize(profile.skills || "").split(/[،,؛;\\s]+/).filter((word) => word.length >= 3);
+    const normalize = (value: string) => value.toLocaleLowerCase("ar").replace(/[\u064B-\u065F\u0670]/g, "").replace(/[أإآ]/g, "ا").replace(/ة/g, "ه").trim();
+    const tokens = normalize(profile.skills || "").split(/[،,؛;\s]+/).filter((word) => word.length >= 3);
     const preferred: Resource["category"] | null =
       profile.interest === "عمل رقمي" ? "learning" :
       profile.interest === "حرفة أو عمل يدوي" ? "work" :
