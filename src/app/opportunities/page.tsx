@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ArrowRight, BriefcaseBusiness, GraduationCap, Lightbulb, Search, ExternalLink, ShieldCheck, HeartHandshake } from "lucide-react";
 
 type Category = "all" | "work" | "learning" | "business" | "support";
@@ -12,6 +12,7 @@ type Resource = {
   provider: string;
   url: string;
   note: string;
+  keywords: string[];
 };
 
 const resources: Resource[] = [
@@ -19,6 +20,8 @@ const resources: Resource[] = [
     title: "منصة العمل المصرية",
     description: "بوابة وزارة العمل لفرص العمل داخل مصر وخارجها، والتدريب المهني والخدمات الإلكترونية.",
     category: "work",
+    keywords: ["وظائف حكومية","مؤهل","اختبارات","إدارة","حاسب","محاسبة","هندسة","تعليم","government","administration"],
+    keywords: ["وظائف","عمل","مبيعات","خدمة عملاء","قيادة","حرف","صيانة","إدارة","محاسبة","تسويق","توصيل","warehouse","sales","customer service","driving","maintenance"],
     provider: "وزارة العمل المصرية",
     url: "https://egywork.labour.gov.eg/",
     note: "تحقق من توافر الفرص وشروط كل إعلان قبل التقديم.",
@@ -35,6 +38,9 @@ const resources: Resource[] = [
     title: "مهارة-تك",
     description: "تعلم مهارات تكنولوجيا المعلومات بالعربية والإنجليزية، مع محتوى يراعي إتاحة التعلم.",
     category: "learning",
+    keywords: ["حرفة","صيانة","كهرباء","سباكة","خياطة","تدريب مهني","صناعة","vocational","technical","craft"],
+    keywords: ["تعلم","لغة","مهارات","إدارة","تسويق","تواصل","تعليم","تعلم ذاتي","language","communication","learning"],
+    keywords: ["برمجة","حاسب","تقنية","تصميم","بيانات","ذكاء اصطناعي","تسويق رقمي","مهارات رقمية","programming","technology","design","data","digital"],
     provider: "معهد تكنولوجيا المعلومات ITI",
     url: "https://maharatech.gov.eg/",
     note: "راجع صفحة الدورة لمعرفة الرسوم والشروط والشهادة.",
@@ -51,6 +57,7 @@ const resources: Resource[] = [
     title: "منصة المشروعات الصغيرة",
     description: "خدمات تدريب وتأسيس وتمويل وتسويق ودعم وتطوير المشروعات الصغيرة والمتوسطة.",
     category: "business",
+    keywords: ["مشروع","بيع","تجارة","إنتاج","تصنيع","تسويق","تمويل","حساب تكاليف","entrepreneurship","business","marketing","production"],
     provider: "جهاز تنمية المشروعات",
     url: "https://www.msme.eg/",
     note: "التمويل ليس مضمونًا؛ راجع الشروط والتكلفة ومقدم الخدمة مباشرة.",
@@ -79,6 +86,59 @@ const categoryLabel: Record<Resource["category"], string> = {
   business: "المشروعات الصغيرة",
   support: "الدعم الإنساني",
 };
+
+type MatchProfile = { skills?: string; goal?: string; interest?: string; education?: string; internet?: string; location?: string };
+
+function OpportunityMatches({ items }: { items: Resource[] }) {
+  const [profile, setProfile] = useState<MatchProfile | null>(null);
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem("humanity-one-personal-plan-v1");
+      if (raw) {
+        const saved = JSON.parse(raw);
+        if (saved?.profile && typeof saved.profile === "object") setProfile(saved.profile);
+      }
+    } catch { setProfile(null); }
+  }, []);
+
+  const matches = useMemo(() => {
+    if (!profile) return [];
+    const skillText = (profile.skills || "").toLocaleLowerCase("ar");
+    const tokens = skillText.split(/[،,؛;\\s]+/).map((word) => word.trim()).filter((word) => word.length >= 3);
+    const preferred: Resource["category"] | null =
+      profile.interest === "عمل رقمي" ? "learning" :
+      profile.interest === "حرفة أو عمل يدوي" ? "work" :
+      profile.interest === "مشروع صغير" || profile.goal === "بدء مشروع صغير" ? "business" :
+      profile.goal === "تعلم مهارة جديدة" ? "learning" : null;
+    return items.map((item) => {
+      const matched = tokens.filter((token) => item.keywords.some((word) => word.toLocaleLowerCase("ar").includes(token) || token.includes(word.toLocaleLowerCase("ar"))));
+      let score = matched.length * 2;
+      if (preferred === item.category) score += 3;
+      if (profile.goal === "الحصول على عمل أو دخل" && item.category === "work") score += 2;
+      if (profile.goal === "زيادة دخلي الحالي" && (item.category === "business" || item.category === "learning")) score += 1;
+      if (profile.goal === "العودة إلى سوق العمل" && item.category === "work") score += 2;
+      const reasons = [];
+      if (preferred === item.category) reasons.push("يتوافق مع المجال الذي اخترته");
+      if (matched.length) reasons.push("يرتبط بمهاراتك: " + matched.slice(0, 3).join("، "));
+      if (!reasons.length) reasons.push("قد يساعدك في هدفك العام؛ راجع الشروط بنفسك");
+      return { item, score, reasons };
+    }).sort((a, b) => b.score - a.score).slice(0, 3);
+  }, [items, profile]);
+
+  return <section style={{ background: "rgba(17,38,52,.88)", border: "1px solid rgba(132,177,190,.22)", borderRadius: 16, padding: 18, marginBottom: 18 }}>
+    <div style={{ color: "#82d9cd", fontSize: 13, marginBottom: 6 }}>مطابقة مبدئية حسب خطتك</div>
+    <h2 style={{ margin: "0 0 8px", color: "#f3fbfc", fontSize: 20 }}>فرص أقرب إلى مهاراتك وهدفك</h2>
+    {!profile ? <><p style={{ color: "#a9bdc8", lineHeight: 1.8, margin: "0 0 12px" }}>أنشئ خطتك الشخصية وأضف مهاراتك أولًا، ثم سنرتب المصادر هنا وفق المجال والمهارات التي أدخلتها.</p><Link href="/personal-plan" style={{ color: "#8bded2" }}>أنشئ خطتك وأدخل مهاراتك ←</Link></> :
+      <><p style={{ color: "#a9bdc8", lineHeight: 1.8, margin: "0 0 12px" }}>هذه توصيات إرشادية محلية مبنية على إجاباتك المحفوظة في هذا المتصفح، وليست إعلانًا عن وظيفة متاحة الآن.</p>
+      <div style={{ display: "grid", gap: 10 }}>{matches.map(({ item, reasons }) => <article key={item.title} style={{ background: "#0a1b27", borderRadius: 11, padding: 13, display: "grid", gap: 6 }}>
+        <div style={{ color: "#82d9cd", fontSize: 12 }}>{categoryLabel[item.category]}</div>
+        <strong style={{ color: "#f3fbfc" }}>{item.title}</strong>
+        <span style={{ color: "#b5c7cf", fontSize: 12, lineHeight: 1.7 }}>{reasons.join(" · ")}</span>
+        <a href={item.url} target="_blank" rel="noopener noreferrer" style={{ color: "#8bded2", fontSize: 13, width: "fit-content" }}>افتح المصدر الرسمي ←</a>
+      </article>)}</div>
+      <div style={{ marginTop: 12, display: "flex", gap: 12, flexWrap: "wrap" }}><Link href="/personal-plan" style={{ color: "#8bded2", fontSize: 13 }}>تعديل مهاراتي وهدفي</Link><button type="button" onClick={() => setProfile(null)} style={{ background: "transparent", border: 0, color: "#a9bdc8", cursor: "pointer", font: "inherit", fontSize: 12 }}>إعادة تحميل بيانات الخطة</button></div></>}
+  </section>;
+}
 
 export default function OpportunitiesPage() {
   const [category, setCategory] = useState<Category>("all");
@@ -118,6 +178,8 @@ export default function OpportunitiesPage() {
             <Lightbulb color="#82d9cd" size={22} /><h2 style={{ fontSize: 16, margin: "10px 0 4px" }}>مشروعك الصغير</h2><p style={{ color: "#a9bdc8", fontSize: 13, margin: 0 }}>تدريب وإرشاد وخدمات دعم</p>
           </div>
         </section>
+
+        <OpportunityMatches items={resources} />
 
         <section style={{ background: "rgba(17,38,52,.88)", border: "1px solid rgba(132,177,190,.18)", borderRadius: 16, padding: 16, marginBottom: 18, display: "grid", gap: 12 }}>
           <label style={{ display: "flex", alignItems: "center", gap: 9, color: "#a9bdc8" }}>
