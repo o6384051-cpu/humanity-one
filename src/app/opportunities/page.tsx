@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { ArrowRight, BriefcaseBusiness, GraduationCap, Lightbulb, Search, ExternalLink, ShieldCheck, HeartHandshake } from "lucide-react";
 
-type Category = "all" | "work" | "learning" | "business" | "support";
+type Category = "all" | "work" | "trades" | "factory" | "learning" | "business" | "support";
 type Resource = {
   title: string;
   description: string;
@@ -17,6 +17,9 @@ type Resource = {
 
 const resources: Resource[] = [
   { title: "منصة العمل المصرية", description: "بوابة وزارة العمل لفرص العمل داخل مصر وخارجها، والتدريب المهني والخدمات الإلكترونية.", category: "work", keywords: ["وظائف","عمل","مبيعات","خدمة عملاء","قيادة","حرف","صيانة","إدارة","محاسبة","تسويق","توصيل","مخازن","warehouse","sales","customer service","driving","maintenance"], provider: "وزارة العمل المصرية", url: "https://egywork.labour.gov.eg/", note: "تحقق من توافر الفرص وشروط كل إعلان قبل التقديم." },
+  { title: "فرص الحرفيين وأصحاب المهن", description: "مسار مخصص للبحث عن عمل حسب الحرفة والخبرة العملية، حتى لمن لا يحمل شهادة جامعية: بناء، حدادة، نقاشة، كهرباء، سباكة، نجارة، لحام، تبريد وتكييف وصيانة.", category: "trades", keywords: ["بناء","بناءون","عامل بناء","حداد","حدادة","نقاش","نقاشة","كهربائي","كهرباء","سباك","سباكة","نجار","نجارة","محارة","مبلط","لحام","تبريد","تكييف","صيانة","فني","حرفي","عامل فني","عامل غير فني","craft","electrician","plumber","welder","painter","carpenter"], provider: "وزارة العمل المصرية", url: "https://egywork.labour.gov.eg/", note: "اختر المهنة وسجل خبرتك العملية. بعض الحرف قد تتطلب قياس مستوى مهارة أو ترخيصًا قانونيًا؛ لا يشترط أن تكون كل الفرص بشهادة جامعية." },
+  { title: "وظائف عمال المصانع والإنتاج", description: "مسار للبحث عن فرص عامل إنتاج، عامل تعبئة وتغليف، تشغيل خطوط إنتاج، مخازن، تحميل وتنزيل، مراقبة جودة، مساعد فني وصيانة مصانع.", category: "factory", keywords: ["مصانع","مصنع","عامل مصنع","عامل إنتاج","انتاج","خط إنتاج","تعبئة","تغليف","مخازن","تحميل","تنزيل","تشغيل","مساعد إنتاج","مراقب جودة","جودة","صيانة مصانع","وردية","production","factory","packing","warehouse","quality"], provider: "وزارة العمل المصرية", url: "https://egywork.labour.gov.eg/", note: "راجع مكان العمل والوردية والأجر والتأمينات وشروط السلامة في الإعلان قبل قبول الوظيفة." },
+  { title: "دليل المهن ومتطلبات كل حرفة", description: "معلومات عن مئات المهن في مصر، وطبيعة العمل ومتطلبات التعليم والمهارات ومؤشرات سوق العمل؛ لمساعدة العامل على اختيار مسار واقعي.", category: "trades", keywords: ["دليل المهن","مهن","حرف","مهارات","أجور","مهنة","تصنيف مهني","مهن صناعية","مهن فنية"], provider: "وزارة التخطيط والتنمية الاقتصادية والتعاون الدولي", url: "https://occupational-outlook.mped.gov.eg/", note: "هذا دليل معلومات عن المهن وليس لوحة وظائف شاغرة؛ استخدمه لفهم متطلبات المهنة قبل البحث عن إعلان عمل." },
   { title: "بوابة الوظائف الحكومية", description: "الإعلانات الرسمية لوظائف الجهات الحكومية ومتابعة إجراءات التقديم.", category: "work", keywords: ["وظائف حكومية","مؤهل","اختبارات","إدارة","حاسب","محاسبة","هندسة","تعليم","government","administration"], provider: "الجهاز المركزي للتنظيم والإدارة", url: "https://jobs.caoa.gov.eg/", note: "راجع مواعيد التقديم والمستندات المطلوبة في الإعلان الرسمي." },
   { title: "مهارة-تك", description: "تعلم مهارات تكنولوجيا المعلومات بالعربية والإنجليزية، مع محتوى يراعي إتاحة التعلم.", category: "learning", keywords: ["برمجة","حاسب","تقنية","تصميم","بيانات","ذكاء اصطناعي","تسويق رقمي","مهارات رقمية","programming","technology","design","data","digital"], provider: "معهد تكنولوجيا المعلومات ITI", url: "https://maharatech.gov.eg/", note: "راجع صفحة الدورة لمعرفة الرسوم والشروط والشهادة." },
   { title: "إدراك", description: "دورات تعليمية مفتوحة عبر الإنترنت في مجالات متنوعة، ويمكن دراسة الدورات مجانًا.", category: "learning", keywords: ["تعلم","لغة","مهارات","إدارة","تسويق","تواصل","تعليم","تعلم ذاتي","language","communication","learning"], provider: "منصة إدراك", url: "https://www.edraak.org/", note: "تحقق من متطلبات كل دورة وشروط الحصول على الشهادة." },
@@ -27,6 +30,8 @@ const resources: Resource[] = [
 const filters: { value: Category; label: string }[] = [
   { value: "all", label: "كل الفرص" },
   { value: "work", label: "العمل" },
+  { value: "trades", label: "العمال والحرفيون" },
+  { value: "factory", label: "عمال المصانع والإنتاج" },
   { value: "learning", label: "التعليم والتدريب" },
   { value: "business", label: "المشروعات الصغيرة" },
   { value: "support", label: "الدعم الإنساني" },
@@ -34,6 +39,8 @@ const filters: { value: Category; label: string }[] = [
 
 const categoryLabel: Record<Resource["category"], string> = {
   work: "العمل والدخل",
+  trades: "الحرف والمهن العملية",
+  factory: "المصانع والإنتاج",
   learning: "التعليم والتدريب",
   business: "المشروعات الصغيرة",
   support: "الدعم الإنساني",
@@ -59,16 +66,16 @@ function OpportunityMatches({ items }: { items: Resource[] }) {
     const tokens = normalize(profile.skills || "").split(/[،,؛;\s]+/).filter((word) => word.length >= 3);
     const preferred: Resource["category"] | null =
       profile.interest === "عمل رقمي" ? "learning" :
-      profile.interest === "حرفة أو عمل يدوي" ? "work" :
+      profile.interest === "حرفة أو عمل يدوي" ? "trades" :
       profile.interest === "مشروع صغير" || profile.goal === "بدء مشروع صغير" ? "business" :
       profile.goal === "تعلم مهارة جديدة" ? "learning" : null;
     return items.map((item) => {
       const matched = tokens.filter((token) => item.keywords.some((word) => { const keyword = normalize(word); return keyword.length >= 3 && (keyword.includes(token) || token.includes(keyword)); }));
       let score = matched.length * 2;
       if (preferred === item.category) score += 3;
-      if (profile.goal === "الحصول على عمل أو دخل" && item.category === "work") score += 2;
+      if (profile.goal === "الحصول على عمل أو دخل" && ["work", "trades", "factory"].includes(item.category)) score += 2;
       if (profile.goal === "زيادة دخلي الحالي" && (item.category === "business" || item.category === "learning")) score += 1;
-      if (profile.goal === "العودة إلى سوق العمل" && item.category === "work") score += 2;
+      if (profile.goal === "العودة إلى سوق العمل" && ["work", "trades", "factory"].includes(item.category)) score += 2;
       if (profile.education === "دبلوم فني" && item.category === "learning") score += 1;
       const reasons: string[] = [];
       if (preferred === item.category) reasons.push("يتوافق مع المجال الذي اخترته");
@@ -99,7 +106,7 @@ export default function OpportunitiesPage() {
 
   const visible = useMemo(() => resources.filter((item) => {
     const matchesCategory = category === "all" || item.category === category;
-    const text = [item.title, item.description, item.provider, categoryLabel[item.category]].join(" ").toLowerCase();
+    const text = [item.title, item.description, item.provider, categoryLabel[item.category], ...item.keywords].join(" ").toLowerCase();
     return matchesCategory && text.includes(query.trim().toLowerCase());
   }), [category, query]);
 
