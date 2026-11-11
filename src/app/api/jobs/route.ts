@@ -44,7 +44,7 @@ export async function GET() {
         jobTitle: true, description: true, skills: true, experienceLevel: true,
         educationRequirement: true, salaryMin: true, salaryMax: true,
         salaryPeriod: true, employmentType: true, shift: true, openings: true,
-        contactPhone: true, createdAt: true,
+        createdAt: true,
       },
     });
     return NextResponse.json({ jobs });
