@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
+import { createHash, randomBytes } from "node:crypto";
 import { prisma } from "@/lib/prisma";
 
 export const runtime = "nodejs";
@@ -65,11 +66,14 @@ export async function POST(req: NextRequest) {
     if (data.salaryMin != null && data.salaryMax != null && data.salaryMax < data.salaryMin) {
       return NextResponse.json({ error: "الحد الأعلى للأجر يجب ألا يقل عن الحد الأدنى." }, { status: 400 });
     }
+    const employerAccessToken = randomBytes(32).toString("base64url");
+    const employerAccessHash = createHash("sha256").update(employerAccessToken).digest("hex");
     const job = await prisma.jobListing.create({
       data: {
         employerName: data.employerName, businessType: data.businessType,
         businessName: data.businessName, city: data.city, area: data.area || null,
         contactPhone: data.contactPhone, contactEmail: data.contactEmail || null,
+        employerAccessHash,
         jobTitle: data.jobTitle, description: data.description, skills: data.skills || null,
         experienceLevel: data.experienceLevel, educationRequirement: data.educationRequirement,
         salaryMin: data.salaryMin ?? null, salaryMax: data.salaryMax ?? null,
@@ -78,7 +82,7 @@ export async function POST(req: NextRequest) {
       },
       select: { id: true },
     });
-    return NextResponse.json({ ok: true, id: job.id, status: "PENDING", message: "وصل إعلانك وسيظهر بعد مراجعته." }, { status: 201 });
+    return NextResponse.json({ ok: true, id: job.id, status: "PENDING", employerAccessToken, message: "وصل إعلانك وسيظهر بعد مراجعته. احتفظ برابط متابعة الطلب؛ لن نعرض رمز الدخول مرة أخرى." }, { status: 201 });
   } catch {
     return NextResponse.json({ error: "تعذر حفظ الإعلان. تأكد من اتصال قاعدة البيانات ثم حاول مجددًا." }, { status: 503 });
   }
