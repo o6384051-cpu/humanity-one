@@ -68,7 +68,8 @@ function OpportunityMatches({ items }: { items: Resource[] }) {
       if (preferred === item.category) score += 3;
       if (profile.goal === "الحصول على عمل أو دخل" && item.category === "work") score += 2;
       if (profile.goal === "زيادة دخلي الحالي" && (item.category === "business" || item.category === "learning")) score += 1;
-      if (profile.goal === "العودة إلى سوق العمل" && item.category === "work") score += 2;\n      if (profile.education === "دبلوم فني" && item.category === "learning") score += 1;
+      if (profile.goal === "العودة إلى سوق العمل" && item.category === "work") score += 2;
+      if (profile.education === "دبلوم فني" && item.category === "learning") score += 1;
       const reasons: string[] = [];
       if (preferred === item.category) reasons.push("يتوافق مع المجال الذي اخترته");
       if (matched.length) reasons.push("يرتبط بمهاراتك: " + matched.slice(0, 3).join("، "));
