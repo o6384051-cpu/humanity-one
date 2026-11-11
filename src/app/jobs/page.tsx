@@ -25,7 +25,7 @@ function ApplicationForm({ job, onClose }: { job: Job; onClose: () => void }) {
   async function submit(event: React.FormEvent) {
     event.preventDefault(); setBusy(true); setResult("");
     try {
-      const response = await fetch("/api/jobs/apply", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ jobId: job.id, applicantName: name, phone, experience, message }) });
+      const response = await fetch("/api/jobs/apply", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ jobId: job.id, applicantName: name, phone, experience, message, website: "" }) });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || "تعذر إرسال الطلب.");
       setResult(data.message || "تم إرسال طلبك بنجاح.");
@@ -39,7 +39,7 @@ function ApplicationForm({ job, onClose }: { job: Job; onClose: () => void }) {
     <input required value={phone} onChange={e => setPhone(e.target.value)} placeholder="رقم هاتف للتواصل" style={field} />
     <textarea maxLength={1200} value={experience} onChange={e => setExperience(e.target.value)} placeholder="خبرتك العملية أو الحرفة التي تتقنها (اختياري)" rows={3} style={field} />
     <textarea maxLength={1200} value={message} onChange={e => setMessage(e.target.value)} placeholder="رسالة لصاحب العمل (اختياري)" rows={3} style={field} />
-    <p style={{ margin: 0, color: "#9fb6c2", fontSize: 12, lineHeight: 1.7 }}>لن تظهر بياناتك الشخصية في صفحة الوظائف العامة. تُرسل بيانات التواصل لصاحب الإعلان لغرض متابعة طلبك فقط.</p>
+    <p style={{ margin: 0, color: "#9fb6c2", fontSize: 12, lineHeight: 1.7 }}>لن تظهر بياناتك الشخصية للعامة. تُحفظ بيانات التقديم داخل قاعدة المنصة ولا تُعرض إلا للمخولين. لا ترسل رقمك القومي أو بياناتك البنكية أو أي معلومات حساسة.</p>
     {result && <p role="status" style={{ color: "#9ce4d6", margin: 0 }}>{result}</p>}
     <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}><button disabled={busy} style={button}>{busy ? "جارٍ الإرسال..." : "إرسال طلب التقديم"}</button><button type="button" onClick={onClose} style={{ ...button, background: "#294454" }}>إغلاق</button></div>
   </form>;
@@ -97,7 +97,7 @@ export default function JobsPage() {
           {selected === job.id && <ApplicationForm job={job} onClose={() => setSelected(null)} />}
         </article>)}
       </section>
-      <footer style={{ marginTop: 22, padding: 15, borderRadius: 12, background: "#0a1b27", color: "#91aab6", fontSize: 12, lineHeight: 1.9 }}><ShieldCheck size={16} style={{ verticalAlign: "middle", marginLeft: 6 }} /> تُراجع الإعلانات قبل نشرها، لكن المراجعة لا تعني ضمان التوظيف. لا تدفع رسومًا للحصول على وظيفة أو مقابلة، ولا ترسل بياناتك البنكية أو رقمك القومي عبر رسائل غير موثوقة.</footer>
+      <footer style={{ marginTop: 22, padding: 15, borderRadius: 12, background: "#0a1b27", color: "#91aab6", fontSize: 12, lineHeight: 1.9 }}><ShieldCheck size={16} style={{ verticalAlign: "middle", marginLeft: 6 }} /> تُراجع الإعلانات قبل نشرها، لكن المراجعة لا تعني ضمان التوظيف. بيانات التقديم محفوظة داخل المنصة ولا تظهر للعامة. لا تدفع رسومًا للحصول على وظيفة أو مقابلة، ولا ترسل بياناتك البنكية أو رقمك القومي.</footer>
     </div>
   </main>;
 }
