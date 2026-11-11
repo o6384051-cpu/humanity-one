@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Home, Bot, FolderKanban, CheckSquare, BookOpen, BarChart3, Settings, Search, Bell, Mail, Sun, Leaf, CheckCircle2, Users, Lightbulb, Send, ShieldCheck, HeartHandshake } from 'lucide-react';
+import { Home, Bot, FolderKanban, CheckSquare, BookOpen, BarChart3, Settings, Search, Bell, Mail, Sun, Leaf, CheckCircle2, Users, Lightbulb, Send, ShieldCheck, HeartHandshake, BriefcaseBusiness, Target } from 'lucide-react';
 
 export default function Dashboard() {
   const router = useRouter();
@@ -38,6 +38,8 @@ export default function Dashboard() {
           <Link href="/" className="active"><Home size={18} /> الرئيسية</Link>
           <Link href="/assistant"><Bot size={18} /> المساعد الذكي</Link>
           <Link href="/ai-core"><Bot size={18} /> مركز الذكاء والعمل الإنساني</Link>
+          <Link href="/opportunities"><BriefcaseBusiness size={18} /> مركز الفرص الإنسانية</Link>
+          <Link href="/personal-plan"><Target size={18} /> خطتي لتحسين حياتي</Link>
           <Link href="/projects"><FolderKanban size={18} /> المشاريع</Link>
           <Link href="/tasks"><CheckSquare size={18} /> المهام</Link>
           <Link href="/knowledge"><BookOpen size={18} /> محرك المعرفة</Link>
@@ -137,6 +139,18 @@ export default function Dashboard() {
               <div className="ho-service-icon tone-2"><HeartHandshake size={20} /></div>
               <h3>الخدمات الإنسانية</h3>
               <p>خطط لدعم المجتمع وحفظ الكرامة</p>
+              <span className="ho-card-arrow">←</span>
+            </Link>
+            <Link href="/opportunities" className="ho-service-card">\n              <div className="ho-service-icon tone-2"><BriefcaseBusiness size={20} /></div>\n              <h3>فرص العمل والدخل</h3>\n              <p>بوابات توظيف وتدريب ومصادر موثوقة</p>\n              <span className="ho-card-arrow">←</span>\n            </Link>\n            <Link href="/personal-plan" className="ho-service-card">
+              <div className="ho-service-icon tone-3"><Target size={20} /></div>
+              <h3>خطتي لتحسين حياتي</h3>
+              <p>خطة شخصية من خطوات عملية للتعلم والعمل</p>
+              <span className="ho-card-arrow">←</span>
+            </Link>
+            <Link href="/small-business" className="ho-service-card">
+              <div className="ho-service-icon tone-1"><Lightbulb size={20} /></div>
+              <h3>مساعد المشروعات الصغيرة</h3>
+              <p>خطط تجربة المشروع واحسب تكاليفك بأرقامك</p>
               <span className="ho-card-arrow">←</span>
             </Link>
             <Link href="/knowledge" className="ho-service-card">
