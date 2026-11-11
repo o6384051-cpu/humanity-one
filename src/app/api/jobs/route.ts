@@ -11,7 +11,7 @@ const listingSchema = z.object({
   businessName: z.string().trim().min(2).max(120),
   city: z.string().trim().min(2).max(80),
   area: z.string().trim().max(100).optional().default(""),
-  contactPhone: z.string().trim().regex(/^[+0-9٠-٩\\s()-]{8,22}$/),
+  contactPhone: z.string().trim().regex(/^[+0-9٠-٩\s()-]{8,22}$/),
   contactEmail: z.string().trim().email().max(160).optional().or(z.literal("")),
   jobTitle: z.string().trim().min(2).max(120),
   description: z.string().trim().min(20).max(2500),
