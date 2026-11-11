@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { ArrowRight, Target, GraduationCap, BriefcaseBusiness, Lightbulb, Clock3, Download, RefreshCw, CheckCircle2, Circle, ShieldCheck } from "lucide-react";
+import { ArrowRight, Target, Download, RefreshCw, CheckCircle2, Circle, ShieldCheck } from "lucide-react";
 
 type Profile = { skills: string; education: string; goal: string; hours: string; interest: string; internet: string; location: string };
 type Step = { id: string; week: number; title: string; detail: string; done: boolean };
@@ -16,7 +16,7 @@ function makeSteps(p: Profile): Step[] {
   const internet = p.internet === "غير متاح بانتظام" ? "ابحث عن مركز شباب أو مكتبة عامة أو مكان يتيح اتصالًا مجانيًا" : "استخدم هاتفك أو جهازك للبحث والتعلم";
   const hours = Math.max(2, Math.min(20, Number(p.hours) || 5));
   return [
-    { id: "w1a", week: 1, title: "جرد المهارات والإمكانات", detail: `اكتب 5 أشياء تستطيع القيام بها، ومنها: ${skill}. حدّد الأدوات المتاحة والوقت الذي يمكنك الالتزام به.`, done: false },
+    { id: "w1a", week: 1, title: "جرد المهارات والإمكانات", detail: `اكتب 5 أشياء تستطيع القيام بها، ومنها: ${skill}. ضع في اعتبارك مستوى تعليمك (${p.education}) وحدّد الأدوات المتاحة والوقت الذي يمكنك الالتزام به.`, done: false },
     { id: "w1b", week: 1, title: "اختيار مسار واحد", detail: `ابدأ بمسار واضح: ${focus}. لا تدفع مقابل تدريب أو توظيف قبل التحقق من الجهة والشروط.`, done: false },
     { id: "w2a", week: 2, title: "تعلم مهارة صغيرة قابلة للتطبيق", detail: `خصص نحو ${hours} ساعات أسبوعيًا لتعلم مهارة مرتبطة بهدفك: ${p.goal}. اختر درسًا مجانيًا وطبّق ما تتعلمه.`, done: false },
     { id: "w2b", week: 2, title: "إنشاء نموذج عمل", detail: "أنجز مثالًا عمليًا واحدًا يثبت مهارتك: تصميم، كتابة، إصلاح، منتج تجريبي أو خدمة بسيطة.", done: false },
@@ -31,7 +31,6 @@ export default function PersonalPlanPage() {
   const [profile, setProfile] = useState<Profile>(blank);
   const [plan, setPlan] = useState<SavedPlan | null>(null);
   const [ready, setReady] = useState(false);
-  const [generated, setGenerated] = useState(false);
 
   useEffect(() => {
     try {
@@ -57,7 +56,7 @@ export default function PersonalPlanPage() {
   function generate(e: React.FormEvent) {
     e.preventDefault();
     const next: SavedPlan = { profile, steps: makeSteps(profile), createdAt: new Date().toISOString() };
-    setPlan(next); setGenerated(true);
+    setPlan(next);
   }
   function exportPlan() {
     if (!plan) return;
@@ -105,7 +104,7 @@ export default function PersonalPlanPage() {
 
       {plan && <section style={{ display: "grid", gap: 14 }}>
         <div style={{ ...panel, display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: 12 }}>
-          <div><div style={{ color: "#83d9ce", fontSize: 13 }}>خطة 4 أسابيع</div><h2 style={{ margin: "7px 0", fontSize: 21 }}>هدفك: {plan.profile.goal}</h2><p style={{ margin: 0, color: "#a9bdc8", fontSize: 13 }}>المجال: {plan.profile.interest} · الوقت المتاح: {plan.profile.hours} ساعات أسبوعيًا</p></div>
+          <div><div style={{ color: "#83d9ce", fontSize: 13 }}>خطة 4 أسابيع</div><h2 style={{ margin: "7px 0", fontSize: 21 }}>هدفك: {plan.profile.goal}</h2><p style={{ margin: 0, color: "#a9bdc8", fontSize: 13 }}>المجال: {plan.profile.interest} · التعليم: {plan.profile.education} · الوقت المتاح: {plan.profile.hours} ساعات أسبوعيًا{plan.profile.location ? ` · المنطقة: ${plan.profile.location}` : ""}</p></div>
           <div style={{ minWidth: 125 }}><strong style={{ fontSize: 25, color: "#83d9ce" }}>{completed}/{plan.steps.length}</strong><div style={{ color: "#a9bdc8", fontSize: 12 }}>خطوات مكتملة</div><div style={{ height: 7, background: "#294454", borderRadius: 9, marginTop: 8, overflow: "hidden" }}><div style={{ width: (completed / plan.steps.length * 100) + "%", height: "100%", background: "#65c9b8" }} /></div></div>
         </div>
         {[1,2,3,4].map(week => <section key={week} style={panel}>
@@ -118,7 +117,7 @@ export default function PersonalPlanPage() {
         </section>)}
         <div style={{ display: "flex", flexWrap: "wrap", gap: 9 }}>
           <button type="button" onClick={exportPlan} style={button}><Download size={16} /> تصدير خطتي</button>
-          <button type="button" onClick={() => { setPlan(null); setGenerated(false); }} style={{ ...button, background: "transparent", borderColor: "#355365" }}><RefreshCw size={16} /> تعديل الإجابات وإنشاء خطة جديدة</button>
+          <button type="button" onClick={() => { setPlan(null); }} style={{ ...button, background: "transparent", borderColor: "#355365" }}><RefreshCw size={16} /> تعديل الإجابات وإنشاء خطة جديدة</button>
         </div>
       </section>}
 
