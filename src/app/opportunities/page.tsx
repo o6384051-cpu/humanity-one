@@ -117,7 +117,7 @@ function OpportunityMatches({ items }: { items: Resource[] }) {
       if (profile.goal === "الحصول على عمل أو دخل" && item.category === "work") score += 2;
       if (profile.goal === "زيادة دخلي الحالي" && (item.category === "business" || item.category === "learning")) score += 1;
       if (profile.goal === "العودة إلى سوق العمل" && item.category === "work") score += 2;
-      const reasons = [];
+      const reasons: string[] = [];
       if (preferred === item.category) reasons.push("يتوافق مع المجال الذي اخترته");
       if (matched.length) reasons.push("يرتبط بمهاراتك: " + matched.slice(0, 3).join("، "));
       if (!reasons.length) reasons.push("قد يساعدك في هدفك العام؛ راجع الشروط بنفسك");
@@ -136,7 +136,7 @@ function OpportunityMatches({ items }: { items: Resource[] }) {
         <span style={{ color: "#b5c7cf", fontSize: 12, lineHeight: 1.7 }}>{reasons.join(" · ")}</span>
         <a href={item.url} target="_blank" rel="noopener noreferrer" style={{ color: "#8bded2", fontSize: 13, width: "fit-content" }}>افتح المصدر الرسمي ←</a>
       </article>)}</div>
-      <div style={{ marginTop: 12, display: "flex", gap: 12, flexWrap: "wrap" }}><Link href="/personal-plan" style={{ color: "#8bded2", fontSize: 13 }}>تعديل مهاراتي وهدفي</Link><button type="button" onClick={() => setProfile(null)} style={{ background: "transparent", border: 0, color: "#a9bdc8", cursor: "pointer", font: "inherit", fontSize: 12 }}>إعادة تحميل بيانات الخطة</button></div></>}
+      <div style={{ marginTop: 12, display: "flex", gap: 12, flexWrap: "wrap" }}><Link href="/personal-plan" style={{ color: "#8bded2", fontSize: 13 }}>تعديل مهاراتي وهدفي</Link><button type="button" onClick={() => { try { const raw = localStorage.getItem("humanity-one-personal-plan-v1"); const saved = raw ? JSON.parse(raw) : null; setProfile(saved?.profile || null); } catch { setProfile(null); } }} style={{ background: "transparent", border: 0, color: "#a9bdc8", cursor: "pointer", font: "inherit", fontSize: 12 }}>إعادة تحميل بيانات الخطة</button></div></>}
   </section>;
 }
 
