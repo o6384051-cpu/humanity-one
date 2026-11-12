@@ -20,8 +20,8 @@ export default function FounderAdminPage() {
     if (response.ok) setUsers(data.users || []);
   }
   useEffect(() => {
-    fetch("/api/admin/users").then(async r => {
-      if (r.ok) { const d = await r.json(); setUsers(d.users || []); }
+    fetch("/api/auth/session").then(async r => {
+      if (r.ok) { const d = await r.json(); setSession(d.user); await loadUsers(); }
     }).catch(() => undefined);
   }, []);
 
