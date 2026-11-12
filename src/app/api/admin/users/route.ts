@@ -62,7 +62,14 @@ export async function DELETE(req: NextRequest) {
     if (!id || id === actor.id) return NextResponse.json({ error: "لا يمكن حذف حسابك الحالي." }, { status: 400 });
     const target = await prisma.user.findUnique({ where: { id }, select: { id: true, role: true } });
     if (!target || target.role === "SUPER_ADMIN") return NextResponse.json({ error: "لا يمكن حذف حساب مؤسس." }, { status: 403 });
-    await prisma.user.delete({ where: { id } });
+    // Preserve the removed moderator's work by transferring owned records to the founder before deleting the account.
+    await prisma.$transaction(async (tx) => {
+      await tx.project.updateMany({ where: { userId: id }, data: { userId: actor.id } });
+      await tx.task.updateMany({ where: { userId: id }, data: { userId: actor.id } });
+      await tx.memory.updateMany({ where: { userId: id }, data: { userId: actor.id } });
+      await tx.agent.updateMany({ where: { userId: id }, data: { userId: actor.id } });
+      await tx.user.delete({ where: { id } });
+    });
     return NextResponse.json({ ok: true });
   } catch {
     return NextResponse.json({ error: "تعذر حذف الحساب." }, { status: 500 });
