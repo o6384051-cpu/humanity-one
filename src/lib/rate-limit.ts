@@ -15,7 +15,7 @@ export function rateLimit(req: Request, scope: string, limit: number, windowMs: 
   }
   bucket.count += 1;
   if (buckets.size > 5000) {
-    for (const [entry, value] of buckets) if (value.resetAt <= now) buckets.delete(entry);
+    buckets.forEach((value, entry) => { if (value.resetAt <= now) buckets.delete(entry); });
   }
   return {
     allowed: bucket.count <= limit,
