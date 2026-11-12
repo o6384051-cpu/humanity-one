@@ -14,3 +14,6 @@ Operational checks still required:
 - Review GitHub and Vercel collaborator/team access in their dashboards.
 - Confirm the production database connection and backup/restore plan.
 - Review repository history for previously committed secrets; rotating any exposed credential is required.
+
+
+Latest source hardening also corrected URL normalization in the AI proxy and email validation in the founder bootstrap route.
