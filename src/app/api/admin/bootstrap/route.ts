@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
     const email = typeof body.email === "string" ? body.email.trim().toLowerCase() : "";
     const password = typeof body.password === "string" ? body.password : "";
     const name = typeof body.name === "string" ? body.name.trim().slice(0, 80) : "مؤسس HUMANITY ONE";
-    if (!/^\\S+@\\S+\\.\\S+$/.test(email) || password.length < 12) return NextResponse.json({ error: "أدخل بريدًا صحيحًا وكلمة مرور لا تقل عن 12 حرفًا." }, { status: 400 });
+    if (!/^\S+@\S+\.\S+$/.test(email) || password.length < 12) return NextResponse.json({ error: "أدخل بريدًا صحيحًا وكلمة مرور لا تقل عن 12 حرفًا." }, { status: 400 });
     const passwordHash = await bcrypt.hash(password, 12);
     const user = await prisma.user.upsert({ where: { email }, update: { passwordHash, name, role: "SUPER_ADMIN" }, create: { email, passwordHash, name, role: "SUPER_ADMIN" }, select: { id: true, email: true, name: true, role: true } });
     return NextResponse.json({ ok: true, user }, { status: 201, headers: { "Cache-Control": "no-store" } });
