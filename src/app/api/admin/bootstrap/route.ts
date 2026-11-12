@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
+import { timingSafeEqual } from "crypto";
 import { prisma } from "@/lib/prisma";
 
 export const runtime = "nodejs";
@@ -11,7 +12,9 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const supplied = typeof body.setupSecret === "string" ? body.setupSecret : "";
-    if (supplied.length !== setupSecret.length || !require("crypto").timingSafeEqual(Buffer.from(supplied), Buffer.from(setupSecret))) {
+    const suppliedBuffer = Buffer.from(supplied);
+    const expectedBuffer = Buffer.from(setupSecret);
+    if (suppliedBuffer.length !== expectedBuffer.length || !timingSafeEqual(suppliedBuffer, expectedBuffer)) {
       return NextResponse.json({ error: "رمز التأسيس غير صحيح." }, { status: 401 });
     }
     const existingFounder = await prisma.user.findFirst({ where: { role: "SUPER_ADMIN" }, select: { id: true } });
