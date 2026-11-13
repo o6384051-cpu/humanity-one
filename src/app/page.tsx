@@ -201,7 +201,7 @@ export default function Dashboard() {
           
           <footer className="ho-footer">
             <span>HUMANITY ONE © 2026</span>
-            <span><span className="status-dot"></span> جميع الأنظمة تعمل</span>
+            <span><span className="status-dot"></span> نسخة تجريبية — بعض الخدمات قيد التطوير</span>
           </footer>
         </div>
       </main>
