@@ -71,3 +71,44 @@ model KnowledgeDocument {
   category  String
   createdAt DateTime @default(now())
 }
+
+model JobListing {
+  id                 String   @id @default(cuid())
+  employerName       String
+  businessType       String
+  businessName       String
+  city               String
+  area               String?
+  contactPhone       String
+  contactEmail       String?
+  employerAccessHash String?
+  jobTitle           String
+  description        String   @db.Text
+  skills             String?
+  experienceLevel    String   @default("لا يشترط خبرة")
+  educationRequirement String @default("لا يشترط مؤهل")
+  salaryMin          Int?
+  salaryMax          Int?
+  salaryPeriod       String   @default("شهري")
+  employmentType     String   @default("دوام كامل")
+  shift              String?
+  openings           Int      @default(1)
+  status             String   @default("PENDING")
+  createdAt          DateTime @default(now())
+  expiresAt          DateTime?
+  applications       JobApplication[]
+  @@index([status, createdAt])
+  @@index([city, businessType])
+}
+
+model JobApplication {
+  id          String     @id @default(cuid())
+  jobId       String
+  applicantName String
+  phone       String
+  experience  String?
+  message     String?
+  createdAt   DateTime   @default(now())
+  job         JobListing @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  @@index([jobId, createdAt])
+}
