@@ -41,6 +41,8 @@ export default function Dashboard() {
           <Link href="/" className="active"><Home size={18} /> الرئيسية</Link>
           <Link href="/ai-core"><Bot size={18} /> المساعد الذكي</Link>
           <Link href="/ai-core"><Bot size={18} /> مركز الذكاء والعمل الإنساني</Link>
+          <Link href="/agents"><Users size={18} /> فريق الوكلاء</Link>
+          <Link href="/memory"><BookOpen size={18} /> الذاكرة والخصوصية</Link>
           <Link href="/founder"><ShieldCheck size={18} /> إدارة المنظومة</Link>
           <Link href="/projects"><FolderKanban size={18} /> المشاريع</Link>
           <Link href="/tasks"><CheckSquare size={18} /> المهام</Link>
