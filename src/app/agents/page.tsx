@@ -15,7 +15,7 @@ const domains = [
   { id: "research", label: "البحث", icon: BookOpen },
 ] as const;
 
-type Result = { answer: string; plan: string; agents: { id: string; label: string; status: string }[]; model: string; limitations: string[] };
+type Result = { answer: string; plan: string; agents: { id: string; label: string; status: string; model?: string }[]; model: string; models?: { planner: string; specialist: string; reviewer: string }; limitations: string[] };
 
 export default function AgentsPage() {
   const [domain, setDomain] = useState<(typeof domains)[number]["id"]>("general");
@@ -69,7 +69,7 @@ export default function AgentsPage() {
       {error && <p role="alert" style={{ marginTop: 18, color: "#ff9c9c" }}>{error}</p>}
       {busy && <p aria-live="polite" style={{ marginTop: 18, opacity: .8 }}>يعمل المنسق ثم الوكيل المتخصص ثم مراجع السلامة. قد يستغرق ذلك بعض الوقت.</p>}
       {result && <section aria-live="polite" style={{ marginTop: 24, display: "grid", gap: 16 }}>
-        <div style={{ border: "1px solid #ffffff22", borderRadius: 16, padding: 18 }}><h2 style={{ fontSize: 20, fontWeight: 800, marginBottom: 12 }}>مسار العمل</h2><p style={{ whiteSpace: "pre-wrap", lineHeight: 1.8 }}>{result.plan}</p><div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 16 }}>{result.agents.map(a => <span key={a.id} style={{ borderRadius: 99, padding: "6px 10px", background: "#174b3c", fontSize: 13 }}><ShieldCheck size={13} style={{ display: "inline", marginLeft: 5 }}/>{a.label}: اكتمل</span>)}</div></div>
+        <div style={{ border: "1px solid #ffffff22", borderRadius: 16, padding: 18 }}><h2 style={{ fontSize: 20, fontWeight: 800, marginBottom: 12 }}>مسار العمل</h2><p style={{ whiteSpace: "pre-wrap", lineHeight: 1.8 }}>{result.plan}</p><div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 16 }}>{result.agents.map(a => <span key={a.id} style={{ borderRadius: 99, padding: "6px 10px", background: "#174b3c", fontSize: 13 }}><ShieldCheck size={13} style={{ display: "inline", marginLeft: 5 }}/>{a.label}: اكتمل{a.model ? ` · ${a.model}` : ""}</span>)}</div></div>
         <div style={{ border: "1px solid #ffffff22", borderRadius: 16, padding: 18 }}><h2 style={{ fontSize: 20, fontWeight: 800, marginBottom: 12 }}>النتيجة بعد المراجعة</h2><div style={{ whiteSpace: "pre-wrap", lineHeight: 1.9 }}>{result.answer}</div><small style={{ display: "block", opacity: .6, marginTop: 16 }}>النموذج: {result.model}</small></div>
         <div style={{ border: "1px solid #c58b342e", borderRadius: 14, padding: 14, background: "#9a6b1510" }}><b>حدود النسخة التجريبية</b><ul style={{ marginTop: 8, paddingRight: 20, lineHeight: 1.8 }}>{result.limitations.map(x => <li key={x}>{x}</li>)}</ul></div>
       </section>}
