@@ -21,7 +21,8 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  if (!authorized(req)) return NextResponse.json({ error: "غير مصرح." }, { status: 401 });
+  const actor = await getAdminSession();
+  if (!actor || !["SUPER_ADMIN", "ADMIN", "MODERATOR"].includes(actor.role)) return NextResponse.json({ error: "غير مصرح." }, { status: 403 });
   try {
     const body = await req.json();
     if (typeof body.id !== "string" || !["APPROVED", "REJECTED"].includes(body.status)) {
