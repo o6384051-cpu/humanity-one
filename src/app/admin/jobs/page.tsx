@@ -1,0 +1,21 @@
+"use client";
+import { useCallback, useEffect, useState } from "react";
+import Link from "next/link";
+type Job={id:string;employerName:string;businessName:string;city:string;jobTitle:string;description:string;contactPhone:string;contactEmail:string|null};
+type App={id:string;applicantName:string;phone:string;experience:string|null;message:string|null;job:{jobTitle:string;businessName:string;city:string}};
+const panel:React.CSSProperties={background:"#101a2b",border:"1px solid #304359",borderRadius:12,padding:16};
+const btn:React.CSSProperties={padding:"9px 13px",borderRadius:8,border:0,background:"#55d3ca",color:"#08212a",fontWeight:700,cursor:"pointer"};
+export default function JobModerationPage(){
+ const [jobs,setJobs]=useState<Job[]>([]),[apps,setApps]=useState<App[]>([]),[busy,setBusy]=useState(""),[error,setError]=useState(""),[message,setMessage]=useState("");
+ const load=useCallback(async()=>{setError("");try{const r=await fetch("/api/jobs/moderate",{cache:"no-store"});const d=await r.json();if(!r.ok)throw new Error(d.error||"تعذر تحميل الإعلانات. سجّل الدخول بحساب إداري.");setJobs(d.jobs||[]);}catch(e){setError(e instanceof Error?e.message:"حدث خطأ.");}},[]);
+ useEffect(()=>{void load();},[load]);
+ async function review(id:string,status:"APPROVED"|"REJECTED"){setBusy(id);setError("");try{const r=await fetch("/api/jobs/moderate",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({id,status})});const d=await r.json();if(!r.ok)throw new Error(d.error||"تعذرت المراجعة.");setMessage(status==="APPROVED"?"تم اعتماد الإعلان.":"تم رفض الإعلان.");await load();}catch(e){setError(e instanceof Error?e.message:"حدث خطأ.");}finally{setBusy("");}}
+ async function loadApps(){setBusy("apps");setError("");try{const r=await fetch("/api/jobs/applications",{cache:"no-store"});const d=await r.json();if(!r.ok)throw new Error(d.error||"تعذر تحميل الطلبات.");setApps(d.applications||[]);}catch(e){setError(e instanceof Error?e.message:"حدث خطأ.");}finally{setBusy("");}}
+ return <main dir="rtl" style={{minHeight:"100vh",padding:22,background:"#080d18",color:"#e8edf7",fontFamily:"Cairo,sans-serif"}}><div style={{maxWidth:1000,margin:"0 auto",display:"grid",gap:16}}>
+ <Link href="/founder" style={{color:"#63d8d0"}}>← إدارة المنظومة</Link><header><h1 style={{fontSize:28,fontWeight:800}}>مراجعة الوظائف وطلبات التقديم</h1><p style={{color:"#9aabc0"}}>لا يظهر أي إعلان للعامة قبل اعتماده يدويًا. تعامل مع بيانات المتقدمين بسرية.</p></header>
+ {error&&<p role="alert" style={{color:"#ffaaaa"}}>{error}</p>}{message&&<p role="status" style={{color:"#8fe3cb"}}>{message}</p>}
+ <section style={{display:"grid",gap:10}}><h2 style={{fontSize:20}}>إعلانات تنتظر المراجعة ({jobs.length})</h2>{jobs.length===0&&<p style={{color:"#9aabc0"}}>لا توجد إعلانات معلقة حاليًا.</p>}
+ {jobs.map(j=><article key={j.id} style={panel}><h3 style={{fontSize:18,fontWeight:700}}>{j.jobTitle} — {j.businessName}</h3><p style={{color:"#aebdce"}}>{j.city} · {j.employerName} · {j.contactPhone}{j.contactEmail?" · "+j.contactEmail:""}</p><p style={{whiteSpace:"pre-wrap",lineHeight:1.8}}>{j.description}</p><div style={{display:"flex",gap:8,flexWrap:"wrap"}}><button disabled={!!busy} onClick={()=>review(j.id,"APPROVED")} style={btn}>{busy===j.id?"جارٍ...":"اعتماد الإعلان"}</button><button disabled={!!busy} onClick={()=>review(j.id,"REJECTED")} style={{...btn,background:"#6b3038",color:"#fff"}}>رفض الإعلان</button></div></article>)}</section>
+ <section style={{...panel,display:"grid",gap:10}}><h2 style={{fontSize:20}}>طلبات المتقدمين</h2><p style={{color:"#aebdce"}}>بيانات التواصل خاصة ولا تستخدم إلا لغرض التوظيف.</p><button disabled={!!busy} style={btn} onClick={loadApps}>تحميل أحدث الطلبات</button>{apps.map(a=><div key={a.id} style={{borderTop:"1px solid #304359",paddingTop:10}}><b>{a.applicantName} — {a.job.jobTitle}</b><p>{a.job.businessName} · {a.job.city} · {a.phone}</p>{a.experience&&<p>الخبرة: {a.experience}</p>}{a.message&&<p>الرسالة: {a.message}</p>}</div>)}</section>
+ <button onClick={()=>void load()} style={{...btn,justifySelf:"start",background:"#243e50",color:"#fff"}}>تحديث القائمة</button></div></main>;
+}
