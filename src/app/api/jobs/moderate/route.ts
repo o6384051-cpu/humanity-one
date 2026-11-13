@@ -13,6 +13,14 @@ export async function GET(req: NextRequest) {
       where: { status: "PENDING" },
       orderBy: { createdAt: "asc" },
       take: 100,
+      select: {
+        id: true, employerName: true, businessType: true, businessName: true,
+        city: true, area: true, contactPhone: true, contactEmail: true,
+        jobTitle: true, description: true, skills: true, experienceLevel: true,
+        educationRequirement: true, salaryMin: true, salaryMax: true,
+        salaryPeriod: true, employmentType: true, shift: true, openings: true,
+        createdAt: true,
+      },
     });
     return NextResponse.json({ jobs });
   } catch {
