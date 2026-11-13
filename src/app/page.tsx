@@ -44,6 +44,11 @@ export default function Dashboard() {
           <Link href="/agents"><Users size={18} /> فريق الوكلاء</Link>
           <Link href="/memory"><BookOpen size={18} /> الذاكرة والخصوصية</Link>
           <Link href="/founder"><ShieldCheck size={18} /> إدارة المنظومة</Link>
+          <Link href="/opportunities"><HeartHandshake size={18} /> مركز الفرص الإنسانية</Link>
+          <Link href="/jobs"><Users size={18} /> سوق العمل</Link>
+          <Link href="/personal-plan"><CheckSquare size={18} /> خطتي الشخصية</Link>
+          <Link href="/resume"><BookOpen size={18} /> إنشاء سيرة ذاتية</Link>
+          <Link href="/small-business"><Leaf size={18} /> تخطيط مشروع صغير</Link>
           <Link href="/projects"><FolderKanban size={18} /> المشاريع</Link>
           <Link href="/tasks"><CheckSquare size={18} /> المهام</Link>
           <Link href="/knowledge"><BookOpen size={18} /> محرك المعرفة</Link>
