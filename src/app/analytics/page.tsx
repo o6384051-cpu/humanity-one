@@ -1,0 +1,10 @@
+"use client";
+import Link from "next/link";
+import {useEffect,useState} from "react";
+const KEYS={initiatives:"humanity-one-initiatives-v1",tasks:"humanity-one-tasks-v1",memory:"humanity-one-approved-memory-v1",chats:"humanity-one-chat-v2"};
+export default function AnalyticsPage(){
+ const [stats,setStats]=useState({initiatives:0,active:0,tasks:0,completed:0,memory:0,chats:0});
+ useEffect(()=>{try{const read=(k:string)=>JSON.parse(localStorage.getItem(k)||"[]");const p=read(KEYS.initiatives),t=read(KEYS.tasks),m=read(KEYS.memory),c=read(KEYS.chats);setStats({initiatives:Array.isArray(p)?p.length:0,active:Array.isArray(p)?p.filter((x:any)=>x.status==="active").length:0,tasks:Array.isArray(t)?t.length:0,completed:Array.isArray(t)?t.filter((x:any)=>x.completed).length:0,memory:Array.isArray(m)?m.length:0,chats:Array.isArray(c)?c.length:0});}catch{}},[]);
+ const items=[["المبادرات",stats.initiatives],["المبادرات النشطة",stats.active],["المهام",stats.tasks],["المهام المكتملة",stats.completed],["ملاحظات الذاكرة",stats.memory],["المحادثات",stats.chats]];
+ return <main dir="rtl" style={{minHeight:"100vh",padding:24,background:"#08131f",color:"#e8f1f5"}}><div style={{maxWidth:900,margin:"0 auto"}}><Link href="/" style={{color:"#80dacf"}}>← الرئيسية</Link><h1 style={{fontSize:30,fontWeight:800,marginTop:22}}>تقارير نشاطك</h1><p style={{color:"#a9bdc8",lineHeight:1.9}}>هذه أرقام محلية من هذا المتصفح فقط، وليست إحصاءات عامة للمنصة أو بيانات مستخدمين آخرين.</p><div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(180px,1fr))",gap:12,marginTop:20}}>{items.map(([label,value])=><article key={label} style={{padding:18,border:"1px solid #294454",borderRadius:14,background:"#102333"}}><p style={{color:"#a9bdc8",margin:0}}>{label}</p><strong style={{fontSize:30}}>{value}</strong></article>)}</div><p style={{marginTop:20,color:"#9fb3c0",lineHeight:1.8}}>لن تظهر هنا أرقام وهمية عن عدد المستفيدين أو الوظائف أو التبرعات. الإحصاءات العامة لن تُعرض إلا بعد وجود بيانات مشتركة ومراجعة تمنع التلاعب.</p></div></main>;
+}
