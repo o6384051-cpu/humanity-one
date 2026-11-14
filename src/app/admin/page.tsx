@@ -10,6 +10,7 @@ type Overview = {
     users: number; administrators: number; projects: number; tasks: number; agents: number;
     jobs: { pending: number; approved: number; rejected: number };
     applications: number;
+    assistance: { total: number; pending: number; inReview: number; approved: number; rejected: number; reviewEvents: number };
   };
   capabilities: {
     database: string; aiConfigured: boolean; aiModel: string | null;
@@ -63,8 +64,19 @@ export default function AdminDashboardPage() {
           {[
             ["إجمالي الحسابات", data.stats.users], ["فريق الإدارة", data.stats.administrators],
             ["المبادرات", data.stats.projects], ["المهام", data.stats.tasks],
-            ["الوكلاء", data.stats.agents], ["طلبات التقديم", data.stats.applications], ["طلبات المساعدة", data.stats.assistance.total],
+            ["الوكلاء", data.stats.agents], ["طلبات التقديم", data.stats.applications], ["طلبات المساعدة", data.stats.assistance.total], ["طلبات المساعدة", data.stats.assistance.total],
           ].map(([label, value]) => <article key={String(label)} style={panel}><p style={{ color: "#9aabc0", fontSize: 13 }}>{label}</p><strong style={{ display: "block", fontSize: 27, marginTop: 7 }}>{number(Number(value))}</strong></article>)}
+        </section>
+
+        <section style={panel}>
+          <h2 style={{ fontSize: 19, fontWeight: 800, marginBottom: 12 }}>حالة طلبات المساعدة</h2>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(120px,1fr))", gap: 10 }}>
+            <div><p style={{ color: "#f2c879" }}>جديدة</p><b style={{ fontSize: 23 }}>{number(data.stats.assistance.pending)}</b></div>
+            <div><p style={{ color: "#f2c879" }}>تحت الدراسة</p><b style={{ fontSize: 23 }}>{number(data.stats.assistance.inReview)}</b></div>
+            <div><p style={{ color: "#8fe3cb" }}>موافق عليها</p><b style={{ fontSize: 23 }}>{number(data.stats.assistance.approved)}</b></div>
+            <div><p style={{ color: "#ffaaaa" }}>غير موافق عليها</p><b style={{ fontSize: 23 }}>{number(data.stats.assistance.rejected)}</b></div>
+            <div><p style={{ color: "#9aabc0" }}>عمليات مراجعة مسجلة</p><b style={{ fontSize: 23 }}>{number(data.stats.assistance.reviewEvents)}</b></div>
+          </div>
         </section>
 
         <section style={panel}>
@@ -78,7 +90,8 @@ export default function AdminDashboardPage() {
 
         <section style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))", gap: 10 }}>
           <Link href="/founder" style={linkStyle}><b>إدارة حسابات الفريق والصلاحيات</b><p style={{ color: "#9aabc0", marginTop: 5, fontSize: 13 }}>إضافة المشرفين وتعديل أدوارهم وإدارتهم.</p></Link>
-          <Link href="/admin/assistance" style={linkStyle}><b>طلبات المستفيدين والمساعدات</b><p style={{ color: "#9aabc0", marginTop: 5, fontSize: 13 }}>مراجعة الطلبات وتحديث حالتها وإرسال إشعار لصاحب الطلب.</p></Link>\n          <Link href="/admin/jobs" style={linkStyle}><b>مراجعة الوظائف وطلبات التقديم</b><p style={{ color: "#9aabc0", marginTop: 5, fontSize: 13 }}>اعتماد الإعلانات أو رفضها ومراجعة طلبات التقديم.</p></Link>
+          <Link href="/admin/assistance" style={linkStyle}><b>طلبات المستفيدين والمساعدات</b><p style={{ color: "#9aabc0", marginTop: 5, fontSize: 13 }}>مراجعة الطلبات وتحديث حالتها وإرسال إشعار لصاحب الطلب.</p></Link>\n          <Link href="/admin/assistance" style={linkStyle}><b>طلبات المستفيدين والمساعدات</b><p style={{ color: "#9aabc0", marginTop: 5, fontSize: 13 }}>مراجعة الطلبات وتحديث حالتها وإرسال إشعار لصاحب الطلب.</p></Link>
+          <Link href="/admin/jobs" style={linkStyle}><b>مراجعة الوظائف وطلبات التقديم</b><p style={{ color: "#9aabc0", marginTop: 5, fontSize: 13 }}>اعتماد الإعلانات أو رفضها ومراجعة طلبات التقديم.</p></Link>
           <Link href="/projects" style={linkStyle}><b>المبادرات والمشروعات</b><p style={{ color: "#9aabc0", marginTop: 5, fontSize: 13 }}>فتح مساحة المبادرات الحالية.</p></Link>
           <Link href="/tasks" style={linkStyle}><b>المهام</b><p style={{ color: "#9aabc0", marginTop: 5, fontSize: 13 }}>فتح مساحة متابعة المهام.</p></Link>
           <Link href="/ai-core" style={linkStyle}><b>مساعد الذكاء الاصطناعي</b><p style={{ color: "#9aabc0", marginTop: 5, fontSize: 13 }}>فتح واجهة المساعد واختبارها يدويًا.</p></Link>
@@ -88,8 +101,8 @@ export default function AdminDashboardPage() {
           <h2 style={{ fontSize: 19, fontWeight: 800, marginBottom: 12 }}>سلامة الخدمات والوظائف غير المكتملة</h2>
           <p style={{ marginBottom: 8 }}>قاعدة البيانات: <b style={{ color: "#8fe3cb" }}>تم الاتصال وقراءة الإحصاءات</b></p>
           <p style={{ marginBottom: 8 }}>إعداد الذكاء الاصطناعي: <b style={{ color: data.capabilities.aiConfigured ? "#8fe3cb" : "#f2c879" }}>{data.capabilities.aiConfigured ? "مفتاح مضبوط في بيئة الخادم" : "لم يتم ضبط مفتاح"}</b>{data.capabilities.aiModel ? " — النموذج: " + data.capabilities.aiModel : ""}</p>
-          <p style={{ color: "#f2c879", marginTop: 12 }}>طلبات المستفيدين: لم يتم إنشاء صندوق طلبات حقيقي بعد. {data.capabilities.beneficiaryRequests.reason}</p>
-          <p style={{ color: "#f2c879", marginTop: 8 }}>سجل تدقيق المديرين: غير متاح بعد. {data.capabilities.auditLog.reason}</p>
+          <p style={{ color: "#8fe3cb", marginTop: 12 }}>طلبات المستفيدين: {data.capabilities.beneficiaryRequests.available ? "متصلة وتُقرأ من قاعدة البيانات." : data.capabilities.beneficiaryRequests.reason}</p>
+          <p style={{ color: "#9aabc0", marginTop: 8 }}>سجل مراجعات طلبات المساعدة: {data.capabilities.assistanceReviewHistory.available ? data.capabilities.assistanceReviewHistory.reason : "غير متاح."}</p>
           <p style={{ color: "#9aabc0", fontSize: 12, marginTop: 12 }}>وجود مفتاح الذكاء الاصطناعي لا يثبت نجاح الاتصال بالمزود؛ يلزم اختبار محادثة فعلية.</p>
         </section>
       </>}
