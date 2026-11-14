@@ -21,6 +21,7 @@ model User {
   agents              Agent[]
   beneficiaryProfile  BeneficiaryProfile?
   assistanceRequests  AssistanceRequest[]
+  beneficiaryFiles    BeneficiaryFile[]
 }
 
 model Project {
@@ -147,7 +148,23 @@ model AssistanceRequest {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  files       BeneficiaryFile[]
 
   @@index([userId, createdAt])
   @@index([status, createdAt])
+}
+
+model BeneficiaryFile {
+  id           String           @id @default(cuid())
+  userId       String
+  requestId    String
+  originalName String
+  objectKey    String           @unique
+  mimeType     String
+  size         Int
+  createdAt    DateTime         @default(now())
+  user         User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  request      AssistanceRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+
+  @@index([userId, requestId, createdAt])
 }
