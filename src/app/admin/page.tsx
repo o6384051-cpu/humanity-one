@@ -14,7 +14,7 @@ type Overview = {
   capabilities: {
     database: string; aiConfigured: boolean; aiModel: string | null;
     beneficiaryRequests: { available: boolean; reason: string };
-    auditLog: { available: boolean; reason: string };
+    assistanceReviewHistory: { available: boolean; reason: string };
   };
 };
 
@@ -63,7 +63,7 @@ export default function AdminDashboardPage() {
           {[
             ["إجمالي الحسابات", data.stats.users], ["فريق الإدارة", data.stats.administrators],
             ["المبادرات", data.stats.projects], ["المهام", data.stats.tasks],
-            ["الوكلاء", data.stats.agents], ["طلبات التقديم", data.stats.applications],
+            ["الوكلاء", data.stats.agents], ["طلبات التقديم", data.stats.applications], ["طلبات المساعدة", data.stats.assistance.total],
           ].map(([label, value]) => <article key={String(label)} style={panel}><p style={{ color: "#9aabc0", fontSize: 13 }}>{label}</p><strong style={{ display: "block", fontSize: 27, marginTop: 7 }}>{number(Number(value))}</strong></article>)}
         </section>
 
@@ -78,7 +78,7 @@ export default function AdminDashboardPage() {
 
         <section style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))", gap: 10 }}>
           <Link href="/founder" style={linkStyle}><b>إدارة حسابات الفريق والصلاحيات</b><p style={{ color: "#9aabc0", marginTop: 5, fontSize: 13 }}>إضافة المشرفين وتعديل أدوارهم وإدارتهم.</p></Link>
-          <Link href="/admin/jobs" style={linkStyle}><b>مراجعة الوظائف وطلبات التقديم</b><p style={{ color: "#9aabc0", marginTop: 5, fontSize: 13 }}>اعتماد الإعلانات أو رفضها ومراجعة طلبات التقديم.</p></Link>
+          <Link href="/admin/assistance" style={linkStyle}><b>طلبات المستفيدين والمساعدات</b><p style={{ color: "#9aabc0", marginTop: 5, fontSize: 13 }}>مراجعة الطلبات وتحديث حالتها وإرسال إشعار لصاحب الطلب.</p></Link>\n          <Link href="/admin/jobs" style={linkStyle}><b>مراجعة الوظائف وطلبات التقديم</b><p style={{ color: "#9aabc0", marginTop: 5, fontSize: 13 }}>اعتماد الإعلانات أو رفضها ومراجعة طلبات التقديم.</p></Link>
           <Link href="/projects" style={linkStyle}><b>المبادرات والمشروعات</b><p style={{ color: "#9aabc0", marginTop: 5, fontSize: 13 }}>فتح مساحة المبادرات الحالية.</p></Link>
           <Link href="/tasks" style={linkStyle}><b>المهام</b><p style={{ color: "#9aabc0", marginTop: 5, fontSize: 13 }}>فتح مساحة متابعة المهام.</p></Link>
           <Link href="/ai-core" style={linkStyle}><b>مساعد الذكاء الاصطناعي</b><p style={{ color: "#9aabc0", marginTop: 5, fontSize: 13 }}>فتح واجهة المساعد واختبارها يدويًا.</p></Link>
