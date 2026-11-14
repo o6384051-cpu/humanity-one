@@ -8,8 +8,8 @@ export const runtime = "nodejs";
 
 // One-time founder setup. Requires private deployment secrets and refuses setup after a founder exists.
 export async function POST(req: NextRequest) {
-  const limit = rateLimit(req, "founder-bootstrap", 5, 60 * 60_000);
-  if (!limit.allowed) return rateLimitResponse(limit.retryAfter);
+  const limit = await rateLimit(req, "founder-bootstrap", 5, 60 * 60_000);
+  if (!limit.allowed) return rateLimitResponse(limit.retryAfter, limit.unavailable);
   const setupSecret = process.env.FOUNDER_SETUP_SECRET;
   if (!setupSecret || !process.env.JWT_SECRET) return NextResponse.json({ error: "إعداد تأسيس حساب المؤسس غير مكتمل في الاستضافة." }, { status: 503 });
   try {
