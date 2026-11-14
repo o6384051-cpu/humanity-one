@@ -46,6 +46,7 @@ export default function Dashboard() {
           <Link href="/founder"><ShieldCheck size={18} /> إدارة المنظومة</Link>
           <Link href="/opportunities"><HeartHandshake size={18} /> مركز الفرص الإنسانية</Link>
           <Link href="/jobs"><Users size={18} /> سوق العمل</Link>
+          <Link href="/beneficiary"><HeartHandshake size={18} /> منصة المستفيدين</Link>
           <Link href="/personal-plan"><CheckSquare size={18} /> خطتي الشخصية</Link>
           <Link href="/resume"><BookOpen size={18} /> إنشاء سيرة ذاتية</Link>
           <Link href="/small-business"><Leaf size={18} /> تخطيط مشروع صغير</Link>
@@ -102,7 +103,7 @@ export default function Dashboard() {
               <p>معاً.. نبني مستقبلاً أكثر إشراقاً للبشرية. منصة تجمع المعرفة، الأدوات، والوكلاء الذكيين في مكان واحد.</p>
               <div className="ho-welcome-actions">
                 <Link href="/projects" className="ho-primary">استكشاف المنصة</Link>
-                <Link href="/projects" className="ho-secondary">ابدأ مبادرة إنسانية</Link>
+                <Link href="/beneficiary" className="ho-secondary">اطلب الدعم أو التوجيه</Link>
               </div>
             </div>
             <div className="ho-orbit">
