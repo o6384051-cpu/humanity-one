@@ -15,6 +15,7 @@ export async function GET() {
     const [
       users, administrators, projects, tasks, agents,
       pendingJobs, approvedJobs, rejectedJobs, applications,
+      totalAssistance, pendingAssistance, reviewAssistance, approvedAssistance, rejectedAssistance, assistanceReviewEvents,
     ] = await Promise.all([
       prisma.user.count(),
       prisma.user.count({ where: { role: { in: ["SUPER_ADMIN", "ADMIN", "MODERATOR"] } } }),
@@ -25,6 +26,12 @@ export async function GET() {
       prisma.jobListing.count({ where: { status: "APPROVED" } }),
       prisma.jobListing.count({ where: { status: "REJECTED" } }),
       prisma.jobApplication.count(),
+      prisma.assistanceRequest.count(),
+      prisma.assistanceRequest.count({ where: { status: "PENDING" } }),
+      prisma.assistanceRequest.count({ where: { status: "IN_REVIEW" } }),
+      prisma.assistanceRequest.count({ where: { status: "APPROVED" } }),
+      prisma.assistanceRequest.count({ where: { status: "REJECTED" } }),
+      prisma.assistanceReviewEvent.count(),
     ]);
 
     return NextResponse.json({
