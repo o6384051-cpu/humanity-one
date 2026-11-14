@@ -12,17 +12,17 @@ export async function POST(req: NextRequest) {
   if (!limit.allowed) return rateLimitResponse(limit.retryAfter, limit.unavailable);
 
   if (!process.env.JWT_SECRET) {
-    return NextResponse.json({ error: "إعدادات الدخول غير مكتملة." }, { status: 503 });
+    return NextResponse.json({ error: "إعدادات الدخول غير مكتملة." }, { status: 503, headers: { "Cache-Control": "no-store, private" } });
   }
 
   try {
     const parsed = z.object({
-      email: z.string().email().max(160),
+      email: z.string().trim().email().max(160),
       password: z.string().min(1).max(128),
-    }).safeParse(await req.json());
+    }).safeParse(await req.json().catch(() => null));
 
     if (!parsed.success) {
-      return NextResponse.json({ error: "أدخل البريد وكلمة المرور." }, { status: 400 });
+      return NextResponse.json({ error: "أدخل البريد وكلمة المرور." }, { status: 400, headers: { "Cache-Control": "no-store, private" } });
     }
 
     const user = await prisma.user.findUnique({ where: { email: parsed.data.email.toLowerCase() } });
@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
 
     const response = NextResponse.json({
       user: { id: user.id, name: user.name, email: user.email, role: user.role },
-    }, { headers: { "Cache-Control": "no-store" } });
+    }, { headers: { "Cache-Control": "no-store, private" } });
     response.cookies.set(BENEFICIARY_COOKIE, createBeneficiaryToken(user.id), {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
@@ -42,6 +42,6 @@ export async function POST(req: NextRequest) {
     });
     return response;
   } catch {
-    return NextResponse.json({ error: "تعذر تسجيل الدخول." }, { status: 503 });
+    return NextResponse.json({ error: "تعذر تسجيل الدخول." }, { status: 503, headers: { "Cache-Control": "no-store, private" } });
   }
 }
