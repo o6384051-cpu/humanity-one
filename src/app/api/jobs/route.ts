@@ -56,8 +56,8 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
-  const limit = rateLimit(req, "job-listing-create", 5, 60_000);
-  if (!limit.allowed) return rateLimitResponse(limit.retryAfter);
+  const limit = await rateLimit(req, "job-listing-create", 5, 60_000);
+  if (!limit.allowed) return rateLimitResponse(limit.retryAfter, limit.unavailable);
   const contentLength = Number(req.headers.get("content-length") || 0);
   if (contentLength > 12_000) return NextResponse.json({ error: "حجم الطلب أكبر من المسموح." }, { status: 413 });
   try {
