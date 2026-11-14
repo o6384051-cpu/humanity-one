@@ -40,7 +40,7 @@ export default function BeneficiaryPage(){
  <div style={{marginTop:14,paddingTop:12,borderTop:"1px solid #294454"}}><b style={{fontSize:13}}>المستندات والصور المرفقة</b>
  {x.files?.length?x.files.map(f=><p key={f.id} style={{fontSize:12,margin:"8px 0"}}><a href={`/api/beneficiary/files/${f.id}`} style={{color:"#8fe1cf",textDecoration:"underline"}}>{f.originalName}</a> · {(f.size/1024).toFixed(0)} كيلوبايت</p>):<p style={{fontSize:12,color:"#91a6b5"}}>لا توجد مرفقات لهذا الطلب.</p>}
  <form onSubmit={e=>uploadFile(e,x.id)} style={{display:"flex",gap:8,alignItems:"center",flexWrap:"wrap",marginTop:8}}><input required type="file" name="file" accept=".pdf,.png,.jpg,.jpeg,application/pdf,image/png,image/jpeg" style={{maxWidth:"100%",fontSize:12,color:"#c5d4df"}}/><button disabled={busy} style={{...btn,padding:"8px 13px",fontSize:12}}>رفع المستند / الصورة</button></form>
- <small style={{color:"#91a6b5"}}>PDF أو JPG أو PNG · حد أقصى 8 ميجابايت. لا يراه إلا صاحب الحساب.</small></div></article>)}</section></>}
+ <small style={{color:"#91a6b5"}}>PDF أو JPG أو PNG · حد أقصى 4 ميجابايت. لا يراه إلا صاحب الحساب.</small></div></article>)}</section></>}
  <footer style={{marginTop:22,color:"#8da3b1",fontSize:12,lineHeight:1.9}}>لا تفرض HUMANITY ONE رسومًا على التسجيل أو الطلب. لا نضمن التمويل أو التوظيف. لا ترسل أموالًا لوسطاء يدّعون تمثيل المنصة.</footer>
  </div></main>;
 }
