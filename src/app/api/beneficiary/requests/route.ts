@@ -28,7 +28,7 @@ export async function GET() {
         id: true, category: true, urgency: true, description: true, city: true, status: true,
         adminNote: true, reviewedAt: true, createdAt: true,
         reviewEvents: {
-          select: { id: true, fromStatus: true, toStatus: true, createdAt: true },
+          select: { id: true, fromStatus: true, toStatus: true, note: true, createdAt: true },
           orderBy: { createdAt: "asc" },
         },
         files: {
