@@ -41,13 +41,14 @@ export async function GET() {
         users, administrators, projects, tasks, agents,
         jobs: { pending: pendingJobs, approved: approvedJobs, rejected: rejectedJobs },
         applications,
+        assistance: { total: totalAssistance, pending: pendingAssistance, inReview: reviewAssistance, approved: approvedAssistance, rejected: rejectedAssistance, reviewEvents: assistanceReviewEvents },
       },
       capabilities: {
         database: "connected",
         aiConfigured: Boolean(process.env.AI_API_KEY || process.env.OPENAI_API_KEY),
         aiModel: process.env.AI_MODEL || (process.env.OPENAI_API_KEY ? "gpt-4o-mini" : null),
-        beneficiaryRequests: { available: false, reason: "لا يوجد نموذج أو مسار API معتمد لطلبات المستفيدين في قاعدة البيانات الحالية." },
-        auditLog: { available: false, reason: "لا يوجد سجل تدقيق دائم للعمليات في المخطط الحالي." },
+        beneficiaryRequests: { available: true, reason: "مرتبطة بقاعدة البيانات ونظام مراجعة وإشعارات المستفيدين." },
+        assistanceReviewHistory: { available: true, reason: "يُسجل تغييرات حالة طلبات المساعدة وملاحظات المراجعة." },
       },
     }, { headers: { "Cache-Control": "no-store, private" } });
   } catch {
