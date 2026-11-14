@@ -3,7 +3,8 @@ import Link from "next/link";
 import { FormEvent, useEffect, useState } from "react";
 
 type Profile={phone?:string|null;city?:string|null;area?:string|null;employmentStatus?:string|null;educationLevel?:string|null;skills?:string|null;householdSize?:number|null;monthlyIncome?:number|null;goals?:string|null};
-type RequestFile={id:string;originalName:string;mimeType:string;size:number;createdAt:string};\ntype RequestItem={id:string;category:string;urgency:string;description:string;city:string;status:string;adminNote:string|null;createdAt:string;files:RequestFile[]};
+type RequestFile={id:string;originalName:string;mimeType:string;size:number;createdAt:string};
+type RequestItem={id:string;category:string;urgency:string;description:string;city:string;status:string;adminNote:string|null;createdAt:string;files:RequestFile[]};
 const categories=[["FOOD","غذاء واحتياجات أساسية"],["HOUSING","سكن أو إيجار"],["HEALTH","احتياج صحي"],["EDUCATION","تعليم وتدريب"],["EMPLOYMENT","عمل ودخل"],["DEBT","تعثر مالي"],["OTHER","احتياج آخر"]];
 const labels:Record<string,string>={PENDING:"قيد المراجعة",IN_REVIEW:"تحت الدراسة",APPROVED:"تمت الموافقة",REJECTED:"لم تتم الموافقة",CLOSED:"مغلق"};
 const initial:Profile={phone:"",city:"",area:"",employmentStatus:"",educationLevel:"",skills:"",householdSize:null,monthlyIncome:null,goals:""};
