@@ -7,12 +7,21 @@ import { rateLimit, rateLimitResponse } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 
+const noStoreHeaders = { "Cache-Control": "no-store, private" };
+
 export async function POST(req: NextRequest) {
   const limit = await rateLimit(req, "beneficiary-register", 5, 3600000);
-  if (!limit.allowed) return rateLimitResponse(limit.retryAfter, limit.unavailable);
+  if (!limit.allowed) {
+    const response = rateLimitResponse(limit.retryAfter, limit.unavailable);
+    response.headers.set("Cache-Control", "no-store, private");
+    return response;
+  }
 
   if (!process.env.JWT_SECRET) {
-    return NextResponse.json({ error: "إعدادات الدخول غير مكتملة." }, { status: 503 });
+    return NextResponse.json(
+      { error: "إعدادات الدخول غير مكتملة." },
+      { status: 503, headers: noStoreHeaders },
+    );
   }
 
   try {
@@ -20,10 +29,13 @@ export async function POST(req: NextRequest) {
       name: z.string().trim().min(2).max(80),
       email: z.string().trim().email().max(160),
       password: z.string().min(10).max(128),
-    }).safeParse(await req.json());
+    }).safeParse(await req.json().catch(() => null));
 
     if (!parsed.success) {
-      return NextResponse.json({ error: "أدخل اسمًا وبريدًا صحيحًا وكلمة مرور من 10 أحرف على الأقل." }, { status: 400 });
+      return NextResponse.json(
+        { error: "أدخل اسمًا وبريدًا صحيحًا وكلمة مرور من 10 أحرف على الأقل." },
+        { status: 400, headers: noStoreHeaders },
+      );
     }
 
     const user = await prisma.user.create({
@@ -36,7 +48,10 @@ export async function POST(req: NextRequest) {
       select: { id: true, name: true, email: true, role: true },
     });
 
-    const response = NextResponse.json({ user }, { status: 201, headers: { "Cache-Control": "no-store" } });
+    const response = NextResponse.json(
+      { user },
+      { status: 201, headers: noStoreHeaders },
+    );
     response.cookies.set(BENEFICIARY_COOKIE, createBeneficiaryToken(user.id), {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
@@ -47,8 +62,14 @@ export async function POST(req: NextRequest) {
     return response;
   } catch (error: unknown) {
     if (typeof error === "object" && error !== null && "code" in error && error.code === "P2002") {
-      return NextResponse.json({ error: "هذا البريد مسجل بالفعل." }, { status: 409 });
+      return NextResponse.json(
+        { error: "هذا البريد مسجل بالفعل." },
+        { status: 409, headers: noStoreHeaders },
+      );
     }
-    return NextResponse.json({ error: "تعذر إنشاء الحساب." }, { status: 503 });
+    return NextResponse.json(
+      { error: "تعذر إنشاء الحساب." },
+      { status: 503, headers: noStoreHeaders },
+    );
   }
 }
