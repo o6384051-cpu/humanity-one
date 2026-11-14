@@ -19,8 +19,8 @@ export async function GET(
   req: NextRequest,
   context: { params: { id: string } },
 ) {
-  const limit = rateLimit(req, "employer-applications-read", 20, 60_000);
-  if (!limit.allowed) return rateLimitResponse(limit.retryAfter);
+  const limit = await rateLimit(req, "employer-applications-read", 20, 60_000);
+  if (!limit.allowed) return rateLimitResponse(limit.retryAfter, limit.unavailable);
   try {
     const job = await prisma.jobListing.findUnique({
       where: { id: context.params.id },
