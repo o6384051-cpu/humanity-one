@@ -3,13 +3,16 @@ import { GetObjectCommand } from "@aws-sdk/client-s3";
 import { prisma } from "@/lib/prisma";
 import { getBeneficiarySession } from "@/lib/beneficiary-auth";
 import { beneficiaryBucket, beneficiaryS3 } from "@/lib/beneficiary-file-storage";
+import { rateLimit, rateLimitResponse } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-export async function GET(_req: Request, context: { params: { id: string } }) {
+export async function GET(req: Request, context: { params: { id: string } }) {
   const user = await getBeneficiarySession();
-  if (!user) return NextResponse.json({ error: "سجّل الدخول أولًا." }, { status: 401 });
+  if (!user) return NextResponse.json({ error: "سجّل الدخول أولًا." }, { status: 401, headers: { "Cache-Control": "no-store" } });
+  const limit = await rateLimit(req, "beneficiary-file-download:" + user.id, 60, 60_000);
+  if (!limit.allowed) return rateLimitResponse(limit.retryAfter, limit.unavailable);
   try {
     const file = await prisma.beneficiaryFile.findFirst({
       where: { id: context.params.id, userId: user.id },
