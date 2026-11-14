@@ -34,7 +34,7 @@ model Project {
   progress    Int      @default(0)
   status      String   @default("active")
   createdAt   DateTime @default(now())
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user        User     @relation(fields: [userId], references: [id], onDelete: Restrict)
 }
 
 model Task {
@@ -134,7 +134,7 @@ model BeneficiaryProfile {
   goals            String?  @db.Text
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
-  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user             User     @relation(fields: [userId], references: [id], onDelete: Restrict)
 }
 
 model AssistanceRequest {
@@ -149,7 +149,7 @@ model AssistanceRequest {
   reviewedAt  DateTime?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user        User     @relation(fields: [userId], references: [id], onDelete: Restrict)
   files       BeneficiaryFile[]
   reviewEvents AssistanceReviewEvent[]
   notifications BeneficiaryNotification[]
@@ -168,7 +168,7 @@ model BeneficiaryFile {
   size         Int
   createdAt    DateTime         @default(now())
   user         User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  request      AssistanceRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  request      AssistanceRequest @relation(fields: [requestId], references: [id], onDelete: Restrict)
 
   @@index([userId, requestId, createdAt])
 }
@@ -181,7 +181,7 @@ model AssistanceReviewEvent {
   toStatus     String
   note         String?          @db.Text
   createdAt    DateTime         @default(now())
-  request      AssistanceRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  request      AssistanceRequest @relation(fields: [requestId], references: [id], onDelete: Restrict)
   admin        User?            @relation("AssistanceReviewActor", fields: [adminUserId], references: [id], onDelete: SetNull)
 
   @@index([requestId, createdAt])
@@ -198,7 +198,7 @@ model BeneficiaryNotification {
   readAt    DateTime?
   createdAt DateTime          @default(now())
   user      User              @relation(fields: [userId], references: [id], onDelete: Cascade)
-  request   AssistanceRequest? @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  request   AssistanceRequest? @relation(fields: [requestId], references: [id], onDelete: SetNull)
 
   @@index([userId, readAt, createdAt])
   @@index([requestId, createdAt])
