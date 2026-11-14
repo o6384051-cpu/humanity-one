@@ -89,6 +89,26 @@ export async function PATCH(req: NextRequest) {
           note: nextNote,
         },
       });
+
+      const statusChanged = current.status !== parsed.data.status;
+      const noteChanged = current.adminNote !== nextNote && Boolean(nextNote);
+      if (statusChanged || noteChanged) {
+        const statusLabels: Record<string, string> = {
+          PENDING: "قيد المراجعة", IN_REVIEW: "تحت الدراسة",
+          APPROVED: "تمت الموافقة", REJECTED: "لم تتم الموافقة", CLOSED: "مغلق",
+        };
+        await tx.beneficiaryNotification.create({
+          data: {
+            userId: (await tx.assistanceRequest.findUniqueOrThrow({ where: { id: parsed.data.id }, select: { userId: true } })).userId,
+            requestId: parsed.data.id,
+            type: statusChanged ? "STATUS_CHANGED" : "ADMIN_REPLY",
+            title: statusChanged ? "تم تحديث حالة طلبك" : "لديك رد جديد من فريق المراجعة",
+            message: statusChanged
+              ? `حالة طلبك الآن: ${statusLabels[parsed.data.status] || parsed.data.status}.`
+              : "أضاف فريق المراجعة ردًا على طلبك. افتح طلبك للاطلاع على التفاصيل.",
+          },
+        });
+      }
       return true;
     });
 
