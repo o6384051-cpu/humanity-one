@@ -9,7 +9,7 @@ export const runtime = "nodejs";
 
 export async function POST(req: NextRequest) {
   const limit = await rateLimit(req, "beneficiary-login", 8, 900000);
-  if (!limit.allowed) return rateLimitResponse(limit.retryAfter, limit.unavailable);
+  if (!limit.allowed) return rateLimitResponse(limit.retryAfter);
 
   if (!process.env.JWT_SECRET) {
     return NextResponse.json({ error: "إعدادات الدخول غير مكتملة." }, { status: 503 });
