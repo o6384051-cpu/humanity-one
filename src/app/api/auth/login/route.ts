@@ -7,8 +7,8 @@ import { rateLimit, rateLimitResponse } from "@/lib/rate-limit";
 export const runtime = "nodejs";
 
 export async function POST(req: NextRequest) {
-  const limit = rateLimit(req, "admin-login", 8, 15 * 60_000);
-  if (!limit.allowed) return rateLimitResponse(limit.retryAfter);
+  const limit = await rateLimit(req, "admin-login", 8, 15 * 60_000);
+  if (!limit.allowed) return rateLimitResponse(limit.retryAfter, limit.unavailable);
   if (!process.env.JWT_SECRET) return NextResponse.json({ error: "إعداد JWT_SECRET مفقود من الاستضافة." }, { status: 503 });
   try {
     const body = await req.json();
