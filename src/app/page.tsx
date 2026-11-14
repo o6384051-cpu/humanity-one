@@ -72,6 +72,7 @@ export default function Dashboard() {
             <div className="ho-breadcrumb">الرئيسية <b>لوحة التحكم</b></div>
           </div>
           <div className="ho-top-actions">
+            <Link href="/founder" aria-label="لوحة المدير" title="لوحة المدير" style={{ display: "inline-flex", alignItems: "center", gap: 7, height: 36, padding: "0 12px", border: "1px solid rgba(83,211,205,.35)", borderRadius: 10, background: "rgba(56,185,183,.12)", color: "#69e0d7", fontSize: 11, fontWeight: 800, textDecoration: "none", whiteSpace: "nowrap" }}><ShieldCheck size={16} /> لوحة المدير</Link>
             <form className="ho-search" onSubmit={handleSearch}>
               <Search size={16} />
               <input 
