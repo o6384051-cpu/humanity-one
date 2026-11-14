@@ -67,18 +67,33 @@ export async function PATCH(req: NextRequest) {
     const result = await prisma.$transaction(async (tx) => {
       const current = await tx.assistanceRequest.findUnique({
         where: { id: parsed.data.id },
-        select: { status: true, adminNote: true },
+        select: { status: true, adminNote: true, userId: true },
       });
-      if (!current) return false;
+      if (!current) return "missing" as const;
 
       const nextNote = parsed.data.adminNote === undefined
         ? current.adminNote
         : parsed.data.adminNote || null;
+      const statusChanged = current.status !== parsed.data.status;
+      const noteChanged = current.adminNote !== nextNote;
 
-      await tx.assistanceRequest.update({
-        where: { id: parsed.data.id },
-        data: { status: parsed.data.status, adminNote: nextNote, reviewedAt: new Date() },
+      // Repeated clicks with identical values must not create duplicate audit entries.
+      if (!statusChanged && !noteChanged) return "unchanged" as const;
+
+      // Compare-and-set prevents two reviewers from silently overwriting each other.
+      const updated = await tx.assistanceRequest.updateMany({
+        where: {
+          id: parsed.data.id,
+          status: current.status,
+          adminNote: current.adminNote,
+        },
+        data: {
+          status: parsed.data.status,
+          adminNote: nextNote,
+          reviewedAt: new Date(),
+        },
       });
+      if (updated.count !== 1) return "conflict" as const;
 
       await tx.assistanceReviewEvent.create({
         data: {
@@ -86,34 +101,44 @@ export async function PATCH(req: NextRequest) {
           adminUserId: admin.id,
           fromStatus: current.status,
           toStatus: parsed.data.status,
-          note: nextNote,
+          note: noteChanged ? nextNote : null,
         },
       });
 
-      const statusChanged = current.status !== parsed.data.status;
-      const noteChanged = current.adminNote !== nextNote && Boolean(nextNote);
-      if (statusChanged || noteChanged) {
-        const statusLabels: Record<string, string> = {
-          PENDING: "قيد المراجعة", IN_REVIEW: "تحت الدراسة",
-          APPROVED: "تمت الموافقة", REJECTED: "لم تتم الموافقة", CLOSED: "مغلق",
-        };
-        await tx.beneficiaryNotification.create({
-          data: {
-            userId: (await tx.assistanceRequest.findUniqueOrThrow({ where: { id: parsed.data.id }, select: { userId: true } })).userId,
-            requestId: parsed.data.id,
-            type: statusChanged ? "STATUS_CHANGED" : "ADMIN_REPLY",
-            title: statusChanged ? "تم تحديث حالة طلبك" : "لديك رد جديد من فريق المراجعة",
-            message: statusChanged
-              ? `حالة طلبك الآن: ${statusLabels[parsed.data.status] || parsed.data.status}.`
-              : "أضاف فريق المراجعة ردًا على طلبك. افتح طلبك للاطلاع على التفاصيل.",
-          },
-        });
+      const statusLabels: Record<string, string> = {
+        PENDING: "قيد المراجعة", IN_REVIEW: "تحت الدراسة",
+        APPROVED: "تمت الموافقة", REJECTED: "لم تتم الموافقة", CLOSED: "مغلق",
+      };
+      const messageParts: string[] = [];
+      if (statusChanged) {
+        messageParts.push(`حالة طلبك الآن: ${statusLabels[parsed.data.status] || parsed.data.status}.`);
       }
-      return true;
+      if (noteChanged) {
+        messageParts.push(nextNote
+          ? "أضاف فريق المراجعة ملاحظة جديدة على طلبك."
+          : "حدّث فريق المراجعة الملاحظة المرتبطة بطلبك.");
+      }
+
+      await tx.beneficiaryNotification.create({
+        data: {
+          userId: current.userId,
+          requestId: parsed.data.id,
+          type: statusChanged ? "STATUS_CHANGED" : "ADMIN_REPLY",
+          title: statusChanged ? "تم تحديث حالة طلبك" : "تم تحديث ملاحظة طلبك",
+          message: messageParts.join(" "),
+        },
+      });
+
+      return "updated" as const;
     });
 
-    if (!result) return NextResponse.json({ error: "الطلب غير موجود." }, { status: 404 });
-    return NextResponse.json({ ok: true });
+    if (result === "missing") {
+      return NextResponse.json({ error: "الطلب غير موجود." }, { status: 404 });
+    }
+    if (result === "conflict") {
+      return NextResponse.json({ error: "تم تحديث الطلب بواسطة مراجع آخر. حدّث القائمة ثم أعد المحاولة." }, { status: 409 });
+    }
+    return NextResponse.json({ ok: true, unchanged: result === "unchanged" });
   } catch {
     return NextResponse.json({ error: "تعذر تحديث الطلب أو تسجيل المراجعة." }, { status: 503 });
   }
