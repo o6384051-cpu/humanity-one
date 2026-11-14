@@ -43,7 +43,7 @@ export default function Dashboard() {
           <Link href="/ai-core"><Bot size={18} /> مركز الذكاء والعمل الإنساني</Link>
           <Link href="/agents"><Users size={18} /> فريق الوكلاء</Link>
           <Link href="/memory"><BookOpen size={18} /> الذاكرة والخصوصية</Link>
-          <Link href="/founder"><ShieldCheck size={18} /> إدارة المنظومة</Link>
+          <Link href="/admin"><ShieldCheck size={18} /> إدارة المنظومة</Link>
           <Link href="/opportunities"><HeartHandshake size={18} /> مركز الفرص الإنسانية</Link>
           <Link href="/jobs"><Users size={18} /> سوق العمل</Link>
           <Link href="/personal-plan"><CheckSquare size={18} /> خطتي الشخصية</Link>
@@ -72,7 +72,7 @@ export default function Dashboard() {
             <div className="ho-breadcrumb">الرئيسية <b>لوحة التحكم</b></div>
           </div>
           <div className="ho-top-actions">
-            <Link href="/founder" aria-label="لوحة المدير" title="لوحة المدير" style={{ display: "inline-flex", alignItems: "center", gap: 7, height: 36, padding: "0 12px", border: "1px solid rgba(83,211,205,.35)", borderRadius: 10, background: "rgba(56,185,183,.12)", color: "#69e0d7", fontSize: 11, fontWeight: 800, textDecoration: "none", whiteSpace: "nowrap" }}><ShieldCheck size={16} /> لوحة المدير</Link>
+            <Link href="/admin" aria-label="لوحة المدير" title="لوحة المدير" style={{ display: "inline-flex", alignItems: "center", gap: 7, height: 36, padding: "0 12px", border: "1px solid rgba(83,211,205,.35)", borderRadius: 10, background: "rgba(56,185,183,.12)", color: "#69e0d7", fontSize: 11, fontWeight: 800, textDecoration: "none", whiteSpace: "nowrap" }}><ShieldCheck size={16} /> لوحة المدير</Link>
             <form className="ho-search" onSubmit={handleSearch}>
               <Search size={16} />
               <input 
