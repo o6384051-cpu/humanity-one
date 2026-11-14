@@ -12,7 +12,7 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -22,7 +22,14 @@ jobs:
           node-version: 20
       - name: Install dependencies
         run: npm install --no-audit --no-fund
+      - name: Validate Prisma schema
+        env:
+          DATABASE_URL: postgresql://ci:ci@localhost:5432/humanity_one
+          DIRECT_URL: postgresql://ci:ci@localhost:5432/humanity_one
+        run: npx prisma validate
       - name: Generate Prisma client
         run: npx prisma generate
+      - name: TypeScript check
+        run: npx tsc --noEmit
       - name: Build application
         run: npm run build

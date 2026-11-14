@@ -3,22 +3,28 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
+  provider = "postgresql"
   url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model User {
-  id           String    @id @default(cuid())
-  email        String    @unique
-  name         String?
-  passwordHash String
-  avatar       String?
-  role         String    @default("USER")
-  createdAt    DateTime  @default(now())
-  projects     Project[]
-  tasks        Task[]
-  memories     Memory[]
-  agents       Agent[]
+  id                  String               @id @default(cuid())
+  email               String               @unique
+  name                String?
+  passwordHash        String
+  avatar              String?
+  role                String               @default("USER")
+  createdAt           DateTime             @default(now())
+  projects            Project[]
+  tasks               Task[]
+  memories            Memory[]
+  agents              Agent[]
+  beneficiaryProfile  BeneficiaryProfile?
+  assistanceRequests  AssistanceRequest[]
+  beneficiaryFiles    BeneficiaryFile[]
+  assistanceReviewEvents AssistanceReviewEvent[] @relation("AssistanceReviewActor")
+  beneficiaryNotifications BeneficiaryNotification[]
 }
 
 model Project {
@@ -73,42 +79,137 @@ model KnowledgeDocument {
 }
 
 model JobListing {
-  id                 String   @id @default(cuid())
-  employerName       String
-  businessType       String
-  businessName       String
-  city               String
-  area               String?
-  contactPhone       String
-  contactEmail       String?
-  employerAccessHash String?
-  jobTitle           String
-  description        String   @db.Text
-  skills             String?
-  experienceLevel    String   @default("لا يشترط خبرة")
-  educationRequirement String @default("لا يشترط مؤهل")
-  salaryMin          Int?
-  salaryMax          Int?
-  salaryPeriod       String   @default("شهري")
-  employmentType     String   @default("دوام كامل")
-  shift              String?
-  openings           Int      @default(1)
-  status             String   @default("PENDING")
-  createdAt          DateTime @default(now())
-  expiresAt          DateTime?
-  applications       JobApplication[]
+  id                   String   @id @default(cuid())
+  employerName         String
+  businessType         String
+  businessName         String
+  city                 String
+  area                 String?
+  contactPhone         String
+  contactEmail         String?
+  employerAccessHash   String?
+  jobTitle             String
+  description          String   @db.Text
+  skills               String?
+  experienceLevel      String   @default("لا يشترط خبرة")
+  educationRequirement String   @default("لا يشترط مؤهل")
+  salaryMin            Int?
+  salaryMax            Int?
+  salaryPeriod         String   @default("شهري")
+  employmentType       String   @default("دوام كامل")
+  shift                String?
+  openings             Int      @default(1)
+  status               String   @default("PENDING")
+  createdAt            DateTime @default(now())
+  expiresAt            DateTime?
+  applications         JobApplication[]
+
   @@index([status, createdAt])
   @@index([city, businessType])
 }
 
 model JobApplication {
-  id          String     @id @default(cuid())
-  jobId       String
+  id            String     @id @default(cuid())
+  jobId         String
   applicantName String
-  phone       String
-  experience  String?
-  message     String?
-  createdAt   DateTime   @default(now())
-  job         JobListing @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  phone         String
+  experience    String?
+  message       String?
+  createdAt     DateTime   @default(now())
+  job           JobListing @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
   @@index([jobId, createdAt])
+}
+
+model BeneficiaryProfile {
+  id               String   @id @default(cuid())
+  userId           String   @unique
+  phone            String?
+  city             String?
+  area             String?
+  employmentStatus String?
+  educationLevel   String?
+  skills           String?  @db.Text
+  householdSize    Int?
+  monthlyIncome    Int?
+  goals            String?  @db.Text
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model AssistanceRequest {
+  id          String   @id @default(cuid())
+  userId      String
+  category    String
+  urgency     String   @default("NORMAL")
+  description String   @db.Text
+  city        String
+  status      String   @default("PENDING")
+  adminNote   String?  @db.Text
+  reviewedAt  DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  files       BeneficiaryFile[]
+  reviewEvents AssistanceReviewEvent[]
+  notifications BeneficiaryNotification[]
+
+  @@index([userId, createdAt])
+  @@index([status, createdAt])
+}
+
+model BeneficiaryFile {
+  id           String           @id @default(cuid())
+  userId       String
+  requestId    String
+  originalName String
+  objectKey    String           @unique
+  mimeType     String
+  size         Int
+  createdAt    DateTime         @default(now())
+  user         User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  request      AssistanceRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+
+  @@index([userId, requestId, createdAt])
+}
+
+model AssistanceReviewEvent {
+  id           String           @id @default(cuid())
+  requestId    String
+  adminUserId  String?
+  fromStatus   String?
+  toStatus     String
+  note         String?          @db.Text
+  createdAt    DateTime         @default(now())
+  request      AssistanceRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  admin        User?            @relation("AssistanceReviewActor", fields: [adminUserId], references: [id], onDelete: SetNull)
+
+  @@index([requestId, createdAt])
+  @@index([adminUserId, createdAt])
+}
+
+model BeneficiaryNotification {
+  id        String            @id @default(cuid())
+  userId    String
+  requestId String?
+  type      String            @default("REQUEST_UPDATE")
+  title     String
+  message   String            @db.Text
+  readAt    DateTime?
+  createdAt DateTime          @default(now())
+  user      User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  request   AssistanceRequest? @relation(fields: [requestId], references: [id], onDelete: Cascade)
+
+  @@index([userId, readAt, createdAt])
+  @@index([requestId, createdAt])
+}
+
+model RateLimitBucket {
+  key       String   @id
+  count     Int
+  resetAt   DateTime
+  updatedAt DateTime @updatedAt
+
+  @@index([resetAt])
 }
