@@ -2,16 +2,18 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { getAdminSession } from "@/lib/admin-auth";
+import { rateLimit, rateLimitResponse } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 const allowedRoles = ["SUPER_ADMIN", "ADMIN", "MODERATOR"];
+const privateHeaders = { "Cache-Control": "no-store, private" };
 
 export async function GET() {
   const admin = await getAdminSession();
   if (!admin || !allowedRoles.includes(admin.role)) {
-    return NextResponse.json({ error: "غير مصرح." }, { status: 403 });
+    return NextResponse.json({ error: "غير مصرح." }, { status: 403, headers: privateHeaders });
   }
 
   try {
@@ -41,7 +43,7 @@ export async function GET() {
         },
       },
     });
-    return NextResponse.json({ requests }, { headers: { "Cache-Control": "no-store, private" } });
+    return NextResponse.json({ requests }, { headers: privateHeaders });
   } catch {
     return NextResponse.json({ error: "تعذر تحميل الطلبات." }, { status: 503 });
   }
@@ -50,18 +52,21 @@ export async function GET() {
 export async function PATCH(req: NextRequest) {
   const admin = await getAdminSession();
   if (!admin || !allowedRoles.includes(admin.role)) {
-    return NextResponse.json({ error: "غير مصرح." }, { status: 403 });
+    return NextResponse.json({ error: "غير مصرح." }, { status: 403, headers: privateHeaders });
   }
+
+  const limit = await rateLimit(req, "admin-assistance-review:" + admin.id, 120, 60_000);
+  if (!limit.allowed) return rateLimitResponse(limit.retryAfter, limit.unavailable);
 
   try {
     const parsed = z.object({
-      id: z.string().min(1),
+      id: z.string().min(1).max(128),
       status: z.enum(["IN_REVIEW", "APPROVED", "REJECTED", "CLOSED"]),
       adminNote: z.string().trim().max(1500).optional(),
-    }).safeParse(await req.json());
+    }).safeParse(await req.json().catch(() => null));
 
     if (!parsed.success) {
-      return NextResponse.json({ error: "بيانات غير صالحة." }, { status: 400 });
+      return NextResponse.json({ error: "بيانات غير صالحة." }, { status: 400, headers: privateHeaders });
     }
 
     const result = await prisma.$transaction(async (tx) => {
@@ -133,13 +138,13 @@ export async function PATCH(req: NextRequest) {
     });
 
     if (result === "missing") {
-      return NextResponse.json({ error: "الطلب غير موجود." }, { status: 404 });
+      return NextResponse.json({ error: "الطلب غير موجود." }, { status: 404, headers: privateHeaders });
     }
     if (result === "conflict") {
-      return NextResponse.json({ error: "تم تحديث الطلب بواسطة مراجع آخر. حدّث القائمة ثم أعد المحاولة." }, { status: 409 });
+      return NextResponse.json({ error: "تم تحديث الطلب بواسطة مراجع آخر. حدّث القائمة ثم أعد المحاولة." }, { status: 409, headers: privateHeaders });
     }
-    return NextResponse.json({ ok: true, unchanged: result === "unchanged" });
+    return NextResponse.json({ ok: true, unchanged: result === "unchanged" }, { headers: privateHeaders });
   } catch {
-    return NextResponse.json({ error: "تعذر تحديث الطلب أو تسجيل المراجعة." }, { status: 503 });
+    return NextResponse.json({ error: "تعذر تحديث الطلب أو تسجيل المراجعة." }, { status: 503, headers: privateHeaders });
   }
 }
