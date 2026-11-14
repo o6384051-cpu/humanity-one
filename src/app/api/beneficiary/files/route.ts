@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "الأنواع المسموحة: PDF أو PNG أو JPG فقط." }, { status: 415 });
     }
 
-    const safeName = file.name.replace(/[\\/\\r\\n\\0]/g, "_").slice(0, 120) || "attachment";
+    const safeName = file.name.replaceAll("/", "_").replaceAll("\\", "_").slice(0, 120) || "attachment";
     const id = randomUUID();
     objectKey = `beneficiaries/${user.id}/requests/${request.id}/${id}`;
     const bucket = beneficiaryBucket();
@@ -48,7 +48,6 @@ export async function POST(req: NextRequest) {
     await s3.send(new PutObjectCommand({
       Bucket: bucket, Key: objectKey, Body: bytes, ContentLength: bytes.length,
       ContentType: mimeType, Metadata: { owner: user.id, request: request.id },
-      ServerSideEncryption: "AES256",
     }));
     const saved = await prisma.beneficiaryFile.create({
       data: { id, userId: user.id, requestId: request.id, originalName: safeName, objectKey, mimeType, size: bytes.length },
