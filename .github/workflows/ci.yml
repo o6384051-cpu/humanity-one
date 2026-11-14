@@ -25,6 +25,7 @@ jobs:
       - name: Validate Prisma schema
         env:
           DATABASE_URL: postgresql://ci:ci@localhost:5432/humanity_one
+          DIRECT_URL: postgresql://ci:ci@localhost:5432/humanity_one
         run: npx prisma validate
       - name: Generate Prisma client
         run: npx prisma generate
