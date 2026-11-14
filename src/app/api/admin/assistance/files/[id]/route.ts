@@ -2,16 +2,20 @@ import { NextResponse } from "next/server";
 import { GetObjectCommand } from "@aws-sdk/client-s3";
 import { prisma } from "@/lib/prisma";
 import { getAdminSession } from "@/lib/admin-auth";
+import { rateLimit, rateLimitResponse } from "@/lib/rate-limit";
 import { beneficiaryBucket, beneficiaryS3 } from "@/lib/beneficiary-file-storage";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-export async function GET(_req: Request, context: { params: { id: string } }) {
+export async function GET(req: Request, context: { params: { id: string } }) {
   const admin = await getAdminSession();
   if (!admin || !["SUPER_ADMIN", "ADMIN", "MODERATOR"].includes(admin.role)) {
-    return NextResponse.json({ error: "غير مصرح." }, { status: 403 });
+    return NextResponse.json({ error: "غير مصرح." }, { status: 403, headers: { "Cache-Control": "no-store" } });
   }
+
+  const limit = await rateLimit(req, "admin-file-download:" + admin.id, 120, 60_000);
+  if (!limit.allowed) return rateLimitResponse(limit.retryAfter, limit.unavailable);
 
   try {
     const file = await prisma.beneficiaryFile.findUnique({
