@@ -13,6 +13,7 @@ type Item = {
   adminNote: string | null;
   createdAt: string;
   files: { id: string; originalName: string; mimeType: string; size: number; createdAt: string }[];
+  reviewEvents: { id: string; fromStatus: string | null; toStatus: string; note: string | null; createdAt: string; admin: { name: string | null } | null }[];
   user: { name: string | null; email: string; beneficiaryProfile: { phone: string | null; area: string | null } | null };
 };
 
@@ -159,6 +160,19 @@ export default function AssistanceAdmin() {
                     <span style={{ color: "#a9bdc9", fontSize: 12 }}> · {(file.size / 1024).toFixed(0)} كيلوبايت</span>
                   </li>
                 ))}</ul>
+              </section>}
+
+              {x.reviewEvents?.length > 0 && <section style={{ marginTop: 14, padding: 12, background: "#0b1b29", borderRadius: 8 }}>
+                <b>سجل المراجعة والتغييرات</b>
+                <ol style={{ marginTop: 8, paddingRight: 20 }}>
+                  {x.reviewEvents.map((event) => <li key={event.id} style={{ marginBottom: 8, color: "#c5d4df" }}>
+                    <span>{event.fromStatus ? (statusNames[event.fromStatus] || event.fromStatus) + " ← " : ""}{statusNames[event.toStatus] || event.toStatus}</span>
+                    <small style={{ display: "block", color: "#91a6b5" }}>
+                      {new Date(event.createdAt).toLocaleString("ar-EG")} · {event.admin?.name || "مشرف"}
+                    </small>
+                    {event.note && <small style={{ display: "block", color: "#a9bdc9" }}>الملاحظة المسجلة: {event.note}</small>}
+                  </li>)}
+                </ol>
               </section>}
 
               <label style={{ display: "block", marginTop: 12 }}>ملاحظة المراجعة
