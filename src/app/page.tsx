@@ -45,6 +45,7 @@ export default function Dashboard() {
           <Link href="/memory"><BookOpen size={18} /> الذاكرة والخصوصية</Link>
           <Link href="/admin"><ShieldCheck size={18} /> إدارة المنظومة</Link>
           <Link href="/opportunities"><HeartHandshake size={18} /> مركز الفرص الإنسانية</Link>
+          <Link href="/beneficiary"><HeartHandshake size={18} /> منصة المستفيدين وطلبات المساعدة</Link>
           <Link href="/jobs"><Users size={18} /> سوق العمل</Link>
           <Link href="/personal-plan"><CheckSquare size={18} /> خطتي الشخصية</Link>
           <Link href="/resume"><BookOpen size={18} /> إنشاء سيرة ذاتية</Link>
