@@ -23,6 +23,7 @@ model User {
   assistanceRequests  AssistanceRequest[]
   beneficiaryFiles    BeneficiaryFile[]
   assistanceReviewEvents AssistanceReviewEvent[] @relation("AssistanceReviewActor")
+  beneficiaryNotifications BeneficiaryNotification[]
 }
 
 model Project {
@@ -151,6 +152,7 @@ model AssistanceRequest {
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   files       BeneficiaryFile[]
   reviewEvents AssistanceReviewEvent[]
+  notifications BeneficiaryNotification[]
 
   @@index([userId, createdAt])
   @@index([status, createdAt])
@@ -184,4 +186,20 @@ model AssistanceReviewEvent {
 
   @@index([requestId, createdAt])
   @@index([adminUserId, createdAt])
+}
+
+model BeneficiaryNotification {
+  id        String            @id @default(cuid())
+  userId    String
+  requestId String?
+  type      String            @default("REQUEST_UPDATE")
+  title     String
+  message   String            @db.Text
+  readAt    DateTime?
+  createdAt DateTime          @default(now())
+  user      User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  request   AssistanceRequest? @relation(fields: [requestId], references: [id], onDelete: Cascade)
+
+  @@index([userId, readAt, createdAt])
+  @@index([requestId, createdAt])
 }
