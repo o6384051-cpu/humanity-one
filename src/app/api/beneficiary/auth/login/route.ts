@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
 
     const user = await prisma.user.findUnique({ where: { email: parsed.data.email.toLowerCase() } });
     if (!user || user.role !== "USER" || !(await bcrypt.compare(parsed.data.password, user.passwordHash))) {
-      return NextResponse.json({ error: "بيانات الدخول غير صحيحة." }, { status: 401 });
+      return NextResponse.json({ error: "بيانات الدخول غير صحيحة." }, { status: 401, headers: { "Cache-Control": "no-store, private" } });
     }
 
     const response = NextResponse.json({
