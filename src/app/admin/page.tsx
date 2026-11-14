@@ -89,6 +89,7 @@ export default function AdminDashboardPage() {
         </section>
 
         <section style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))", gap: 10 }}>
+          <Link href="/admin/beneficiaries" style={linkStyle}><b>إدارة حسابات المستفيدين</b><p style={{ color: "#9aabc0", marginTop: 5, fontSize: 13 }}>البحث في الحسابات والملفات الأساسية وعدد طلبات كل مستفيد.</p></Link>
           <Link href="/founder" style={linkStyle}><b>إدارة حسابات الفريق والصلاحيات</b><p style={{ color: "#9aabc0", marginTop: 5, fontSize: 13 }}>إضافة المشرفين وتعديل أدوارهم وإدارتهم.</p></Link>
           <Link href="/admin/assistance" style={linkStyle}><b>طلبات المستفيدين والمساعدات</b><p style={{ color: "#9aabc0", marginTop: 5, fontSize: 13 }}>مراجعة الطلبات وتحديث حالتها وإرسال إشعار لصاحب الطلب.</p></Link>\n          <Link href="/admin/assistance" style={linkStyle}><b>طلبات المستفيدين والمساعدات</b><p style={{ color: "#9aabc0", marginTop: 5, fontSize: 13 }}>مراجعة الطلبات وتحديث حالتها وإرسال إشعار لصاحب الطلب.</p></Link>
           <Link href="/admin/jobs" style={linkStyle}><b>مراجعة الوظائف وطلبات التقديم</b><p style={{ color: "#9aabc0", marginTop: 5, fontSize: 13 }}>اعتماد الإعلانات أو رفضها ومراجعة طلبات التقديم.</p></Link>
