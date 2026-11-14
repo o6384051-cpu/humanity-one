@@ -8,7 +8,7 @@ import { rateLimit, rateLimitResponse } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-const MAX_BYTES = 8 * 1024 * 1024;
+const MAX_BYTES = 4 * 1024 * 1024;
 
 function detectMime(bytes: Buffer): string | null {
   if (bytes.subarray(0, 5).toString("ascii") === "%PDF-") return "application/pdf";
@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
     const file = form.get("file");
     const requestId = String(form.get("requestId") || "");
     if (!(file instanceof File)) return NextResponse.json({ error: "اختر ملفًا صالحًا." }, { status: 400 });
-    if (!requestId || file.size < 1 || file.size > MAX_BYTES) return NextResponse.json({ error: "الحد الأقصى للملف 8 ميجابايت." }, { status: 400 });
+    if (!requestId || file.size < 1 || file.size > MAX_BYTES) return NextResponse.json({ error: "الحد الأقصى للملف 4 ميجابايت." }, { status: 400 });
 
     const request = await prisma.assistanceRequest.findFirst({ where: { id: requestId, userId: user.id }, select: { id: true } });
     if (!request) return NextResponse.json({ error: "طلب المساعدة غير موجود ضمن حسابك." }, { status: 404 });
