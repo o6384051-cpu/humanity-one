@@ -1,0 +1,7 @@
+CREATE TABLE "BeneficiaryProfile" ("id" TEXT NOT NULL,"userId" TEXT NOT NULL,"phone" TEXT,"city" TEXT,"area" TEXT,"employmentStatus" TEXT,"educationLevel" TEXT,"skills" TEXT,"householdSize" INTEGER,"monthlyIncome" INTEGER,"goals" TEXT,"createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,"updatedAt" TIMESTAMP(3) NOT NULL,CONSTRAINT "BeneficiaryProfile_pkey" PRIMARY KEY ("id"));
+CREATE TABLE "AssistanceRequest" ("id" TEXT NOT NULL,"userId" TEXT NOT NULL,"category" TEXT NOT NULL,"urgency" TEXT NOT NULL DEFAULT 'NORMAL',"description" TEXT NOT NULL,"city" TEXT NOT NULL,"status" TEXT NOT NULL DEFAULT 'PENDING',"adminNote" TEXT,"reviewedAt" TIMESTAMP(3),"createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,"updatedAt" TIMESTAMP(3) NOT NULL,CONSTRAINT "AssistanceRequest_pkey" PRIMARY KEY ("id"));
+CREATE UNIQUE INDEX "BeneficiaryProfile_userId_key" ON "BeneficiaryProfile"("userId");
+CREATE INDEX "AssistanceRequest_userId_createdAt_idx" ON "AssistanceRequest"("userId","createdAt");
+CREATE INDEX "AssistanceRequest_status_createdAt_idx" ON "AssistanceRequest"("status","createdAt");
+ALTER TABLE "BeneficiaryProfile" ADD CONSTRAINT "BeneficiaryProfile_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "AssistanceRequest" ADD CONSTRAINT "AssistanceRequest_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
