@@ -16,8 +16,8 @@ const applicationSchema = z.object({
 });
 
 export async function POST(req: NextRequest) {
-  const limit = rateLimit(req, "job-application-create", 8, 15 * 60_000);
-  if (!limit.allowed) return rateLimitResponse(limit.retryAfter);
+  const limit = await rateLimit(req, "job-application-create", 8, 15 * 60_000);
+  if (!limit.allowed) return rateLimitResponse(limit.retryAfter, limit.unavailable);
   const contentLength = Number(req.headers.get("content-length") || 0);
   if (contentLength > 6_000) return NextResponse.json({ error: "حجم الطلب أكبر من المسموح." }, { status: 413 });
   try {

@@ -13,8 +13,8 @@ const prompts: Record<string, string> = {
 };
 
 export async function POST(req: NextRequest) {
-  const limit = rateLimit(req, "ai-chat", 20, 60_000);
-  if (!limit.allowed) return rateLimitResponse(limit.retryAfter);
+  const limit = await rateLimit(req, "ai-chat", 20, 60_000);
+  if (!limit.allowed) return rateLimitResponse(limit.retryAfter, limit.unavailable);
   const contentLength = Number(req.headers.get("content-length") || 0);
   if (contentLength > 24_000) return NextResponse.json({ error: "حجم المحادثة أكبر من المسموح." }, { status: 413 });
   // AI_API_KEY is provider-neutral. OPENAI_API_KEY remains as a backward-compatible fallback.
