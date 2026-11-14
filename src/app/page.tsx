@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Home, Bot, FolderKanban, CheckSquare, BookOpen, BarChart3, Settings, Search, Bell, Mail, Sun, Leaf, CheckCircle2, Users, Lightbulb, Send, ShieldCheck, HeartHandshake } from 'lucide-react';
+import { Home, Bot, FolderKanban, CheckSquare, BookOpen, BarChart3, Settings, Search, Bell, Mail, Sun, Leaf, CheckCircle2, Users, Lightbulb, Send, ShieldCheck, HeartHandshake, BadgeInfo } from 'lucide-react';
 
 export default function Dashboard() {
   const router = useRouter();
@@ -46,6 +46,7 @@ export default function Dashboard() {
           <Link href="/admin"><ShieldCheck size={18} /> إدارة المنظومة</Link>
           <Link href="/opportunities"><HeartHandshake size={18} /> مركز الفرص الإنسانية</Link>
           <Link href="/beneficiary"><HeartHandshake size={18} /> منصة المستفيدين وطلبات المساعدة</Link>
+          <Link href="/fees"><BadgeInfo size={18} /> الرسوم والخدمات المجانية</Link>
           <Link href="/jobs"><Users size={18} /> سوق العمل</Link>
           <Link href="/personal-plan"><CheckSquare size={18} /> خطتي الشخصية</Link>
           <Link href="/resume"><BookOpen size={18} /> إنشاء سيرة ذاتية</Link>
