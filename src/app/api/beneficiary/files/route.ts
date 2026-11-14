@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
   if (!user) return NextResponse.json({ error: "سجّل الدخول أولًا." }, { status: 401 });
 
   const limit = await rateLimit(req, "beneficiary-file:" + user.id, 12, 86400000);
-  if (!limit.allowed) return rateLimitResponse(limit.retryAfter, limit.unavailable);
+  if (!limit.allowed) return rateLimitResponse(limit.retryAfter);
 
   let objectKey: string | null = null;
   try {
