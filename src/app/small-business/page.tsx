@@ -20,6 +20,7 @@ const ideas = [
 ];
 
 export default function SmallBusinessPage() {
+  const tx = (value: string) => translateText(value, language);
   const { language } = useLanguage();
   const tr = (value: string) => translateText(value, language);
   const [idea, setIdea] = useState(ideas[0].name);
@@ -107,7 +108,7 @@ export default function SmallBusinessPage() {
           <div style={{ background: "#0a1b27", padding: 12, borderRadius: 10 }}><small style={{ color: "#9db5c0" }}>{tr("الإيراد الشهري التقديري")}</small><strong style={{ display: "block", color: "#d8efeb", fontSize: 18 }}>{money(revenue)}</strong></div>
           <div style={{ background: "#0a1b27", padding: 12, borderRadius: 10 }}><small style={{ color: "#9db5c0" }}>{tr("المتبقي الحسابي")}</small><strong style={{ display: "block", color: remainder >= 0 ? "#83d9ce" : "#ffb5a9", fontSize: 18 }}>{money(remainder)}</strong></div>
         </div>
-        <p style={{ color: "#91aab6", fontSize: 12, lineHeight: 1.8, marginBottom: 0 }}>تنبيه: الحاسبة تقريبية. تفترض أن تكاليف البنود المدخلة تخص الفترة الشهرية نفسها، ولا تشمل تلقائيًا الضرائب أو التالف أو عمولات المنصات أو أجور العمل أو التكاليف التي لم تدخلها. لا تعتبر النتيجة ربحًا مؤكدًا.</p>
+        <p style={{ color: "#91aab6", fontSize: 12, lineHeight: 1.8, marginBottom: 0 }}>{tx("تنبيه: الحاسبة تقريبية. تفترض أن تكاليف البنود المدخلة تخص الفترة الشهرية نفسها، ولا تشمل تلقائيًا الضرائب أو التالف أو عمولات المنصات أو أجور العمل أو التكاليف التي لم تدخلها. لا تعتبر النتيجة ربحًا مؤكدًا.")}</p>
       </section>
 
       <section style={{ ...panel, display: "grid", gap: 10 }}>
