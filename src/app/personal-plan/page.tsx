@@ -59,6 +59,7 @@ export default function PersonalPlanPage() {
   }, [plan, ready]);
 
   const completed = useMemo(() => plan?.steps.filter(s => s.done).length ?? 0, [plan]);
+  const displaySteps = useMemo(() => plan ? makeSteps(plan.profile, language).map(step => ({ ...step, done: plan.steps.find(saved => saved.id === step.id)?.done ?? false })) : [], [plan, language]);
   const field: React.CSSProperties = { width: "100%", minWidth: 0, boxSizing: "border-box", border: "1px solid #294454", borderRadius: 10, padding: "12px", background: "#0a1b27", color: "#eef7f8", font: "inherit" };
   const panel: React.CSSProperties = { background: "rgba(17,38,52,.9)", border: "1px solid rgba(132,177,190,.18)", borderRadius: 16, padding: 18 };
   const button: React.CSSProperties = { display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8, border: "1px solid #3b7f78", borderRadius: 10, padding: "11px 15px", background: "#174c49", color: "#eafff9", cursor: "pointer", font: "inherit" };
@@ -88,25 +89,25 @@ export default function PersonalPlanPage() {
       </header>
 
       {!plan && <form onSubmit={generate} style={{ ...panel, display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(100%,250px),1fr))", gap: 14 }}>
-        <label style={{ display: "grid", gap: 7, color: "#c5d6dd", fontSize: 13 }}>ما المهارات التي تمتلكها حاليًا؟
+        <label style={{ display: "grid", gap: 7, color: "#c5d6dd", fontSize: 13 }}>{tr("ما المهارات التي تمتلكها حاليًا؟")}
           <textarea maxLength={500} rows={3} value={profile.skills} onChange={e => setProfile({ ...profile, skills: e.target.value })} placeholder={tr("مثل: البيع، القيادة، الطبخ، الصيانة، الكمبيوتر...")} style={{ ...field, resize: "vertical" }} />
         </label>
-        <label style={{ display: "grid", gap: 7, color: "#c5d6dd", fontSize: 13 }}>مستوى التعليم
-          <select value={profile.education} onChange={e => setProfile({ ...profile, education: e.target.value })} style={field}><option>{tr("بدون مؤهل رسمي")}</option><option>{tr("ابتدائي أو إعدادي")}</option><option>{tr("ثانوي أو ما يعادله")}</option><option>{tr("دبلوم فني")}</option><option>{tr("جامعي")}</option><option>{tr("دراسات عليا")}</option></select>
+        <label style={{ display: "grid", gap: 7, color: "#c5d6dd", fontSize: 13 }}>{tr("مستوى التعليم")}
+          <select value={profile.education} onChange={e => setProfile({ ...profile, education: e.target.value })} style={field}><option value="بدون مؤهل رسمي">{tr("بدون مؤهل رسمي")}</option><option value="ابتدائي أو إعدادي">{tr("ابتدائي أو إعدادي")}</option><option value="ثانوي أو ما يعادله">{tr("ثانوي أو ما يعادله")}</option><option value="دبلوم فني">{tr("دبلوم فني")}</option><option value="جامعي">{tr("جامعي")}</option><option value="دراسات عليا">{tr("دراسات عليا")}</option></select>
         </label>
-        <label style={{ display: "grid", gap: 7, color: "#c5d6dd", fontSize: 13 }}>ما هدفك الأساسي؟
-          <select value={profile.goal} onChange={e => setProfile({ ...profile, goal: e.target.value })} style={field}><option>{tr("الحصول على عمل أو دخل")}</option><option>{tr("تعلم مهارة جديدة")}</option><option>{tr("زيادة دخلي الحالي")}</option><option>{tr("بدء مشروع صغير")}</option><option>{tr("العودة إلى سوق العمل")}</option></select>
+        <label style={{ display: "grid", gap: 7, color: "#c5d6dd", fontSize: 13 }}>{tr("ما هدفك الأساسي؟")}
+          <select value={profile.goal} onChange={e => setProfile({ ...profile, goal: e.target.value })} style={field}><option value="الحصول على عمل أو دخل">{tr("الحصول على عمل أو دخل")}</option><option value="تعلم مهارة جديدة">{tr("تعلم مهارة جديدة")}</option><option value="زيادة دخلي الحالي">{tr("زيادة دخلي الحالي")}</option><option value="بدء مشروع صغير">{tr("بدء مشروع صغير")}</option><option value="العودة إلى سوق العمل">{tr("العودة إلى سوق العمل")}</option></select>
         </label>
-        <label style={{ display: "grid", gap: 7, color: "#c5d6dd", fontSize: 13 }}>المجال الذي تفضله
-          <select value={profile.interest} onChange={e => setProfile({ ...profile, interest: e.target.value })} style={field}><option>{tr("أي فرصة مناسبة")}</option><option>{tr("عمل رقمي")}</option><option>{tr("حرفة أو عمل يدوي")}</option><option>{tr("مشروع صغير")}</option></select>
+        <label style={{ display: "grid", gap: 7, color: "#c5d6dd", fontSize: 13 }}>{tr("المجال الذي تفضله")}
+          <select value={profile.interest} onChange={e => setProfile({ ...profile, interest: e.target.value })} style={field}><option value="أي فرصة مناسبة">{tr("أي فرصة مناسبة")}</option><option value="عمل رقمي">{tr("عمل رقمي")}</option><option value="حرفة أو عمل يدوي">{tr("حرفة أو عمل يدوي")}</option><option value="مشروع صغير">{tr("مشروع صغير")}</option></select>
         </label>
-        <label style={{ display: "grid", gap: 7, color: "#c5d6dd", fontSize: 13 }}>الوقت المتاح أسبوعيًا (بالساعات)
+        <label style={{ display: "grid", gap: 7, color: "#c5d6dd", fontSize: 13 }}>{tr("الوقت المتاح أسبوعيًا (بالساعات)")}
           <select value={profile.hours} onChange={e => setProfile({ ...profile, hours: e.target.value })} style={field}><option value="2">{tr("ساعتان")}</option><option value="5">{tr("5 ساعات")}</option><option value="10">{tr("10 ساعات")}</option><option value="15">{tr("15 ساعة")}</option><option value="20">{tr("20 ساعة أو أكثر")}</option></select>
         </label>
-        <label style={{ display: "grid", gap: 7, color: "#c5d6dd", fontSize: 13 }}>إمكانية الوصول إلى الإنترنت
-          <select value={profile.internet} onChange={e => setProfile({ ...profile, internet: e.target.value })} style={field}><option>{tr("متاح")}</option><option>{tr("غير متاح بانتظام")}</option></select>
+        <label style={{ display: "grid", gap: 7, color: "#c5d6dd", fontSize: 13 }}>{tr("إمكانية الوصول إلى الإنترنت")}
+          <select value={profile.internet} onChange={e => setProfile({ ...profile, internet: e.target.value })} style={field}><option value="متاح">{tr("متاح")}</option><option value="غير متاح بانتظام">{tr("غير متاح بانتظام")}</option></select>
         </label>
-        <label style={{ display: "grid", gap: 7, color: "#c5d6dd", fontSize: 13 }}>المحافظة أو المنطقة (اختياري)
+        <label style={{ display: "grid", gap: 7, color: "#c5d6dd", fontSize: 13 }}>{tr("المحافظة أو المنطقة (اختياري)")}
           <input maxLength={100} value={profile.location} onChange={e => setProfile({ ...profile, location: e.target.value })} placeholder={tr("اختياري لتسهيل البحث المحلي لاحقًا")} style={field} />
         </label>
         <div style={{ gridColumn: "1 / -1", display: "flex", flexWrap: "wrap", alignItems: "center", gap: 12 }}>
@@ -122,7 +123,7 @@ export default function PersonalPlanPage() {
         </div>
         {[1,2,3,4].map(week => <section key={week} style={panel}>
           <h3 style={{ margin: "0 0 13px", color: "#dff6f2", fontSize: 17 }}>{tr("الأسبوع")} {week}</h3>
-          <div style={{ display: "grid", gap: 12 }}>{plan.steps.filter(s => s.week === week).map(step => <label key={step.id} style={{ display: "flex", alignItems: "start", gap: 10, cursor: "pointer" }}>
+          <div style={{ display: "grid", gap: 12 }}>{displaySteps.filter(s => s.week === week).map(step => <label key={step.id} style={{ display: "flex", alignItems: "start", gap: 10, cursor: "pointer" }}>
             <input type="checkbox" checked={step.done} onChange={e => setPlan(current => current ? { ...current, steps: current.steps.map(s => s.id === step.id ? { ...s, done: e.target.checked } : s) } : current)} style={{ marginTop: 4, accentColor: "#65c9b8", width: 17, height: 17 }} />
             <span style={{ flex: 1 }}><strong style={{ color: step.done ? "#83d9ce" : "#edf6f7", textDecoration: step.done ? "line-through" : "none" }}>{step.title}</strong><span style={{ display: "block", color: "#a9bdc8", fontSize: 13, lineHeight: 1.8, marginTop: 4 }}>{step.detail}</span></span>
             {step.done ? <CheckCircle2 size={18} color="#83d9ce" /> : <Circle size={18} color="#7893a1" />}
