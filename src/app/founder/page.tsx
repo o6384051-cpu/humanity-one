@@ -86,10 +86,10 @@ export default function FounderAdminPage() {
         {mode === "setup" && <><p style={{ color: "#f2c879" }}>{tr("يعمل التأسيس مرة واحدة فقط، ويتطلب FOUNDER_SETUP_SECRET مضبوطًا في إعدادات Vercel.")}</p><Field label="اسم المؤسس" value={form.name} onChange={v => setForm({ ...form, name: v })} /><Field label="رمز التأسيس السري" value={form.setupSecret} onChange={v => setForm({ ...form, setupSecret: v })} type="password" /></>}
         <Field label="البريد الإلكتروني" value={form.email} onChange={v => setForm({ ...form, email: v })} type="email" />
         <Field label="كلمة المرور (12 حرفًا على الأقل عند التأسيس)" value={form.password} onChange={v => setForm({ ...form, password: v })} type="password" />
-        <button disabled={busy} style={primaryStyle}>{busy ? "جارٍ التنفيذ..." : mode === "setup" ? "إنشاء حساب المؤسس" : "دخول آمن"}</button>
+        <button disabled={busy} style={primaryStyle}>{busy ? tr("جارٍ التنفيذ...") : mode === "setup" ? tr("إنشاء حساب المؤسس") : tr("دخول آمن")}</button>
       </form> : <section style={{ display: "grid", gap: 18 }}>
         <div style={{ padding: 16, background: "#101a2b", borderRadius: 12, display: "flex", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
-          <div><b>{session.name || session.email}</b><p style={{ margin: 4, color: "#65d9d0" }}>صلاحيتك: {session.role === "SUPER_ADMIN" ? "المؤسس — صلاحية عليا" : session.role}</p></div>
+          <div><b>{session.name || session.email}</b><p style={{ margin: 4, color: "#65d9d0" }}>{tr("صلاحيتك:")} {session.role === "SUPER_ADMIN" ? tr("المؤسس — صلاحية عليا") : tr(session.role === "ADMIN" ? "إداري" : "مشرف")}</p></div>
           <button onClick={logout} style={tabStyle(false)}>{tr("تسجيل الخروج")}</button>
         </div>
         {session.role === "SUPER_ADMIN" && <form onSubmit={addUser} style={{ padding: 20, background: "#101a2b", borderRadius: 14, display: "grid", gap: 10 }}>
@@ -104,7 +104,7 @@ export default function FounderAdminPage() {
           <h2>{tr("فريق الإدارة")}</h2>
           <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 500 }}>
             <thead><tr><th style={cellStyle}>{tr("الاسم")}</th><th style={cellStyle}>{tr("البريد")}</th><th style={cellStyle}>{tr("الدور")}</th>{session.role === "SUPER_ADMIN" && <th style={cellStyle}>{tr("الإجراءات")}</th>}</tr></thead>
-            <tbody>{users.map(user => <tr key={user.id}><td style={cellStyle}>{user.name || "—"}</td><td style={cellStyle}>{user.email}</td><td style={cellStyle}>{user.role === "SUPER_ADMIN" ? "المؤسس" : user.role === "ADMIN" ? "إداري" : "مشرف"}</td>{session.role === "SUPER_ADMIN" && <td style={cellStyle}>{user.role !== "SUPER_ADMIN" && <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}><select aria-label={tr("تغيير الدور")} value={user.role} onChange={e => changeRole(user.id, e.target.value)} style={fieldStyle}><option value="MODERATOR">{tr("مشرف")}</option><option value="ADMIN">{tr("إداري")}</option><option value="USER">{tr("إلغاء صلاحية الإدارة")}</option></select><button onClick={() => removeUser(user.id)} style={{ ...tabStyle(false), color: "#ff9c9c" }}>{tr("حذف")}</button></div>}</td>}</tr>)}</tbody>
+            <tbody>{users.map(user => <tr key={user.id}><td style={cellStyle}>{user.name || "—"}</td><td style={cellStyle}>{user.email}</td><td style={cellStyle}>{user.role === "SUPER_ADMIN" ? tr("المؤسس") : user.role === "ADMIN" ? tr("إداري") : tr("مشرف")}</td>{session.role === "SUPER_ADMIN" && <td style={cellStyle}>{user.role !== "SUPER_ADMIN" && <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}><select aria-label={tr("تغيير الدور")} value={user.role} onChange={e => changeRole(user.id, e.target.value)} style={fieldStyle}><option value="MODERATOR">{tr("مشرف")}</option><option value="ADMIN">{tr("إداري")}</option><option value="USER">{tr("إلغاء صلاحية الإدارة")}</option></select><button onClick={() => removeUser(user.id)} style={{ ...tabStyle(false), color: "#ff9c9c" }}>{tr("حذف")}</button></div>}</td>}</tr>)}</tbody>
           </table>
         </div>
       </section>}
@@ -113,7 +113,9 @@ export default function FounderAdminPage() {
 }
 
 function Field({ label, value, onChange, type = "text" }: { label: string; value: string; onChange: (value: string) => void; type?: string }) {
-  return <label style={{ display: "grid", gap: 5, color: "#cbd7e7", fontSize: 13 }}>{label}<input required value={value} type={type} onChange={e => onChange(e.target.value)} style={fieldStyle} /></label>;
+  const { language: fieldLanguage } = useLanguage();
+  const fieldLabel = translateText(label, fieldLanguage);
+  return <label style={{ display: "grid", gap: 5, color: "#cbd7e7", fontSize: 13 }}>{fieldLabel}<input required value={value} type={type} onChange={e => onChange(e.target.value)} style={fieldStyle} /></label>;
 }
 const fieldStyle: React.CSSProperties = { width: "100%", padding: 11, color: "#edf5ff", background: "#0b1422", border: "1px solid #304359", borderRadius: 8 };
 const primaryStyle: React.CSSProperties = { padding: 12, border: 0, borderRadius: 9, background: "#55d3ca", color: "#08212a", fontWeight: 800, cursor: "pointer" };
