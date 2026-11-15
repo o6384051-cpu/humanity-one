@@ -94,7 +94,7 @@ export default function EmployerApplicationsPage() {
                 <span style={{ color: "#91aab6", fontSize: 12 }}>{new Date(application.createdAt).toLocaleString(language === "ar" ? "ar-EG" : "en-EG")}</span>
               </div>
               <p style={{ margin: "10px 0", color: "#bfe9e3" }}>{tx("الهاتف:")} <a href={`tel:${application.phone}`} style={{ color: "#8bded2" }}>{application.phone}</a></p>
-              {application.experience && <p style={{ color: "#c5d6dd", whiteSpace: "pre-wrap", lineHeight: 1.8 }}>{tr("الخبرة والمهارات:")} {application.experience}</p>}
+              {application.experience && <p style={{ color: "#c5d6dd", whiteSpace: "pre-wrap", lineHeight: 1.8 }}>{tx("الخبرة والمهارات:")} {application.experience}</p>}
               {application.message && <p style={{ color: "#c5d6dd", whiteSpace: "pre-wrap", lineHeight: 1.8 }}>{tx("رسالة المتقدم:")} {application.message}</p>}
             </article>)}
           </section>}
