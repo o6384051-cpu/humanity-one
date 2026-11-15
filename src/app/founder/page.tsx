@@ -77,7 +77,7 @@ export default function FounderAdminPage() {
       <a href="/" style={{ color: "#63d8d0" }}>{tr("← العودة للرئيسية")}</a>
       <h1 style={{ marginTop: 22 }}>{tr("إدارة HUMANITY ONE")}</h1>
       <p style={{ color: "#9aabc0" }}>{tr("إدارة حسابات المشرفين والصلاحيات — حساب المؤسس هو صاحب السلطة العليا.")}</p>
-      {message && <p role="status" style={{ padding: 12, borderRadius: 10, background: "#14283a", border: "1px solid #315568" }}>{message}</p>}
+      {message && <p role="status" style={{ padding: 12, borderRadius: 10, background: "#14283a", border: "1px solid #315568" }}>{tr(message)}</p>}
       {!session ? <form onSubmit={submitAuth} style={{ maxWidth: 480, display: "grid", gap: 12, padding: 20, background: "#101a2b", borderRadius: 14 }}>
         <div style={{ display: "flex", gap: 8 }}>
           <button type="button" onClick={() => setMode("login")} style={tabStyle(mode === "login")}>{tr("تسجيل الدخول")}</button>
