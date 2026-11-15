@@ -3,14 +3,22 @@ import { prisma } from "@/lib/prisma";
 
 type LimitResult = { allowed: boolean; retryAfter: number; unavailable?: boolean };
 
-export async function rateLimit(req: Request, scope: string, limit: number, windowMs: number): Promise<LimitResult> {
+export async function rateLimit(
+  req: Request,
+  scope: string,
+  limit: number,
+  windowMs: number,
+  identifier?: string,
+): Promise<LimitResult> {
   const secret = process.env.JWT_SECRET;
   if (!secret) return { allowed: false, retryAfter: 60, unavailable: true };
 
   const forwarded = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim();
   const ip = req.headers.get("x-real-ip")?.trim() || forwarded || "unknown";
-  // Store only a keyed digest, not the raw IP address or beneficiary identifier.
-  const key = createHmac("sha256", secret).update(scope + ":" + ip).digest("hex");
+  // Identifier-based buckets let shared mobile/carrier IPs serve many legitimate users.
+  // Only a keyed digest is stored; neither raw IP nor email is persisted.
+  const subject = identifier ? "id:" + identifier.trim().toLowerCase() : "ip:" + ip;
+  const key = createHmac("sha256", secret).update(scope + ":" + subject).digest("hex");
 
   try {
     const rows = await prisma.$queryRaw<Array<{ count: number; resetAt: Date }>>`
@@ -31,7 +39,6 @@ export async function rateLimit(req: Request, scope: string, limit: number, wind
     const bucket = rows[0];
     if (!bucket) return { allowed: false, retryAfter: 60, unavailable: true };
 
-    // Opportunistically prune expired keys without adding a cleanup query to every request.
     if (bucket.count % 100 === 0) {
       try {
         await prisma.rateLimitBucket.deleteMany({ where: { resetAt: { lte: new Date() } } });
