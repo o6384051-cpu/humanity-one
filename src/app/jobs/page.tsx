@@ -68,7 +68,7 @@ export default function JobsPage() {
   }, []);
 
   const visible = useMemo(() => jobs.filter(job => {
-    const text = [job.jobTitle, job.businessName, job.businessType, job.description, job.skills || "", job.city, job.area || ""].join(" ").toLocaleLowerCase("ar");
+    const text = [job.jobTitle, job.businessName, job.businessType, job.description, job.skills || "", job.city, job.area || ""].join(" ").toLocaleLowerCase(language === "ar" ? "ar" : "en");
     return text.includes(query.trim().toLocaleLowerCase("ar")) && (!city || job.city.includes(city.trim()));
   }), [jobs, query, city]);
 
