@@ -29,6 +29,7 @@ function makeSteps(p: Profile): Step[] {
 }
 
 export default function PersonalPlanPage() {
+  const tx = (value: string) => translateText(value, language);
   const { language } = useLanguage();
   const tr = (value: string) => translateText(value, language);
   const [profile, setProfile] = useState<Profile>(blank);
@@ -76,7 +77,7 @@ export default function PersonalPlanPage() {
       <header style={{ marginBottom: 22 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 9, color: "#83d9ce", fontSize: 13 }}><Target size={18} /> {tr("خطوات عملية تناسب ظروفك")}</div>
         <h1 style={{ fontSize: "clamp(27px,4vw,39px)", margin: "9px 0" }}>{tr("خطتي لتحسين حياتي")}</h1>
-        <p style={{ color: "#a9bdc8", lineHeight: 1.9, maxWidth: 760, margin: 0 }}>أجب عن أسئلة بسيطة لتحصل على خطة أولية لمدة 4 أسابيع للتعلم والعمل أو بدء مشروع صغير. لا نطلب اسمك أو رقمك القومي أو بياناتك البنكية.</p>
+        <p style={{ color: "#a9bdc8", lineHeight: 1.9, maxWidth: 760, margin: 0 }}>{tx("أجب عن أسئلة بسيطة لتحصل على خطة أولية لمدة 4 أسابيع للتعلم والعمل أو بدء مشروع صغير. لا نطلب اسمك أو رقمك القومي أو بياناتك البنكية.")}</p>
       </header>
 
       {!plan && <form onSubmit={generate} style={{ ...panel, display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(100%,250px),1fr))", gap: 14 }}>
