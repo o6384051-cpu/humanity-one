@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { getBeneficiarySession } from "@/lib/beneficiary-auth";
-import { checkRateLimit } from "@/lib/rate-limit";
+import { rateLimit, rateLimitResponse } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -15,8 +15,8 @@ const schema = z.object({
 });
 
 export async function POST(req: NextRequest) {
-  const limited = await checkRateLimit(req, "mail-contact", 5, 60 * 60 * 1000);
-  if (limited) return limited;
+  const limit = await rateLimit(req, "mail-contact", 5, 60 * 60 * 1000);
+  if (!limit.allowed) return rateLimitResponse(limit.retryAfter, limit.unavailable);
   const parsed = schema.safeParse(await req.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: "راجع البيانات؛ الرسالة يجب أن تكون واضحة ومكتملة." }, { status: 400 });
   try {
