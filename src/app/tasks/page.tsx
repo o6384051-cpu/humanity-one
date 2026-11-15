@@ -70,16 +70,16 @@ export default function TasksPage() {
       </section>
 
       <form onSubmit={addTask} style={{ ...panel, display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(180px,1fr))", gap: 11, marginBottom: 18 }}>
-        <label style={{ display: "grid", gap: 6, color: "#c5d6dd", fontSize: 13 }}>المهمة *
+        <label style={{ display: "grid", gap: 6, color: "#c5d6dd", fontSize: 13 }}>{tx("المهمة *")}
           <input required maxLength={140} value={title} onChange={(e) => setTitle(e.target.value)} placeholder={tr("مثال: إعداد قائمة احتياجات المبادرة")} style={input} />
         </label>
-        <label style={{ display: "grid", gap: 6, color: "#c5d6dd", fontSize: 13 }}>المبادرة المرتبطة
+        <label style={{ display: "grid", gap: 6, color: "#c5d6dd", fontSize: 13 }}>{tx("المبادرة المرتبطة")}
           <input maxLength={100} value={initiative} onChange={(e) => setInitiative(e.target.value)} placeholder={tr("اسم المبادرة (اختياري)")} style={input} />
         </label>
-        <label style={{ display: "grid", gap: 6, color: "#c5d6dd", fontSize: 13 }}>تاريخ الاستحقاق
+        <label style={{ display: "grid", gap: 6, color: "#c5d6dd", fontSize: 13 }}>{tx("تاريخ الاستحقاق")}
           <input type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} style={input} />
         </label>
-        <label style={{ display: "grid", gap: 6, color: "#c5d6dd", fontSize: 13 }}>الأولوية
+        <label style={{ display: "grid", gap: 6, color: "#c5d6dd", fontSize: 13 }}>{tx("الأولوية")}
           <select value={priority} onChange={(e) => setPriority(e.target.value as Task["priority"])} style={input}>
             <option value="low">{tr("منخفضة")}</option><option value="medium">{tr("متوسطة")}</option><option value="high">{tr("عالية")}</option>
           </select>
