@@ -3,7 +3,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useLanguage, translateText } from '../components/LanguageProvider';
-import { Home, Bot, FolderKanban, CheckSquare, BookOpen, BarChart3, Settings, Search, Bell, Mail, Sun, Leaf, CheckCircle2, Users, Lightbulb, Send, ShieldCheck, HeartHandshake, BadgeInfo } from 'lucide-react';
+import { Home, Bot, FolderKanban, CheckSquare, BookOpen, BarChart3, Settings, Search, Bell, Mail, Sun, Leaf, CheckCircle2, Users, Lightbulb, Send, ShieldCheck, HeartHandshake, BadgeInfo, Menu, X } from 'lucide-react';
 
 export default function Dashboard() {
   const router = useRouter();
@@ -15,6 +15,7 @@ export default function Dashboard() {
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [messagesOpen, setMessagesOpen] = useState(false);
   const [lightMode, setLightMode] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const openAssistant = (query: string) => {
     const value = query.trim();
@@ -29,7 +30,9 @@ export default function Dashboard() {
   return (
     <div className={`ho-shell${lightMode ? " ho-light" : ""}`}>
       {/* الشريط الجانبي */}
-      <aside className="ho-sidebar">
+      {mobileMenuOpen && <button type="button" className="ho-overlay" aria-label={tr("إغلاق القائمة","Close menu")} onClick={() => setMobileMenuOpen(false)} />}
+      <aside id="main-navigation" className={`ho-sidebar${mobileMenuOpen ? " is-open" : ""}`}>
+        <button type="button" className="ho-close" aria-label={tr("إغلاق القائمة","Close menu")} onClick={() => setMobileMenuOpen(false)}><X size={21} /></button>
         <div className="ho-brand">
           <div className="ho-brand-mark"><span>∞</span><i></i></div>
           <div><strong>HUMANITY <b>ONE</b></strong><small>Together for a Better Tomorrow</small></div>
@@ -41,7 +44,7 @@ export default function Dashboard() {
         <div className="ho-nav-label">{tr("القائمة الرئيسية","MAIN MENU")}</div>
         
         {/* القائمة المحدثة بالروابط */}
-        <nav className="ho-nav">
+        <nav className="ho-nav" aria-label={tr("القائمة الرئيسية","Main navigation")} onClick={() => setMobileMenuOpen(false)}>
           <Link href="/" className="active"><Home size={18} />{tr("الرئيسية","Home")}</Link>
           <Link href="/ai-core"><Bot size={18} />{tr("المساعد الذكي","AI Assistant")}</Link>
           <Link href="/ai-core"><Bot size={18} />{tr("مركز الذكاء والعمل الإنساني","Humanitarian AI & Action Hub")}</Link>
