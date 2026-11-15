@@ -50,10 +50,10 @@ export default function ResetPasswordPage() {
       <h1 style={{ fontSize: 25, margin: "18px 0 8px" }}>{tx("تعيين كلمة مرور جديدة")}</h1>
       {!token && !message ? <p style={{ color: "#ffc5c5" }}>{tx("رابط الاستعادة غير موجود أو غير صالح. اطلب رابطًا جديدًا.")}</p> : null}
       <form onSubmit={submit} style={{ display: "grid", gap: 13, marginTop: 18 }}>
-        <label style={{ display: "grid", gap: 7, fontSize: 13 }}>كلمة المرور الجديدة
+        <label style={{ display: "grid", gap: 7, fontSize: 13 }}>{tx("كلمة المرور الجديدة")}
           <input required type="password" minLength={10} maxLength={128} autoComplete="new-password" value={password} onChange={event => setPassword(event.target.value)} style={field} disabled={!token || busy} />
         </label>
-        <label style={{ display: "grid", gap: 7, fontSize: 13 }}>تأكيد كلمة المرور
+        <label style={{ display: "grid", gap: 7, fontSize: 13 }}>{tx("تأكيد كلمة المرور")}
           <input required type="password" minLength={10} maxLength={128} autoComplete="new-password" value={confirmation} onChange={event => setConfirmation(event.target.value)} style={field} disabled={!token || busy} />
         </label>
         <small style={{ color: "#91a6b5" }}>{tx("استخدم 10 أحرف على الأقل.")}</small>
