@@ -13,8 +13,8 @@ const freeServices: [string,string][] = [
 ];
 
 export default function FeesPage() {
-  const tx = (value: string) => translateText(value, language);
   const { language } = useLanguage();
+  const tx = (value: string) => translateText(value, language);
   const tr = (ar: string, en: string) => language === "ar" ? ar : en;
   return (
     <main dir={language === "ar" ? "rtl" : "ltr"} style={{ minHeight: "100vh", padding: "clamp(20px,5vw,56px)", color: "#e8f1f5", background: "linear-gradient(145deg,#07131d,#0b1d2b 58%,#102a34)" }}>
