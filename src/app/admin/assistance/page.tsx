@@ -12,6 +12,7 @@ type Item = {
   status: string;
   adminNote: string | null;
   createdAt: string;
+  updatedAt: string;
   files: { id: string; originalName: string; mimeType: string; size: number; createdAt: string }[];
   reviewEvents: { id: string; fromStatus: string | null; toStatus: string; note: string | null; createdAt: string; admin: { name: string | null } | null }[];
   user: { name: string | null; email: string; beneficiaryProfile: { phone: string | null; area: string | null } | null };
@@ -36,6 +37,7 @@ export default function AssistanceAdmin() {
   const [error, setError] = useState("");
   const [query, setQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("ALL");
+  const [sortMode, setSortMode] = useState("URGENT_NEWEST");
   const [loading, setLoading] = useState(true);
   const [savingId, setSavingId] = useState("");
 
@@ -88,6 +90,7 @@ export default function AssistanceAdmin() {
     review: items.filter((x) => x.status === "IN_REVIEW").length,
     approved: items.filter((x) => x.status === "APPROVED").length,
     rejected: items.filter((x) => x.status === "REJECTED").length,
+    urgent: items.filter((x) => x.urgency === "URGENT" && !["APPROVED", "REJECTED", "CLOSED"].includes(x.status)).length,
   }), [items]);
 
   const filtered = useMemo(() => {
@@ -98,8 +101,15 @@ export default function AssistanceAdmin() {
         x.user.beneficiaryProfile?.phone || "", categoryNames[x.category] || x.category]
         .join(" ").toLocaleLowerCase("ar");
       return matchesStatus && (!q || haystack.includes(q));
+    }).sort((a, b) => {
+      if (sortMode === "URGENT_NEWEST") {
+        const urgency = Number(b.urgency === "URGENT") - Number(a.urgency === "URGENT");
+        return urgency || new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      }
+      if (sortMode === "OLDEST") return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+      return new Date(b.updatedAt || b.createdAt).getTime() - new Date(a.updatedAt || a.createdAt).getTime();
     });
-  }, [items, query, statusFilter]);
+  }, [items, query, statusFilter, sortMode]);
 
   const panel = { background: "#102333", border: "1px solid #294454", borderRadius: 13, padding: 16 };
   const input = { width: "100%", padding: 11, background: "#0b1b29", color: "white", border: "1px solid #30495a", borderRadius: 8 };
@@ -120,7 +130,7 @@ export default function AssistanceAdmin() {
 
         <section aria-label="ملخص الطلبات" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(135px,1fr))", gap: 10, margin: "18px 0" }}>
           {[
-            ["إجمالي المعروض", counts.total], ["طلبات جديدة", counts.pending],
+            ["إجمالي المعروض", counts.total], ["عاجل مفتوح", counts.urgent], ["طلبات جديدة", counts.pending],
             ["تحت الدراسة", counts.review], ["تمت الموافقة", counts.approved], ["غير موافق عليها", counts.rejected],
           ].map(([label, value]) => <div key={label} style={panel}><div style={{ color: "#a9bdc9", fontSize: 13 }}>{label}</div><strong style={{ fontSize: 25 }}>{value}</strong></div>)}
         </section>
@@ -133,6 +143,13 @@ export default function AssistanceAdmin() {
             <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} style={{ ...input, display: "block", marginTop: 6 }}>
               <option value="ALL">كل الحالات</option>
               {Object.entries(statusNames).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+            </select>
+          </label>
+          <label>ترتيب الطلبات
+            <select value={sortMode} onChange={(e) => setSortMode(e.target.value)} style={{ ...input, display: "block", marginTop: 6 }}>
+              <option value="URGENT_NEWEST">العاجلة أولًا ثم الأحدث</option>
+              <option value="NEWEST">آخر تحديث أولًا</option>
+              <option value="OLDEST">الأقدم أولًا</option>
             </select>
           </label>
         </section>
@@ -150,7 +167,7 @@ export default function AssistanceAdmin() {
                 المستفيد: {x.user.name || "بدون اسم"} · {x.user.email} · {x.user.beneficiaryProfile?.phone || "لا يوجد هاتف"} · {x.city}
                 {x.user.beneficiaryProfile?.area ? " · " + x.user.beneficiaryProfile.area : ""}
               </p>
-              <p style={{ color: "#a9bdc9", fontSize: 12 }}>تاريخ التقديم: {new Date(x.createdAt).toLocaleString("ar-EG")}</p>
+              <div style={{ color: "#a9bdc9", fontSize: 12, display: "grid", gap: 5 }}><span>رقم الطلب: <b dir="ltr">{x.id.slice(-8).toUpperCase()}</b></span><span>تاريخ التقديم: {new Date(x.createdAt).toLocaleString("ar-EG")}</span><span>آخر تحديث: {new Date(x.updatedAt || x.createdAt).toLocaleString("ar-EG")}</span></div>
 
               {x.files?.length > 0 && <section style={{ margin: "12px 0", padding: 12, background: "#0b1b29", borderRadius: 8 }}>
                 <b>المستندات المرفقة ({x.files.length})</b>
