@@ -22,7 +22,7 @@ export default function FeesPage() {
         <header style={{ padding: "28px 24px", borderRadius: 18, background: "rgba(17,38,52,.92)", border: "1px solid rgba(132,177,190,.25)" }}>
           <div style={{ color: "#8bded2", display: "flex", alignItems: "center", gap: 10 }}><ShieldCheck size={22}/>{tr("سياسة الرسوم والشفافية","Fees & transparency policy")}</div>
           <h1 style={{ fontSize: "clamp(28px,5vw,40px)", margin: "14px 0 8px" }}>{tr("الخدمات المجانية في HUMANITY ONE","Free services at HUMANITY ONE")}</h1>
-          <p style={{ color: "#b7cbd4", lineHeight: 1.9, margin: 0 }}>هدفنا تسهيل وصول الناس إلى الدعم والفرص والمعرفة، دون أن تكون الرسوم عائقًا أمام الخدمات الإنسانية الأساسية.</p>
+          <p style={{ color: "#b7cbd4", lineHeight: 1.9, margin: 0 }}>{tr("هدفنا تسهيل وصول الناس إلى الدعم والفرص والمعرفة، دون أن تكون الرسوم عائقًا أمام الخدمات الإنسانية الأساسية.","Our goal is to make support, opportunities, and knowledge accessible without fees becoming a barrier to essential humanitarian services.")}</p>
         </header>
         <section style={{ marginTop: 22, padding: 24, borderRadius: 16, background: "#102b2c", border: "1px solid #28645d" }}>
           <h2 style={{ marginTop: 0, color: "#a5eadb" }}>{tr("خدمات متاحة مجانًا","Services available for free")}</h2>
