@@ -20,8 +20,8 @@ const ideas = [
 ];
 
 export default function SmallBusinessPage() {
-  const tx = (value: string) => translateText(value, language);
   const { language } = useLanguage();
+  const tx = (value: string) => translateText(value, language);
   const tr = (value: string) => translateText(value, language);
   const [idea, setIdea] = useState(ideas[0].name);
   const [budget, setBudget] = useState("");
