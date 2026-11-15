@@ -13,7 +13,6 @@ export default function Dashboard() {
   const [searchQuery, setSearchQuery] = useState('');
   const [assistantQuery, setAssistantQuery] = useState('');
   const [notificationsOpen, setNotificationsOpen] = useState(false);
-  const [messagesOpen, setMessagesOpen] = useState(false);
   const [lightMode, setLightMode] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -93,13 +92,10 @@ export default function Dashboard() {
               />
             </form>
             <div className="ho-top-control">
-              <button type="button" className="ho-icon-btn" aria-label={tr("الإشعارات","Notifications")} aria-expanded={notificationsOpen} onClick={() => { setNotificationsOpen((open) => !open); setMessagesOpen(false); }}><Bell size={18} />{!notificationsOpen && <i />}</button>
+              <button type="button" className="ho-icon-btn" aria-label={tr("الإشعارات","Notifications")} aria-expanded={notificationsOpen} onClick={() => setNotificationsOpen((open) => !open)}><Bell size={18} />{!notificationsOpen && <i />}</button>
               {notificationsOpen && <div className="ho-top-popover"><b>{tr("الإشعارات","Notifications")}</b><p>{tr("لا توجد إشعارات جديدة حاليًا.","There are no new notifications.")}</p><small>{tr("ستظهر هنا التنبيهات الفعلية عند تفعيل نظام الإشعارات.","Actual alerts will appear here when notifications are enabled.")}</small></div>}
             </div>
-            <div className="ho-top-control">
-              <button type="button" className="ho-icon-btn" aria-label={tr("الرسائل","Messages")} aria-expanded={messagesOpen} onClick={() => { setMessagesOpen((open) => !open); setNotificationsOpen(false); }}><Mail size={18} /></button>
-              {messagesOpen && <div className="ho-top-popover"><b>{tr("الرسائل","Messages")}</b><p>{tr("تم تفعيل مركز المراسلات الداخلي.","The internal mail center is available.")}</p><Link href="/mail" onClick={() => setMessagesOpen(false)}>{tr("افتح مركز المراسلات","Open the mail center")}</Link></div>}
-            </div>
+            <Link href="/mail" className="ho-icon-btn" aria-label={tr("مركز الرسائل","Message center")} title={tr("مركز الرسائل","Message center")} style={{display:"inline-flex",alignItems:"center",justifyContent:"center",textDecoration:"none"}}><Mail size={18} /></Link>
             <button type="button" className="ho-icon-btn" aria-label={lightMode ? tr("تفعيل الوضع الداكن","Enable dark mode") : tr("تفعيل الوضع الفاتح","Enable light mode")} title={lightMode ? tr("الوضع الداكن","Dark mode") : tr("الوضع الفاتح","Light mode")} onClick={() => setLightMode((mode) => !mode)}>{lightMode ? <Sun size={18} /> : <Sun size={18} />}</button>
             <div className="ho-user">{tx("أ")}</div>
           </div>
