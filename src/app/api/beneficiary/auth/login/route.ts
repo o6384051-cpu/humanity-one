@@ -8,8 +8,10 @@ import { rateLimit, rateLimitResponse } from "@/lib/rate-limit";
 export const runtime = "nodejs";
 
 export async function POST(req: NextRequest) {
-  const limit = await rateLimit(req, "beneficiary-login", 8, 900000);
-  if (!limit.allowed) return rateLimitResponse(limit.retryAfter);
+  // Keep a network-level ceiling, but avoid blocking every beneficiary behind
+  // the same mobile-carrier NAT after only a handful of attempts.
+  const networkLimit = await rateLimit(req, "beneficiary-login-network", 30, 900000);
+  if (!networkLimit.allowed) return rateLimitResponse(networkLimit.retryAfter, networkLimit.unavailable);
 
   if (!process.env.JWT_SECRET) {
     return NextResponse.json({ error: "إعدادات الدخول غير مكتملة." }, { status: 503 });
@@ -17,13 +19,23 @@ export async function POST(req: NextRequest) {
 
   try {
     const parsed = z.object({
-      email: z.string().email().max(160),
+      email: z.string().trim().email().max(160),
       password: z.string().min(1).max(128),
     }).safeParse(await req.json());
 
     if (!parsed.success) {
       return NextResponse.json({ error: "أدخل البريد وكلمة المرور." }, { status: 400 });
     }
+
+    // A separate per-account bucket follows the account across different IPs.
+    const accountLimit = await rateLimit(
+      req,
+      "beneficiary-login-account",
+      8,
+      900000,
+      parsed.data.email.toLowerCase(),
+    );
+    if (!accountLimit.allowed) return rateLimitResponse(accountLimit.retryAfter, accountLimit.unavailable);
 
     const user = await prisma.user.findUnique({ where: { email: parsed.data.email.toLowerCase() } });
     if (!user || user.role !== "USER" || !(await bcrypt.compare(parsed.data.password, user.passwordHash))) {
