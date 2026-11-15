@@ -46,7 +46,7 @@ export default function MemoryPage() {
   }
 
   function clearAll() {
-    if (!window.confirm("هل تريد حذف كل الملاحظات المحفوظة في هذا المتصفح؟")) return;
+    if (!window.confirm(tr("هل تريد حذف كل الملاحظات المحفوظة في هذا المتصفح؟"))) return;
     setNotes([]);
   }
 
