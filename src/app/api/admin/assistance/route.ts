@@ -20,7 +20,7 @@ export async function GET() {
       take: 200,
       select: {
         id: true, category: true, urgency: true, description: true, city: true,
-        status: true, adminNote: true, createdAt: true,
+        status: true, adminNote: true, createdAt: true, updatedAt: true,
         files: {
           select: { id: true, originalName: true, mimeType: true, size: true, createdAt: true },
           orderBy: { createdAt: "asc" },
