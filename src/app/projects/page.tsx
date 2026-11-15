@@ -138,7 +138,7 @@ export default function ProjectsPage() {
             { label: "مكتملة", value: items.filter((item) => item.status === "complete").length, icon: Users },
           ].map((stat) => <div key={stat.label} style={{ ...panelStyle, padding: 16, display: "flex", alignItems: "center", gap: 13 }}>
             <stat.icon size={20} color="#82d9cd" />
-            <div><div style={{ color: "#a9bdc8", fontSize: 12 }}>{stat.label}</div><strong style={{ fontSize: 24 }}>{stat.value}</strong></div>
+            <div><div style={{ color: "#a9bdc8", fontSize: 12 }}>{tr(stat.label)}</div><strong style={{ fontSize: 24 }}>{stat.value}</strong></div>
           </div>)}
         </section>
 
@@ -180,15 +180,15 @@ export default function ProjectsPage() {
           </div>
           <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} aria-label={tr("تصفية حسب الحالة")} style={{ ...fieldStyle, flex: "0 1 190px" }}>
             <option value="all">{tr("كل الحالات")}</option>
-            {Object.entries(statusLabels).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+            {Object.entries(statusLabels).map(([value, label]) => <option key={value} value={value}>{tr(label)}</option>)}
           </select>
         </section>
 
         {!ready ? <p style={{ color: "#a9bdc8" }}>{tr("جارٍ تحميل المبادرات...")}</p> : visibleItems.length === 0 ? (
           <section style={{ ...panelStyle, textAlign: "center", padding: "42px 20px" }}>
             <div style={{ width: 58, height: 58, borderRadius: 18, display: "grid", placeItems: "center", margin: "0 auto 15px", background: "#183c43", color: "#8ce0d3" }}><HeartHandshake size={27} /></div>
-            <h2 style={{ margin: "0 0 9px", fontSize: 20 }}>{items.length ? "لا توجد نتائج مطابقة" : "ابدأ أول مبادرة"}</h2>
-            <p style={{ color: "#a9bdc8", lineHeight: 1.8, maxWidth: 520, margin: "0 auto 18px" }}>{items.length ? "جرّب تغيير كلمات البحث أو حالة المبادرة." : "كل تغيير كبير يبدأ بخطوة. سجّل الفكرة والهدف والفئات المستفيدة، ثم حوّلها إلى خطة قابلة للتنفيذ."}</p>
+            <h2 style={{ margin: "0 0 9px", fontSize: 20 }}>{items.length ? tr("لا توجد نتائج مطابقة") : tr("ابدأ أول مبادرة")}</h2>
+            <p style={{ color: "#a9bdc8", lineHeight: 1.8, maxWidth: 520, margin: "0 auto 18px" }}>{items.length ? tr("جرّب تغيير كلمات البحث أو حالة المبادرة.") : tr("كل تغيير كبير يبدأ بخطوة. سجّل الفكرة والهدف والفئات المستفيدة، ثم حوّلها إلى خطة قابلة للتنفيذ.")}</p>
             {!items.length && <button type="button" onClick={() => setShowForm(true)} style={buttonStyle}><Plus size={16} /> {tr("إنشاء أول مبادرة")}</button>}
           </section>
         ) : (
@@ -207,7 +207,7 @@ export default function ProjectsPage() {
                 {item.location && <div style={{ display: "flex", gap: 8, alignItems: "center", color: "#b5c7cf", fontSize: 13 }}><MapPin size={15} color="#83cfc5" /> {item.location}</div>}
                 {item.needs && <div style={{ padding: 12, background: "#0a1b27", borderRadius: 10, color: "#b5c7cf", fontSize: 13, lineHeight: 1.8 }}><b style={{ color: "#dce9ec" }}>{tr("الاحتياجات:")}</b> {item.needs}</div>}
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, marginTop: "auto", paddingTop: 10, borderTop: "1px solid #294454" }}>
-                  <span style={{ display: "flex", alignItems: "center", gap: 6, color: "#91aab6", fontSize: 11 }}><CalendarDays size={13} /> {new Date(item.createdAt).toLocaleDateString("ar-EG")}</span>
+                  <span style={{ display: "flex", alignItems: "center", gap: 6, color: "#91aab6", fontSize: 11 }}><CalendarDays size={13} /> {new Date(item.createdAt).toLocaleDateString(language === "ar" ? "ar-EG" : "en-EG")}</span>
                   <select value={item.status} onChange={(e) => updateStatus(item.id, e.target.value as Initiative["status"])} aria-label={tr("حالة المبادرة")} style={{ ...fieldStyle, width: "auto", maxWidth: 145, padding: "7px 9px", fontSize: 12 }}>
                     {Object.entries(statusLabels).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
                   </select>
