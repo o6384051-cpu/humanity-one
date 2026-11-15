@@ -104,8 +104,8 @@ function OpportunityMatches({ items }: { items: Resource[] }) {
 }
 
 export default function OpportunitiesPage() {
-  const tx = (value: string) => translateText(value, language);
   const { language } = useLanguage();
+  const tx = (value: string) => translateText(value, language);
   const tr = (value: string) => translateText(value, language);
   const [category, setCategory] = useState<Category>("all");
   const [query, setQuery] = useState("");
