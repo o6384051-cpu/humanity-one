@@ -93,15 +93,24 @@ export async function POST(req: NextRequest) {
 
     const base = (process.env.AI_BASE_URL || "https://api.openai.com/v1").replace(/\/+$/, "");
     const model = process.env.AI_MODEL || "gpt-4o-mini";
+    const isGeminiOpenAIEndpoint =
+      base.includes("generativelanguage.googleapis.com") && base.includes("/v1beta/openai");
+
+    // Gemini's OpenAI-compatible endpoint is kept on the minimal documented payload.
+    // Optional OpenAI sampling/token fields are sent only to the OpenAI-compatible default path.
+    const providerPayload = isGeminiOpenAIEndpoint
+      ? { model, messages: [{ role: "system", content: prompts[role] }, ...messages] }
+      : {
+          model,
+          temperature: 0.25,
+          max_tokens: 1400,
+          messages: [{ role: "system", content: prompts[role] }, ...messages],
+        };
+
     const upstream = await fetch(`${base}/chat/completions`, {
       method: "POST",
       headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model,
-        temperature: 0.25,
-        max_tokens: 1400,
-        messages: [{ role: "system", content: prompts[role] }, ...messages],
-      }),
+      body: JSON.stringify(providerPayload),
       signal: AbortSignal.timeout(55_000),
     });
 
