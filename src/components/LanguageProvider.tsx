@@ -1152,6 +1152,10 @@ const ADMIN_AND_FORM_COPY: Record<string, string> = {
 };
 Object.assign(ENGLISH_COPY, ADMIN_AND_FORM_COPY);
 
+
+const LIVE_STATUS_COPY: Record<string, string> = { "متصل": "Connected" };
+Object.assign(ENGLISH_COPY, LIVE_STATUS_COPY);
+
 export function translateText(value: string, language: AppLanguage): string {
   return language === "ar" ? value : (ENGLISH_COPY[value] ?? value);
 }
