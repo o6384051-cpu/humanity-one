@@ -42,9 +42,9 @@ function ApplicationForm({ job, onClose }: { job: Job; onClose: () => void }) {
     <input required value={phone} onChange={e => setPhone(e.target.value)} placeholder={tr("رقم هاتف للتواصل")} style={field} />
     <textarea maxLength={1200} value={experience} onChange={e => setExperience(e.target.value)} placeholder={tr("خبرتك العملية أو الحرفة التي تتقنها (اختياري)")} rows={3} style={field} />
     <textarea maxLength={1200} value={message} onChange={e => setMessage(e.target.value)} placeholder={tr("رسالة لصاحب العمل (اختياري)")} rows={3} style={field} />
-    <p style={{ margin: 0, color: "#9fb6c2", fontSize: 12, lineHeight: 1.7 }}>{tx("لن تظهر بياناتك الشخصية للعامة. تُحفظ بيانات التقديم داخل قاعدة المنصة ولا تُعرض إلا للمخولين. لا ترسل رقمك القومي أو بياناتك البنكية أو أي معلومات حساسة.")}</p>
+    <p style={{ margin: 0, color: "#9fb6c2", fontSize: 12, lineHeight: 1.7 }}>{tr("لن تظهر بياناتك الشخصية للعامة. تُحفظ بيانات التقديم داخل قاعدة المنصة ولا تُعرض إلا للمخولين. لا ترسل رقمك القومي أو بياناتك البنكية أو أي معلومات حساسة.")}</p>
     {result && <p role="status" style={{ color: "#9ce4d6", margin: 0 }}>{tr(result)}</p>}
-    <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}><button disabled={busy} style={button}>{busy ? "جارٍ الإرسال..." : "إرسال طلب التقديم"}</button><button type="button" onClick={onClose} style={{ ...button, background: "#294454" }}>{tr("إغلاق")}</button></div>
+    <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}><button disabled={busy} style={button}>{busy ? tr("جارٍ الإرسال...") : tr("إرسال طلب التقديم")}</button><button type="button" onClick={onClose} style={{ ...button, background: "#294454" }}>{tr("إغلاق")}</button></div>
   </form>;
 }
 
