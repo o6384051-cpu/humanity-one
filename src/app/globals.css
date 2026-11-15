@@ -126,3 +126,56 @@ html[dir="ltr"] .ho-sidebar.is-open{transform:translateX(0)}
 
 html[dir="ltr"] .ho-language-switcher{left:auto;right:14px}
 html[dir="ltr"] [dir="rtl"]{direction:ltr!important;text-align:left!important;unicode-bidi:plaintext}
+
+
+/* App-wide mobile layout safety: keep existing desktop layouts intact. */
+html, body {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+*, *::before, *::after {
+  min-width: 0;
+}
+img, video, canvas, iframe {
+  max-width: 100%;
+}
+@media (max-width: 760px) {
+  body {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+  main, section, article, form, header, footer, nav, aside {
+    max-width: 100%;
+  }
+  input, select, textarea {
+    max-width: 100%;
+    min-width: 0;
+  }
+  pre, code {
+    max-width: 100%;
+    overflow-x: auto;
+  }
+  table {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  button, a {
+    overflow-wrap: anywhere;
+  }
+  /* Prevent wide dashboard controls and content panels from forcing page overflow. */
+  .ho-topbar, .ho-top-left, .ho-top-actions,
+  .ho-section-head, .ho-welcome-actions,
+  .ho-prompt-tools, .ho-footer {
+    min-width: 0;
+    flex-wrap: wrap;
+  }
+  .ho-content, .ho-main, .ho-shell {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+  }
+}
