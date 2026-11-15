@@ -61,7 +61,7 @@ export default function AdminDashboardPage() {
       {data && <>
         <section style={{ ...panel, display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 10 }}>
           <div><b>{data.actor.name || data.actor.email}</b><p style={{ color: "#63d8d0", marginTop: 4 }}>الصلاحية: {roleName(data.actor.role)}</p></div>
-          <div style={{ color: "#9aabc0", fontSize: 12 }}>آخر قراءة: {new Date(data.generatedAt).toLocaleString("ar-EG")}</div>
+          <div style={{ color: "#9aabc0", fontSize: 12 }}>{tr("آخر قراءة:")} {new Date(data.generatedAt).toLocaleString(language === "ar" ? "ar-EG" : "en-EG")}</div>
         </section>
 
         <section style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(145px,1fr))", gap: 10 }}>
@@ -105,9 +105,9 @@ export default function AdminDashboardPage() {
         <section style={panel}>
           <h2 style={{ fontSize: 19, fontWeight: 800, marginBottom: 12 }}>{tr("سلامة الخدمات والوظائف غير المكتملة")}</h2>
           <p style={{ marginBottom: 8 }}>{tr("قاعدة البيانات:")} <b style={{ color: "#8fe3cb" }}>{tr("تم الاتصال وقراءة الإحصاءات")}</b></p>
-          <p style={{ marginBottom: 8 }}>{tr("إعداد الذكاء الاصطناعي:")} <b style={{ color: data.capabilities.aiConfigured ? "#8fe3cb" : "#f2c879" }}>{data.capabilities.aiConfigured ? "مفتاح مضبوط في بيئة الخادم" : "لم يتم ضبط مفتاح"}</b>{data.capabilities.aiModel ? " — النموذج: " + data.capabilities.aiModel : ""}</p>
-          <p style={{ color: "#8fe3cb", marginTop: 12 }}>طلبات المستفيدين: {data.capabilities.beneficiaryRequests.available ? "متصلة وتُقرأ من قاعدة البيانات." : data.capabilities.beneficiaryRequests.reason}</p>
-          <p style={{ color: "#9aabc0", marginTop: 8 }}>سجل مراجعات طلبات المساعدة: {data.capabilities.assistanceReviewHistory.available ? data.capabilities.assistanceReviewHistory.reason : "غير متاح."}</p>
+          <p style={{ marginBottom: 8 }}>{tr("إعداد الذكاء الاصطناعي:")} <b style={{ color: data.capabilities.aiConfigured ? "#8fe3cb" : "#f2c879" }}>{data.capabilities.aiConfigured ? tr("مفتاح مضبوط في بيئة الخادم") : tr("لم يتم ضبط مفتاح")}</b>{data.capabilities.aiModel ? " — " + tr("النموذج:") + " " + data.capabilities.aiModel : ""}</p>
+          <p style={{ color: "#8fe3cb", marginTop: 12 }}>{tr("طلبات المستفيدين:")} {data.capabilities.beneficiaryRequests.available ? tr("متصلة وتُقرأ من قاعدة البيانات.") : tr(data.capabilities.beneficiaryRequests.reason)}</p>
+          <p style={{ color: "#9aabc0", marginTop: 8 }}>{tr("سجل مراجعات طلبات المساعدة:")} {data.capabilities.assistanceReviewHistory.available ? tr(data.capabilities.assistanceReviewHistory.reason) : tr("غير متاح.")}</p>
           <p style={{ color: "#9aabc0", fontSize: 12, marginTop: 12 }}>{tr("وجود مفتاح الذكاء الاصطناعي لا يثبت نجاح الاتصال بالمزود؛ يلزم اختبار محادثة فعلية.")}</p>
         </section>
       </>}
