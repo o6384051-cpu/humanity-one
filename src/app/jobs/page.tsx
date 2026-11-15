@@ -43,7 +43,7 @@ function ApplicationForm({ job, onClose }: { job: Job; onClose: () => void }) {
     <textarea maxLength={1200} value={experience} onChange={e => setExperience(e.target.value)} placeholder={tr("خبرتك العملية أو الحرفة التي تتقنها (اختياري)")} rows={3} style={field} />
     <textarea maxLength={1200} value={message} onChange={e => setMessage(e.target.value)} placeholder={tr("رسالة لصاحب العمل (اختياري)")} rows={3} style={field} />
     <p style={{ margin: 0, color: "#9fb6c2", fontSize: 12, lineHeight: 1.7 }}>{tx("لن تظهر بياناتك الشخصية للعامة. تُحفظ بيانات التقديم داخل قاعدة المنصة ولا تُعرض إلا للمخولين. لا ترسل رقمك القومي أو بياناتك البنكية أو أي معلومات حساسة.")}</p>
-    {result && <p role="status" style={{ color: "#9ce4d6", margin: 0 }}>{result}</p>}
+    {result && <p role="status" style={{ color: "#9ce4d6", margin: 0 }}>{tr(result)}</p>}
     <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}><button disabled={busy} style={button}>{busy ? "جارٍ الإرسال..." : "إرسال طلب التقديم"}</button><button type="button" onClick={onClose} style={{ ...button, background: "#294454" }}>{tr("إغلاق")}</button></div>
   </form>;
 }
@@ -69,7 +69,7 @@ export default function JobsPage() {
 
   const visible = useMemo(() => jobs.filter(job => {
     const text = [job.jobTitle, job.businessName, job.businessType, job.description, job.skills || "", job.city, job.area || ""].join(" ").toLocaleLowerCase(language === "ar" ? "ar" : "en");
-    return text.includes(query.trim().toLocaleLowerCase("ar")) && (!city || job.city.includes(city.trim()));
+    return text.includes(query.trim().toLocaleLowerCase(language === "ar" ? "ar" : "en")) && (!city || job.city.includes(city.trim()));
   }), [jobs, query, city]);
 
   return <main dir={language === "ar" ? "rtl" : "ltr"} style={{ minHeight: "100vh", padding: "clamp(18px,4vw,48px)", color: "#e8f1f5", background: "linear-gradient(145deg,#07131d,#0b1d2b 58%,#102a34)" }}>
@@ -86,7 +86,7 @@ export default function JobsPage() {
         <label><span style={{ display: "block", marginBottom: 6, color: "#a9bdc8", fontSize: 13 }}>{tr("المحافظة / المدينة")}</span><input value={city} onChange={e => setCity(e.target.value)} placeholder={tr("مثال: القاهرة، الجيزة...")} style={field} /></label>
       </section>
       {loading && <p>{tr("جارٍ تحميل الوظائف...")}</p>}
-      {error && <p role="alert" style={{ color: "#ffb4a8" }}>{error}</p>}
+      {error && <p role="alert" style={{ color: "#ffb4a8" }}>{tr(error)}</p>}
       {!loading && !error && visible.length === 0 && <section style={{ padding: 24, background: "#112634", borderRadius: 14, color: "#b5c7cf", lineHeight: 1.9 }}>{tr("لا توجد إعلانات منشورة تطابق البحث حاليًا. يمكنك العودة لاحقًا أو دعوة صاحب عمل لنشر فرصة حقيقية.")}</section>}
       <section style={{ display: "grid", gap: 14 }}>
         {visible.map(job => <article key={job.id} style={{ padding: 18, borderRadius: 15, background: "rgba(17,38,52,.92)", border: "1px solid rgba(132,177,190,.2)" }}>
