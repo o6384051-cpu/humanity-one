@@ -37,7 +37,7 @@ export default function FeesPage() {
         </section>
         <aside style={{ marginTop: 20, padding: 18, borderRadius: 14, background: "#0a1b27", color: "#a9bdc8", lineHeight: 1.9, fontSize: 14 }}>
           <Info size={18} style={{ verticalAlign: "middle", marginLeft: 8, color: "#8bded2" }}/>
-          هذه الصفحة توضح سياسة المنصة المعلنة. لا تعني المجانية ضمان الحصول على مساعدة أو وظيفة؛ تخضع الطلبات والفرص للمراجعة والتوافر والتحقق.
+          {tr("هذه الصفحة توضح سياسة المنصة المعلنة. لا تعني المجانية ضمان الحصول على مساعدة أو وظيفة؛ تخضع الطلبات والفرص للمراجعة والتوافر والتحقق.","This page explains the platform’s published policy. Free access does not guarantee assistance or employment; requests and opportunities remain subject to review, availability, and verification.")}
         </aside>
         <footer style={{ marginTop: 28, textAlign: "center", color: "#91aab6", fontSize: 13 }}>HUMANITY ONE © 2026</footer>
       </div>
