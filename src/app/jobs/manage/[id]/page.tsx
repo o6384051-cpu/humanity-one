@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useLanguage, translateText } from "../../../components/LanguageProvider";
 import { ArrowRight, LockKeyhole, RefreshCw, Users } from "lucide-react";
 
 type Application = {
@@ -26,6 +27,8 @@ const panel: React.CSSProperties = { background: "rgba(17,38,52,.94)", border: "
 const button: React.CSSProperties = { border: 0, borderRadius: 9, padding: "10px 13px", background: "#17645b", color: "white", font: "inherit", cursor: "pointer" };
 
 export default function EmployerApplicationsPage() {
+  const { language } = useLanguage();
+  const tx = (value: string) => translateText(value, language);
   const params = useParams<{ id: string }>();
   const id = params.id;
   const [token, setToken] = useState("");
@@ -70,33 +73,33 @@ export default function EmployerApplicationsPage() {
 
   return <main dir="rtl" style={{ minHeight: "100vh", padding: "clamp(18px,4vw,44px)", color: "#e8f1f5", background: "linear-gradient(145deg,#07131d,#0b1d2b 58%,#102a34)" }}>
     <div style={{ maxWidth: 900, margin: "0 auto" }}>
-      <Link href="/jobs" style={{ color: "#8bded2", display: "inline-flex", alignItems: "center", gap: 8, textDecoration: "none", marginBottom: 22 }}><ArrowRight size={17}/> سوق العمل</Link>
-      <div style={{ display: "flex", gap: 9, alignItems: "center", color: "#82d9cd" }}><LockKeyhole size={18}/> مساحة خاصة بصاحب الإعلان</div>
-      <h1 style={{ fontSize: "clamp(27px,4vw,38px)", margin: "9px 0" }}>متابعة المتقدمين للوظيفة</h1>
-      <p style={{ color: "#a9bdc8", lineHeight: 1.9 }}>هذه الصفحة لا تظهر للعامة. الدخول يتم برابط سري أُنشئ عند نشر الإعلان، ولا نعرض بيانات المتقدمين إلا لصاحب الرابط.</p>
-      {loading && <section style={panel}>جارٍ تحميل طلبات التقديم...</section>}
-      {error && <section role="alert" style={{ ...panel, color: "#ffb4a8", lineHeight: 1.9 }}>{error}<p style={{ color: "#a9bdc8", fontSize: 13 }}>إذا فقدت الرابط السري، لأمان بيانات العمال لن نعرض الطلبات دون إثبات ملكية الإعلان.</p></section>}
+      <Link href="/jobs" style={{ color: "#8bded2", display: "inline-flex", alignItems: "center", gap: 8, textDecoration: "none", marginBottom: 22 }}><ArrowRight size={17}/> {tx("سوق العمل")}</Link>
+      <div style={{ display: "flex", gap: 9, alignItems: "center", color: "#82d9cd" }}><LockKeyhole size={18}/> {tx("مساحة خاصة بصاحب الإعلان")}</div>
+      <h1 style={{ fontSize: "clamp(27px,4vw,38px)", margin: "9px 0" }}>{tx("متابعة المتقدمين للوظيفة")}</h1>
+      <p style={{ color: "#a9bdc8", lineHeight: 1.9 }}>{tx("هذه الصفحة لا تظهر للعامة. الدخول يتم برابط سري أُنشئ عند نشر الإعلان، ولا نعرض بيانات المتقدمين إلا لصاحب الرابط.")}</p>
+      {loading && <section style={panel}>{tx("جارٍ تحميل طلبات التقديم...")}</section>}
+      {error && <section role="alert" style={{ ...panel, color: "#ffb4a8", lineHeight: 1.9 }}>{error}<p style={{ color: "#a9bdc8", fontSize: 13 }}>{tx("إذا فقدت الرابط السري، لأمان بيانات العمال لن نعرض الطلبات دون إثبات ملكية الإعلان.")}</p></section>}
       {job && <>
         <section style={{ ...panel, marginBottom: 14 }}>
           <div style={{ color: "#82d9cd", fontSize: 13 }}>{job.businessName} · {job.city}</div>
           <h2 style={{ margin: "7px 0" }}>{job.jobTitle}</h2>
           <div style={{ display: "flex", alignItems: "center", gap: 8, color: "#b5c7cf" }}><Users size={17}/> {job.applications.length} طلب تقديم معروض (بحد أقصى 100)</div>
         </section>
-        <div style={{ display: "flex", justifyContent: "flex-start", marginBottom: 12 }}><button type="button" onClick={() => void load(token)} style={{ ...button, display: "inline-flex", alignItems: "center", gap: 7 }}><RefreshCw size={16}/> تحديث الطلبات</button></div>
-        {job.applications.length === 0 ? <section style={panel}>لم يصل أي طلب تقديم بعد. سنعرض الطلبات الجديدة هنا عند تحديث الصفحة.</section> :
+        <div style={{ display: "flex", justifyContent: "flex-start", marginBottom: 12 }}><button type="button" onClick={() => void load(token)} style={{ ...button, display: "inline-flex", alignItems: "center", gap: 7 }}><RefreshCw size={16}/> {tx("تحديث الطلبات")}</button></div>
+        {job.applications.length === 0 ? <section style={panel}>{tx("لم يصل أي طلب تقديم بعد. سنعرض الطلبات الجديدة هنا عند تحديث الصفحة.")}</section> :
           <section style={{ display: "grid", gap: 12 }}>
             {job.applications.map((application, index) => <article key={application.id} style={panel}>
               <div style={{ display: "flex", justifyContent: "space-between", gap: 8, flexWrap: "wrap" }}>
                 <strong style={{ color: "#f3fbfc" }}>{index + 1}. {application.applicantName}</strong>
                 <span style={{ color: "#91aab6", fontSize: 12 }}>{new Date(application.createdAt).toLocaleString("ar-EG")}</span>
               </div>
-              <p style={{ margin: "10px 0", color: "#bfe9e3" }}>الهاتف: <a href={`tel:${application.phone}`} style={{ color: "#8bded2" }}>{application.phone}</a></p>
+              <p style={{ margin: "10px 0", color: "#bfe9e3" }}>{tx("الهاتف:")} <a href={`tel:${application.phone}`} style={{ color: "#8bded2" }}>{application.phone}</a></p>
               {application.experience && <p style={{ color: "#c5d6dd", whiteSpace: "pre-wrap", lineHeight: 1.8 }}>الخبرة والمهارات: {application.experience}</p>}
               {application.message && <p style={{ color: "#c5d6dd", whiteSpace: "pre-wrap", lineHeight: 1.8 }}>رسالة المتقدم: {application.message}</p>}
             </article>)}
           </section>}
       </>}
-      <footer style={{ ...panel, marginTop: 18, color: "#91aab6", fontSize: 12, lineHeight: 1.9 }}>احفظ رابط المتابعة في مكان آمن، ولا ترسله في مجموعات عامة. بيانات العمال أمانة: استخدمها فقط للتواصل بشأن هذه الوظيفة، ولا تطلب رسومًا من المتقدمين.</footer>
+      <footer style={{ ...panel, marginTop: 18, color: "#91aab6", fontSize: 12, lineHeight: 1.9 }}>{tx("احفظ رابط المتابعة في مكان آمن، ولا ترسله في مجموعات عامة. بيانات العمال أمانة: استخدمها فقط للتواصل بشأن هذه الوظيفة، ولا تطلب رسومًا من المتقدمين.")}</footer>
     </div>
   </main>;
 }
