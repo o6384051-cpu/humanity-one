@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { ArrowRight, FolderKanban, Plus, Search, HeartHandshake, BookOpen, Sprout, Users, MapPin, CalendarDays, Trash2, Download, X, Target, HandHeart } from "lucide-react";
+import { useLanguage, translateText } from "../../components/LanguageProvider";
 
 type Initiative = {
   id: string;
@@ -33,6 +34,8 @@ const statusLabels: Record<Initiative["status"], string> = {
 const blankForm = { title: "", category: "community", goal: "", beneficiaries: "", location: "", needs: "" };
 
 export default function ProjectsPage() {
+  const { language } = useLanguage();
+  const tr = (value: string) => translateText(value, language);
   const [items, setItems] = useState<Initiative[]>([]);
   const [ready, setReady] = useState(false);
   const [showForm, setShowForm] = useState(false);
@@ -116,13 +119,13 @@ export default function ProjectsPage() {
 
         <header style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: 18, marginBottom: 24 }}>
           <div>
-            <div style={{ display: "flex", alignItems: "center", gap: 10, color: "#80d8ca", fontSize: 13, marginBottom: 9 }}><HeartHandshake size={18} /> من الأفكار إلى أثر إنساني</div>
-            <h1 style={{ fontSize: "clamp(27px,4vw,40px)", margin: 0, color: "#f3fbfc" }}>مساحة المبادرات الإنسانية</h1>
-            <p style={{ color: "#a9bdc8", lineHeight: 1.9, maxWidth: 720, margin: "10px 0 0" }}>خطط لمبادرات تعليمية ومجتمعية وبيئية، وحدد الهدف والفئات المستفيدة والاحتياجات والخطوات التالية. ابدأ بفكرة صغيرة قابلة للتنفيذ.</p>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, color: "#80d8ca", fontSize: 13, marginBottom: 9 }}><HeartHandshake size={18} /> {tr("من الأفكار إلى أثر إنساني")}</div>
+            <h1 style={{ fontSize: "clamp(27px,4vw,40px)", margin: 0, color: "#f3fbfc" }}>{tr("مساحة المبادرات الإنسانية")}</h1>
+            <p style={{ color: "#a9bdc8", lineHeight: 1.9, maxWidth: 720, margin: "10px 0 0" }}>{tr("خطط لمبادرات تعليمية ومجتمعية وبيئية، وحدد الهدف والفئات المستفيدة والاحتياجات والخطوات التالية. ابدأ بفكرة صغيرة قابلة للتنفيذ.")}</p>
           </div>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 9 }}>
-            <button type="button" onClick={exportInitiatives} disabled={!items.length} style={{ ...buttonStyle, background: "transparent", borderColor: "#355365", color: "#c4d7df", opacity: items.length ? 1 : .45 }}><Download size={16} /> تصدير نسخة</button>
-            <button type="button" onClick={() => setShowForm((open) => !open)} style={buttonStyle}><Plus size={17} /> مبادرة جديدة</button>
+            <button type="button" onClick={exportInitiatives} disabled={!items.length} style={{ ...buttonStyle, background: "transparent", borderColor: "#355365", color: "#c4d7df", opacity: items.length ? 1 : .45 }}><Download size={16} /> {tr("تصدير نسخة")}</button>
+            <button type="button" onClick={() => setShowForm((open) => !open)} style={buttonStyle}><Plus size={17} /> {tr("مبادرة جديدة")}</button>
           </div>
         </header>
 
@@ -140,31 +143,31 @@ export default function ProjectsPage() {
 
         {showForm && <section style={{ ...panelStyle, marginBottom: 22 }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, marginBottom: 16 }}>
-            <h2 style={{ fontSize: 20, margin: 0 }}>إنشاء مبادرة جديدة</h2>
-            <button type="button" onClick={() => setShowForm(false)} aria-label="إغلاق النموذج" style={{ ...buttonStyle, padding: 8, background: "transparent", borderColor: "#355365" }}><X size={17} /></button>
+            <h2 style={{ fontSize: 20, margin: 0 }}>{tr("إنشاء مبادرة جديدة")}</h2>
+            <button type="button" onClick={() => setShowForm(false)} aria-label={tr("إغلاق النموذج")} style={{ ...buttonStyle, padding: 8, background: "transparent", borderColor: "#355365" }}><X size={17} /></button>
           </div>
           <form onSubmit={createInitiative} style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(230px,1fr))", gap: 13 }}>
             <label style={{ display: "grid", gap: 7, color: "#c5d6dd", fontSize: 13 }}>اسم المبادرة *
-              <input required maxLength={90} value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="مثال: دروس دعم مجانية للطلاب" style={fieldStyle} />
+              <input required maxLength={90} value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder={tr("مثال: دروس دعم مجانية للطلاب")} style={fieldStyle} />
             </label>
             <label style={{ display: "grid", gap: 7, color: "#c5d6dd", fontSize: 13 }}>مجال المبادرة
-              <select value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} style={fieldStyle}>{categories.map((category) => <option key={category.value} value={category.value}>{category.label}</option>)}</select>
+              <select value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} style={fieldStyle}>{categories.map((category) => <option key={category.value} value={category.value}>{tr(category.label)}</option>)}</select>
             </label>
             <label style={{ display: "grid", gap: 7, color: "#c5d6dd", fontSize: 13 }}>الهدف الأساسي *
-              <textarea required maxLength={700} rows={3} value={form.goal} onChange={(e) => setForm({ ...form, goal: e.target.value })} placeholder="ما المشكلة التي تريد المبادرة المساهمة في حلها؟" style={{ ...fieldStyle, resize: "vertical" }} />
+              <textarea required maxLength={700} rows={3} value={form.goal} onChange={(e) => setForm({ ...form, goal: e.target.value })} placeholder={tr("ما المشكلة التي تريد المبادرة المساهمة في حلها؟")} style={{ ...fieldStyle, resize: "vertical" }} />
             </label>
             <label style={{ display: "grid", gap: 7, color: "#c5d6dd", fontSize: 13 }}>الفئات المستفيدة
-              <input maxLength={180} value={form.beneficiaries} onChange={(e) => setForm({ ...form, beneficiaries: e.target.value })} placeholder="من سيستفيد؟" style={fieldStyle} />
+              <input maxLength={180} value={form.beneficiaries} onChange={(e) => setForm({ ...form, beneficiaries: e.target.value })} placeholder={tr("من سيستفيد؟")} style={fieldStyle} />
             </label>
             <label style={{ display: "grid", gap: 7, color: "#c5d6dd", fontSize: 13 }}>الموقع أو النطاق
-              <input maxLength={180} value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })} placeholder="المدينة أو الحي أو عبر الإنترنت" style={fieldStyle} />
+              <input maxLength={180} value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })} placeholder={tr("المدينة أو الحي أو عبر الإنترنت")} style={fieldStyle} />
             </label>
             <label style={{ display: "grid", gap: 7, color: "#c5d6dd", fontSize: 13 }}>الاحتياجات والشركاء
-              <textarea maxLength={700} rows={3} value={form.needs} onChange={(e) => setForm({ ...form, needs: e.target.value })} placeholder="متطوعون، أدوات، مكان، تمويل، خبرات..." style={{ ...fieldStyle, resize: "vertical" }} />
+              <textarea maxLength={700} rows={3} value={form.needs} onChange={(e) => setForm({ ...form, needs: e.target.value })} placeholder={tr("متطوعون، أدوات، مكان، تمويل، خبرات...")} style={{ ...fieldStyle, resize: "vertical" }} />
             </label>
             <div style={{ display: "flex", alignItems: "end", gap: 9 }}>
-              <button type="submit" style={buttonStyle}><Plus size={16} /> حفظ المبادرة</button>
-              <button type="button" onClick={() => { setForm(blankForm); setShowForm(false); }} style={{ ...buttonStyle, background: "transparent", borderColor: "#355365", color: "#c4d7df" }}>إلغاء</button>
+              <button type="submit" style={buttonStyle}><Plus size={16} /> {tr("حفظ المبادرة")}</button>
+              <button type="button" onClick={() => { setForm(blankForm); setShowForm(false); }} style={{ ...buttonStyle, background: "transparent", borderColor: "#355365", color: "#c4d7df" }}>{tr("إلغاء")}</button>
             </div>
           </form>
         </section>}
@@ -172,20 +175,20 @@ export default function ProjectsPage() {
         <section style={{ ...panelStyle, marginBottom: 18, display: "flex", flexWrap: "wrap", gap: 10 }}>
           <div style={{ flex: "1 1 240px", position: "relative" }}>
             <Search size={17} style={{ position: "absolute", right: 12, top: 13, color: "#8fa8b5" }} />
-            <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="ابحث في مبادراتك..." style={{ ...fieldStyle, paddingRight: 38 }} />
+            <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder={tr("ابحث في مبادراتك...")} style={{ ...fieldStyle, paddingRight: 38 }} />
           </div>
-          <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} aria-label="تصفية حسب الحالة" style={{ ...fieldStyle, flex: "0 1 190px" }}>
-            <option value="all">كل الحالات</option>
+          <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} aria-label={tr("تصفية حسب الحالة")} style={{ ...fieldStyle, flex: "0 1 190px" }}>
+            <option value="all">{tr("كل الحالات")}</option>
             {Object.entries(statusLabels).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
           </select>
         </section>
 
-        {!ready ? <p style={{ color: "#a9bdc8" }}>جارٍ تحميل المبادرات...</p> : visibleItems.length === 0 ? (
+        {!ready ? <p style={{ color: "#a9bdc8" }}>{tr("جارٍ تحميل المبادرات...")}</p> : visibleItems.length === 0 ? (
           <section style={{ ...panelStyle, textAlign: "center", padding: "42px 20px" }}>
             <div style={{ width: 58, height: 58, borderRadius: 18, display: "grid", placeItems: "center", margin: "0 auto 15px", background: "#183c43", color: "#8ce0d3" }}><HeartHandshake size={27} /></div>
             <h2 style={{ margin: "0 0 9px", fontSize: 20 }}>{items.length ? "لا توجد نتائج مطابقة" : "ابدأ أول مبادرة"}</h2>
             <p style={{ color: "#a9bdc8", lineHeight: 1.8, maxWidth: 520, margin: "0 auto 18px" }}>{items.length ? "جرّب تغيير كلمات البحث أو حالة المبادرة." : "كل تغيير كبير يبدأ بخطوة. سجّل الفكرة والهدف والفئات المستفيدة، ثم حوّلها إلى خطة قابلة للتنفيذ."}</p>
-            {!items.length && <button type="button" onClick={() => setShowForm(true)} style={buttonStyle}><Plus size={16} /> إنشاء أول مبادرة</button>}
+            {!items.length && <button type="button" onClick={() => setShowForm(true)} style={buttonStyle}><Plus size={16} /> {tr("إنشاء أول مبادرة")}</button>}
           </section>
         ) : (
           <section style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(100%,300px),1fr))", gap: 14 }}>
@@ -194,17 +197,17 @@ export default function ProjectsPage() {
               const CategoryIcon = category.icon;
               return <article key={item.id} style={{ ...panelStyle, display: "flex", flexDirection: "column", gap: 13 }}>
                 <div style={{ display: "flex", alignItems: "start", justifyContent: "space-between", gap: 10 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 9, color: "#86d9ce" }}><CategoryIcon size={19} /><span style={{ fontSize: 12 }}>{category.label}</span></div>
-                  <button type="button" onClick={() => deleteInitiative(item.id)} title="حذف المبادرة" aria-label="حذف المبادرة" style={{ border: 0, background: "transparent", color: "#9aabb5", cursor: "pointer" }}><Trash2 size={16} /></button>
+                  <div style={{ display: "flex", alignItems: "center", gap: 9, color: "#86d9ce" }}><CategoryIcon size={19} /><span style={{ fontSize: 12 }}>{tr(category.label)}</span></div>
+                  <button type="button" onClick={() => deleteInitiative(item.id)} title={tr("حذف المبادرة")} aria-label={tr("حذف المبادرة")} style={{ border: 0, background: "transparent", color: "#9aabb5", cursor: "pointer" }}><Trash2 size={16} /></button>
                 </div>
                 <h2 style={{ fontSize: 19, margin: 0, lineHeight: 1.5 }}>{item.title}</h2>
                 <p style={{ color: "#b5c7cf", lineHeight: 1.8, margin: 0, whiteSpace: "pre-wrap" }}>{item.goal}</p>
                 {item.beneficiaries && <div style={{ display: "flex", gap: 8, alignItems: "center", color: "#b5c7cf", fontSize: 13 }}><Users size={15} color="#83cfc5" /> {item.beneficiaries}</div>}
                 {item.location && <div style={{ display: "flex", gap: 8, alignItems: "center", color: "#b5c7cf", fontSize: 13 }}><MapPin size={15} color="#83cfc5" /> {item.location}</div>}
-                {item.needs && <div style={{ padding: 12, background: "#0a1b27", borderRadius: 10, color: "#b5c7cf", fontSize: 13, lineHeight: 1.8 }}><b style={{ color: "#dce9ec" }}>الاحتياجات:</b> {item.needs}</div>}
+                {item.needs && <div style={{ padding: 12, background: "#0a1b27", borderRadius: 10, color: "#b5c7cf", fontSize: 13, lineHeight: 1.8 }}><b style={{ color: "#dce9ec" }}>{tr("الاحتياجات:")}</b> {item.needs}</div>}
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, marginTop: "auto", paddingTop: 10, borderTop: "1px solid #294454" }}>
                   <span style={{ display: "flex", alignItems: "center", gap: 6, color: "#91aab6", fontSize: 11 }}><CalendarDays size={13} /> {new Date(item.createdAt).toLocaleDateString("ar-EG")}</span>
-                  <select value={item.status} onChange={(e) => updateStatus(item.id, e.target.value as Initiative["status"])} aria-label="حالة المبادرة" style={{ ...fieldStyle, width: "auto", maxWidth: 145, padding: "7px 9px", fontSize: 12 }}>
+                  <select value={item.status} onChange={(e) => updateStatus(item.id, e.target.value as Initiative["status"])} aria-label={tr("حالة المبادرة")} style={{ ...fieldStyle, width: "auto", maxWidth: 145, padding: "7px 9px", fontSize: 12 }}>
                     {Object.entries(statusLabels).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
                   </select>
                 </div>
@@ -214,7 +217,7 @@ export default function ProjectsPage() {
         )}
 
         <footer style={{ marginTop: 26, padding: 15, borderRadius: 12, background: "rgba(10,27,39,.75)", color: "#91aab6", fontSize: 12, lineHeight: 1.9 }}>
-          <b style={{ color: "#bfe9e3" }}>تنبيه الشفافية والخصوصية:</b> تُحفظ هذه المسودات على هذا الجهاز والمتصفح فقط في هذه المرحلة، ولا تُنشر للعامة ولا يراها مستخدمون آخرون. لا تضف أسماء المستفيدين أو بياناتهم الشخصية. استخدم «تصدير نسخة» للاحتفاظ بنسخة احتياطية.
+          <b style={{ color: "#bfe9e3" }}>{tr("تنبيه الشفافية والخصوصية:")}</b> تُحفظ هذه المسودات على هذا الجهاز والمتصفح فقط في هذه المرحلة، ولا تُنشر للعامة ولا يراها مستخدمون آخرون. لا تضف أسماء المستفيدين أو بياناتهم الشخصية. استخدم «تصدير نسخة» للاحتفاظ بنسخة احتياطية.
         </footer>
       </div>
     </main>
