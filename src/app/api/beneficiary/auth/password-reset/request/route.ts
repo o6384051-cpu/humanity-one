@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
       data: { passwordResetTokenHash: tokenHash, passwordResetExpiresAt: expiresAt },
     });
 
-    const appUrl = (process.env.NEXT_PUBLIC_APP_URL || "https://humanity-one-wc35.vercel.app").replace(/\\/+$/, "");
+    const appUrl = (process.env.NEXT_PUBLIC_APP_URL || "https://humanity-one-wc35.vercel.app").replace(/\/+$/, "");
     const resetUrl = `${appUrl}/beneficiary/reset-password?token=${token}`;
 
     try {
