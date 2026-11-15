@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "الرسالة غير صالحة." }, { status: 400 });
     }
 
-    const base = (process.env.AI_BASE_URL || "https://api.openai.com/v1").replace(/\\/+$/, "");
+    const base = (process.env.AI_BASE_URL || "https://api.openai.com/v1").replace(/\/+$/, "");
     const model = process.env.AI_MODEL || "gpt-4o-mini";
     const upstream = await fetch(`${base}/chat/completions`, {
       method: "POST",
