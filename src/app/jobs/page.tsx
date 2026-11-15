@@ -49,8 +49,8 @@ function ApplicationForm({ job, onClose }: { job: Job; onClose: () => void }) {
 }
 
 export default function JobsPage() {
-  const tx = (value: string) => translateText(value, language);
   const { language } = useLanguage();
+  const tx = (value: string) => translateText(value, language);
   const tr = (value: string) => translateText(value, language);
   const [jobs, setJobs] = useState<Job[]>([]);
   const [query, setQuery] = useState("");
