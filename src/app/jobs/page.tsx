@@ -90,16 +90,16 @@ export default function JobsPage() {
       {!loading && !error && visible.length === 0 && <section style={{ padding: 24, background: "#112634", borderRadius: 14, color: "#b5c7cf", lineHeight: 1.9 }}>{tr("لا توجد إعلانات منشورة تطابق البحث حاليًا. يمكنك العودة لاحقًا أو دعوة صاحب عمل لنشر فرصة حقيقية.")}</section>}
       <section style={{ display: "grid", gap: 14 }}>
         {visible.map(job => <article key={job.id} style={{ padding: 18, borderRadius: 15, background: "rgba(17,38,52,.92)", border: "1px solid rgba(132,177,190,.2)" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", gap: 10, flexWrap: "wrap" }}><span style={{ color: "#82d9cd", fontSize: 13 }}>{job.businessType} · {job.businessName}</span><span style={{ color: "#91aab6", fontSize: 12 }}>{new Date(job.createdAt).toLocaleDateString("ar-EG")}</span></div>
+          <div style={{ display: "flex", justifyContent: "space-between", gap: 10, flexWrap: "wrap" }}><span style={{ color: "#82d9cd", fontSize: 13 }}>{tr(job.businessType)} · {job.businessName}</span><span style={{ color: "#91aab6", fontSize: 12 }}>{new Date(job.createdAt).toLocaleDateString(language === "ar" ? "ar-EG" : "en-EG")}</span></div>
           <h2 style={{ color: "#f3fbfc", margin: "9px 0", fontSize: 21 }}>{job.jobTitle}</h2>
           <p style={{ color: "#b5c7cf", lineHeight: 1.8, whiteSpace: "pre-wrap" }}>{job.description}</p>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 8, margin: "12px 0", color: "#c6d8de", fontSize: 12 }}>
-            <span>الموقع: {job.city}{job.area ? " - " + job.area : ""}</span><span>• {job.employmentType}</span><span>• {job.experienceLevel}</span><span>• {job.educationRequirement}</span><span>• عدد المطلوب: {job.openings}</span>
+            <span>{tr("الموقع:")} {job.city}{job.area ? " - " + job.area : ""}</span><span>• {tr(job.employmentType)}</span><span>• {tr(job.experienceLevel)}</span><span>• {tr(job.educationRequirement)}</span><span>• {tr("عدد المطلوب:")} {job.openings}</span>
           </div>
-          <div style={{ color: "#9ce4d6", fontSize: 14, marginBottom: 12 }}>الأجر: {job.salaryMin != null || job.salaryMax != null ? [job.salaryMin, job.salaryMax].filter(v => v != null).join(" - ") + " جنيه " + job.salaryPeriod : "لم يحدد صاحب العمل الأجر"}</div>
-          {job.shift && <p style={{ color: "#b5c7cf", fontSize: 13 }}>الوردية: {job.shift}</p>}
-          {job.skills && <p style={{ color: "#b5c7cf", fontSize: 13 }}>المهارات المطلوبة: {job.skills}</p>}
-          <button type="button" onClick={() => setSelected(selected === job.id ? null : job.id)} style={button}>{selected === job.id ? "إخفاء نموذج التقديم" : "قدّم على الوظيفة مجانًا"}</button>
+          <div style={{ color: "#9ce4d6", fontSize: 14, marginBottom: 12 }}>{tr("الأجر:")} {job.salaryMin != null || job.salaryMax != null ? [job.salaryMin, job.salaryMax].filter(v => v != null).join(" - ") + " " + tr("جنيه") + " " + tr(job.salaryPeriod)  : tr("لم يحدد صاحب العمل الأجر")}</div>
+          {job.shift && <p style={{ color: "#b5c7cf", fontSize: 13 }}>{tr("الوردية:")} {tr(job.shift)}</p>}
+          {job.skills && <p style={{ color: "#b5c7cf", fontSize: 13 }}>{tr("المهارات المطلوبة:")} {job.skills}</p>}
+          <button type="button" onClick={() => setSelected(selected === job.id ? null : job.id)} style={button}>{selected === job.id ? tr("إخفاء نموذج التقديم") : tr("قدّم على الوظيفة مجانًا")}</button>
           {selected === job.id && <ApplicationForm job={job} onClose={() => setSelected(null)} />}
         </article>)}
       </section>
