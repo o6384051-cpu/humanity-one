@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { ArrowRight, Download, Printer, ShieldCheck, FileText } from "lucide-react";
+import { useLanguage, translateText } from "../../components/LanguageProvider";
 
 type Resume = {
   fullName: string;
@@ -23,6 +24,8 @@ const empty: Resume = {
 };
 
 export default function ResumeBuilderPage() {
+  const { language } = useLanguage();
+  const tr = (value: string) => translateText(value, language);
   const [data, setData] = useState<Resume>(empty);
   const update = (key: keyof Resume, value: string) => setData((old) => ({ ...old, [key]: value }));
   const lines = (value: string) => value.split("\n").map((v) => v.trim()).filter(Boolean);
@@ -74,8 +77,8 @@ export default function ResumeBuilderPage() {
           <ArrowRight size={17} /> العودة إلى خطتي الشخصية
         </Link>
         <header style={{ marginBottom: 22 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 9, color: "#83d9ce", fontSize: 13 }}><FileText size={18} /> أداة مجانية دون تسجيل</div>
-          <h1 style={{ fontSize: "clamp(27px,4vw,39px)", margin: "9px 0" }}>أنشئ سيرتك الذاتية</h1>
+          <div style={{ display: "flex", alignItems: "center", gap: 9, color: "#83d9ce", fontSize: 13 }}><FileText size={18} /> {tr("أداة مجانية دون تسجيل")}</div>
+          <h1 style={{ fontSize: "clamp(27px,4vw,39px)", margin: "9px 0" }}>{tr("أنشئ سيرتك الذاتية")}</h1>
           <p style={{ color: "#a9bdc8", lineHeight: 1.9, maxWidth: 780, margin: 0 }}>
             اكتب معلوماتك المهنية فقط، وشاهد معاينة مباشرة، ثم نزّل نسخة نصية يمكنك تعديلها أو تنسيقها. إذا لم تكن لديك خبرة، ركّز على مهاراتك ومشروعاتك وتدريبك.
           </p>
@@ -83,19 +86,19 @@ export default function ResumeBuilderPage() {
 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(100%,320px),1fr))", gap: 16, alignItems: "start" }}>
           <form onSubmit={(e) => { e.preventDefault(); save(); }} style={{ ...panel, display: "grid", gap: 13 }}>
-            <h2 style={{ margin: 0, fontSize: 19 }}>بيانات السيرة الذاتية</h2>
-            <label style={labelStyle}>الاسم الذي تريد إظهاره<input required maxLength={100} value={data.fullName} onChange={(e) => update("fullName", e.target.value)} style={field} placeholder="الاسم الكامل" /></label>
-            <label style={labelStyle}>المسمى أو الوظيفة المستهدفة<input maxLength={120} value={data.role} onChange={(e) => update("role", e.target.value)} style={field} placeholder="مثال: خدمة عملاء، فني صيانة، مساعد إداري" /></label>
+            <h2 style={{ margin: 0, fontSize: 19 }}>{tr("بيانات السيرة الذاتية")}</h2>
+            <label style={labelStyle}>{tr("الاسم الذي تريد إظهاره")}<input required maxLength={100} value={data.fullName} onChange={(e) => update("fullName", e.target.value)} style={field} placeholder={tr("الاسم الكامل")} /></label>
+            <label style={labelStyle}>{tr("المسمى أو الوظيفة المستهدفة")}<input maxLength={120} value={data.role} onChange={(e) => update("role", e.target.value)} style={field} placeholder={tr("مثال: خدمة عملاء، فني صيانة، مساعد إداري")} /></label>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(130px,1fr))", gap: 10 }}>
-              <label style={labelStyle}>الهاتف (اختياري)<input maxLength={40} value={data.phone} onChange={(e) => update("phone", e.target.value)} style={field} /></label>
-              <label style={labelStyle}>البريد الإلكتروني<input type="email" maxLength={120} value={data.email} onChange={(e) => update("email", e.target.value)} style={field} /></label>
+              <label style={labelStyle}>{tr("الهاتف (اختياري)")}<input maxLength={40} value={data.phone} onChange={(e) => update("phone", e.target.value)} style={field} /></label>
+              <label style={labelStyle}>{tr("البريد الإلكتروني")}<input type="email" maxLength={120} value={data.email} onChange={(e) => update("email", e.target.value)} style={field} /></label>
             </div>
-            <label style={labelStyle}>المدينة أو المحافظة (اختياري)<input maxLength={100} value={data.city} onChange={(e) => update("city", e.target.value)} style={field} /></label>
-            <label style={labelStyle}>نبذة مهنية قصيرة<textarea maxLength={700} rows={4} value={data.summary} onChange={(e) => update("summary", e.target.value)} style={field} placeholder="اكتب ما تجيده ونوع العمل الذي تبحث عنه." /></label>
-            <label style={labelStyle}>المهارات (مهارة في كل سطر)<textarea maxLength={1200} rows={4} value={data.skills} onChange={(e) => update("skills", e.target.value)} style={field} placeholder={"التواصل مع العملاء\nالعمل ضمن فريق\nاستخدام الحاسب"} /></label>
-            <label style={labelStyle}>الخبرات أو الأعمال السابقة (كل خبرة في سطر)<textarea maxLength={1800} rows={5} value={data.experience} onChange={(e) => update("experience", e.target.value)} style={field} placeholder="المسمى – جهة العمل – الفترة – أهم المهام. يمكنك كتابة الأعمال الحرة أو التطوعية." /></label>
-            <label style={labelStyle}>التعليم (كل مؤهل في سطر)<textarea maxLength={1000} rows={3} value={data.education} onChange={(e) => update("education", e.target.value)} style={field} placeholder="المؤهل – المؤسسة – سنة التخرج" /></label>
-            <label style={labelStyle}>الدورات والشهادات (اختياري)<textarea maxLength={1000} rows={3} value={data.courses} onChange={(e) => update("courses", e.target.value)} style={field} placeholder="اسم الدورة – الجهة – السنة" /></label>
+            <label style={labelStyle}>{tr("المدينة أو المحافظة (اختياري)")}<input maxLength={100} value={data.city} onChange={(e) => update("city", e.target.value)} style={field} /></label>
+            <label style={labelStyle}>{tr("نبذة مهنية قصيرة")}<textarea maxLength={700} rows={4} value={data.summary} onChange={(e) => update("summary", e.target.value)} style={field} placeholder={tr("اكتب ما تجيده ونوع العمل الذي تبحث عنه.")} /></label>
+            <label style={labelStyle}>{tr("المهارات (مهارة في كل سطر)")}<textarea maxLength={1200} rows={4} value={data.skills} onChange={(e) => update("skills", e.target.value)} style={field} placeholder={"التواصل مع العملاء\nالعمل ضمن فريق\nاستخدام الحاسب"} /></label>
+            <label style={labelStyle}>{tr("الخبرات أو الأعمال السابقة (كل خبرة في سطر)")}<textarea maxLength={1800} rows={5} value={data.experience} onChange={(e) => update("experience", e.target.value)} style={field} placeholder={tr("المسمى – جهة العمل – الفترة – أهم المهام. يمكنك كتابة الأعمال الحرة أو التطوعية.")} /></label>
+            <label style={labelStyle}>{tr("التعليم (كل مؤهل في سطر)")}<textarea maxLength={1000} rows={3} value={data.education} onChange={(e) => update("education", e.target.value)} style={field} placeholder={tr("المؤهل – المؤسسة – سنة التخرج")} /></label>
+            <label style={labelStyle}>{tr("الدورات والشهادات (اختياري)")}<textarea maxLength={1000} rows={3} value={data.courses} onChange={(e) => update("courses", e.target.value)} style={field} placeholder={tr("اسم الدورة – الجهة – السنة")} /></label>
             <button type="submit" disabled={!data.fullName.trim()} style={{ border: 0, borderRadius: 10, padding: 13, background: data.fullName.trim() ? "#17635b" : "#355365", color: "white", font: "inherit", cursor: data.fullName.trim() ? "pointer" : "not-allowed", display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
               <Download size={17} /> تنزيل السيرة الذاتية
             </button>
@@ -103,8 +106,8 @@ export default function ResumeBuilderPage() {
 
           <section style={{ ...panel, position: "sticky", top: 14 }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8, marginBottom: 14 }}>
-              <h2 style={{ margin: 0, fontSize: 19 }}>معاينة مباشرة</h2>
-              <button type="button" onClick={() => window.print()} style={{ border: "1px solid #426273", borderRadius: 9, padding: "8px 10px", background: "transparent", color: "#d8e7eb", font: "inherit", display: "inline-flex", alignItems: "center", gap: 6 }}><Printer size={15} /> طباعة</button>
+              <h2 style={{ margin: 0, fontSize: 19 }}>{tr("معاينة مباشرة")}</h2>
+              <button type="button" onClick={() => window.print()} style={{ border: "1px solid #426273", borderRadius: 9, padding: "8px 10px", background: "transparent", color: "#d8e7eb", font: "inherit", display: "inline-flex", alignItems: "center", gap: 6 }}><Printer size={15} /> {tr("طباعة")}</button>
             </div>
             <article style={{ background: "#fff", color: "#1b2930", borderRadius: 8, padding: "clamp(16px,3vw,28px)", minHeight: 420, lineHeight: 1.8, overflowWrap: "anywhere" }}>
               <h2 style={{ color: "#14564f", fontSize: 25, margin: "0 0 2px" }}>{data.fullName || "اسمك الكامل"}</h2>
@@ -117,14 +120,14 @@ export default function ResumeBuilderPage() {
                 ["التعليم", data.education],
                 ["الدورات والشهادات", data.courses],
               ] as const).map(([heading, value]) => value.trim() ? <section key={heading} style={{ marginTop: 15 }}><h3 style={{ color: "#14564f", fontSize: 15, borderBottom: "1px solid #dce4e7", margin: "0 0 6px" }}>{heading}</h3><p style={{ whiteSpace: "pre-wrap", margin: 0, fontSize: 13 }}>{value}</p></section> : null)}
-              {!hasContent && <p style={{ color: "#71838a" }}>ابدأ بملء النموذج لتظهر سيرتك الذاتية هنا.</p>}
+              {!hasContent && <p style={{ color: "#71838a" }}>{tr("ابدأ بملء النموذج لتظهر سيرتك الذاتية هنا.")}</p>}
             </article>
-            <p style={{ color: "#91aab6", fontSize: 12, lineHeight: 1.8, marginBottom: 0 }}>المعاينة قابلة للطباعة. التنزيل الحالي بصيغة نصية UTF-8 لتتمكن من فتحها وتنسيقها في محرر مستندات.</p>
+            <p style={{ color: "#91aab6", fontSize: 12, lineHeight: 1.8, marginBottom: 0 }}>{tr("المعاينة قابلة للطباعة. التنزيل الحالي بصيغة نصية UTF-8 لتتمكن من فتحها وتنسيقها في محرر مستندات.")}</p>
           </section>
         </div>
 
         <footer style={{ ...panel, marginTop: 16, color: "#91aab6", fontSize: 12, lineHeight: 1.9 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 7, color: "#bfe9e3", marginBottom: 5 }}><ShieldCheck size={16} /> الخصوصية</div>
+          <div style={{ display: "flex", alignItems: "center", gap: 7, color: "#bfe9e3", marginBottom: 5 }}><ShieldCheck size={16} /> {tr("الخصوصية")}</div>
           لا يتم إرسال البيانات إلى خادم أو حفظها في حساب. تجنب إدخال رقمك القومي أو بياناتك البنكية أو معلومات لا تحتاجها جهة التوظيف. راجع بيانات التواصل قبل مشاركة السيرة الذاتية.
         </footer>
       </div>
