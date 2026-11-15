@@ -96,7 +96,7 @@ export default function AICorePage() {
     setSessions((current) => [session, ...current].slice(0, 40));
     setActiveId(session.id);
     setInput("");
-    setStatus("محادثة جديدة");
+    setStatus(tr("محادثة جديدة"));
     setSidebarOpen(false);
     window.setTimeout(() => textareaRef.current?.focus(), 50);
   }
@@ -119,7 +119,7 @@ export default function AICorePage() {
       : session));
     setInput("");
     setBusy(true);
-    setStatus("يتم تجهيز الرد...");
+    setStatus(tr("يتم تجهيز الرد..."));
     try {
       const response = await fetch("/api/ai/chat", {
         method: "POST",
@@ -138,7 +138,7 @@ export default function AICorePage() {
       setSessions((current) => current.map((session) => session.id === chatId
         ? { ...session, messages: [...session.messages, { id: `m-${Date.now()}-error`, role: "assistant", content: `تعذر إكمال الطلب: ${message}` }], updatedAt: Date.now() }
         : session));
-      setStatus("تعذر الاتصال — راجع إعدادات الخدمة");
+      setStatus(tr("تعذر الاتصال — راجع إعدادات الخدمة"));
     } finally {
       setBusy(false);
     }
@@ -150,7 +150,7 @@ export default function AICorePage() {
       setCopiedId(message.id);
       window.setTimeout(() => setCopiedId(""), 1600);
     } catch {
-      setStatus("تعذر النسخ من هذا المتصفح");
+      setStatus(tr("تعذر النسخ من هذا المتصفح"));
     }
   }
 
@@ -169,7 +169,7 @@ export default function AICorePage() {
     link.click();
     link.remove();
     window.setTimeout(() => URL.revokeObjectURL(url), 1000);
-    setStatus("تم تجهيز نسخة المحادثة");
+    setStatus(tr("تم تجهيز نسخة المحادثة"));
   }
 
   function deleteChat(id: string) {
@@ -179,17 +179,17 @@ export default function AICorePage() {
     const next = remaining.length ? remaining : [makeSession()];
     setSessions(next);
     if (activeId === id) setActiveId(next[0].id);
-    setStatus("تم حذف المحادثة");
+    setStatus(tr("تم حذف المحادثة"));
   }
 
   function clearCurrent() {
     if (!active || busy) return;
     updateActive((session) => ({ ...session, title: "محادثة جديدة", messages: [], updatedAt: Date.now() }));
-    setStatus("تم تفريغ المحادثة");
+    setStatus(tr("تم تفريغ المحادثة"));
   }
 
   return (
-    <main className="humanity-chat" dir="rtl">
+    <main className="humanity-chat" dir={language === "ar" ? "rtl" : "ltr"} lang={language}>
       <aside className={`hc-sidebar ${sidebarOpen ? "is-open" : ""}`}>
         <div className="hc-side-top">
           <a className="hc-brand" href="/"><span className="hc-brand-icon"><HeartHandshake size={21} /></span><span><b>HUMANITY ONE</b><small>{tr("ذكاء يصنع أثرًا")}</small></span></a>
