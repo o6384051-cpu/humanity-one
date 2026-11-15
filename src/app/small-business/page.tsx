@@ -75,7 +75,7 @@ export default function SmallBusinessPage() {
 
       <section style={{ ...panel, display: "grid", gap: 13, marginBottom: 15 }}>
         <h2 style={{ margin: 0, fontSize: 19 }}>{tr("1. اختر فكرة وابدأ بخطوة صغيرة")}</h2>
-        <label style={label}>نوع النشاط
+        <label style={label}>{tx("نوع النشاط")}
           <select value={idea} onChange={(e) => setIdea(e.target.value)} style={field}>{ideas.map((x) => <option key={x.name}>{x.name}</option>)}</select>
         </label>
         <div style={{ background: "#0a1b27", borderRadius: 10, padding: 13, lineHeight: 1.9 }}>
@@ -126,7 +126,7 @@ export default function SmallBusinessPage() {
 
       <footer style={{ ...panel, marginTop: 15, color: "#91aab6", fontSize: 12, lineHeight: 1.9 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 7, color: "#bfe9e3", marginBottom: 5 }}><ShieldCheck size={16}/> {tr("الخصوصية والشفافية")}</div>
-        تُحسب الأرقام داخل المتصفح ولا تُرسل إلى الخادم ولا تُحفظ تلقائيًا. لا نقدم تمويلًا ولا نضمن الربح. لا تدفع رسومًا لوسيط مقابل وعد بتمويل، واستشر الجهات الرسمية المختصة قبل بدء نشاط يتطلب ترخيصًا.
+        {tx("تُحسب الأرقام داخل المتصفح ولا تُرسل إلى الخادم ولا تُحفظ تلقائيًا. لا نقدم تمويلًا ولا نضمن الربح. لا تدفع رسومًا لوسيط مقابل وعد بتمويل، واستشر الجهات الرسمية المختصة قبل بدء نشاط يتطلب ترخيصًا.")}
       </footer>
     </div>
   </main>;
