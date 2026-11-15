@@ -39,7 +39,7 @@ export default function ForgotPasswordPage() {
       <h1 style={{ fontSize: 25, margin: "18px 0 8px" }}>{tx("نسيت كلمة المرور؟")}</h1>
       <p style={{ color: "#a9bdc9", lineHeight: 1.8 }}>{tx("أدخل البريد الإلكتروني المسجل في حسابك، وسنرسل رابطًا آمنًا لإعادة تعيين كلمة المرور إذا كان الحساب موجودًا.")}</p>
       <form onSubmit={submit} style={{ display: "grid", gap: 13, marginTop: 18 }}>
-        <label style={{ display: "grid", gap: 7, fontSize: 13 }}>البريد الإلكتروني
+        <label style={{ display: "grid", gap: 7, fontSize: 13 }}>{tx("البريد الإلكتروني")}
           <input required type="email" maxLength={160} autoComplete="email" value={email} onChange={event => setEmail(event.target.value)} style={field} />
         </label>
         <button disabled={busy} style={{ ...button, opacity: busy ? 0.65 : 1 }}>{busy ? "جارٍ الإرسال…" : "إرسال رابط الاستعادة"}</button>
