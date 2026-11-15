@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useLanguage, translateText } from "../../../components/LanguageProvider";
+import { useLanguage, translateText } from "../../../../components/LanguageProvider";
 import { ArrowRight, LockKeyhole, RefreshCw, Users } from "lucide-react";
 
 type Application = {
