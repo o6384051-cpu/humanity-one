@@ -115,7 +115,7 @@ export default function ProjectsPage() {
     <main dir="rtl" style={pageStyle}>
       <div style={{ maxWidth: 1120, margin: "0 auto" }}>
         <Link href="/" style={{ display: "inline-flex", alignItems: "center", gap: 8, color: "#8bded2", textDecoration: "none", marginBottom: 24 }}>
-          <ArrowRight size={17} /> العودة إلى HUMANITY ONE
+          <ArrowRight size={17} /> {tx("العودة إلى HUMANITY ONE")}
         </Link>
 
         <header style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: 18, marginBottom: 24 }}>
@@ -148,22 +148,22 @@ export default function ProjectsPage() {
             <button type="button" onClick={() => setShowForm(false)} aria-label={tr("إغلاق النموذج")} style={{ ...buttonStyle, padding: 8, background: "transparent", borderColor: "#355365" }}><X size={17} /></button>
           </div>
           <form onSubmit={createInitiative} style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(230px,1fr))", gap: 13 }}>
-            <label style={{ display: "grid", gap: 7, color: "#c5d6dd", fontSize: 13 }}>اسم المبادرة *
+            <label style={{ display: "grid", gap: 7, color: "#c5d6dd", fontSize: 13 }}>{tx("اسم المبادرة *")}
               <input required maxLength={90} value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder={tr("مثال: دروس دعم مجانية للطلاب")} style={fieldStyle} />
             </label>
-            <label style={{ display: "grid", gap: 7, color: "#c5d6dd", fontSize: 13 }}>مجال المبادرة
+            <label style={{ display: "grid", gap: 7, color: "#c5d6dd", fontSize: 13 }}>{tx("مجال المبادرة")}
               <select value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} style={fieldStyle}>{categories.map((category) => <option key={category.value} value={category.value}>{tr(category.label)}</option>)}</select>
             </label>
-            <label style={{ display: "grid", gap: 7, color: "#c5d6dd", fontSize: 13 }}>الهدف الأساسي *
+            <label style={{ display: "grid", gap: 7, color: "#c5d6dd", fontSize: 13 }}>{tx("الهدف الأساسي *")}
               <textarea required maxLength={700} rows={3} value={form.goal} onChange={(e) => setForm({ ...form, goal: e.target.value })} placeholder={tr("ما المشكلة التي تريد المبادرة المساهمة في حلها؟")} style={{ ...fieldStyle, resize: "vertical" }} />
             </label>
-            <label style={{ display: "grid", gap: 7, color: "#c5d6dd", fontSize: 13 }}>الفئات المستفيدة
+            <label style={{ display: "grid", gap: 7, color: "#c5d6dd", fontSize: 13 }}>{tx("الفئات المستفيدة")}
               <input maxLength={180} value={form.beneficiaries} onChange={(e) => setForm({ ...form, beneficiaries: e.target.value })} placeholder={tr("من سيستفيد؟")} style={fieldStyle} />
             </label>
-            <label style={{ display: "grid", gap: 7, color: "#c5d6dd", fontSize: 13 }}>الموقع أو النطاق
+            <label style={{ display: "grid", gap: 7, color: "#c5d6dd", fontSize: 13 }}>{tx("الموقع أو النطاق")}
               <input maxLength={180} value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })} placeholder={tr("المدينة أو الحي أو عبر الإنترنت")} style={fieldStyle} />
             </label>
-            <label style={{ display: "grid", gap: 7, color: "#c5d6dd", fontSize: 13 }}>الاحتياجات والشركاء
+            <label style={{ display: "grid", gap: 7, color: "#c5d6dd", fontSize: 13 }}>{tx("الاحتياجات والشركاء")}
               <textarea maxLength={700} rows={3} value={form.needs} onChange={(e) => setForm({ ...form, needs: e.target.value })} placeholder={tr("متطوعون، أدوات، مكان، تمويل، خبرات...")} style={{ ...fieldStyle, resize: "vertical" }} />
             </label>
             <div style={{ display: "flex", alignItems: "end", gap: 9 }}>
@@ -218,7 +218,7 @@ export default function ProjectsPage() {
         )}
 
         <footer style={{ marginTop: 26, padding: 15, borderRadius: 12, background: "rgba(10,27,39,.75)", color: "#91aab6", fontSize: 12, lineHeight: 1.9 }}>
-          <b style={{ color: "#bfe9e3" }}>{tr("تنبيه الشفافية والخصوصية:")}</b> تُحفظ هذه المسودات على هذا الجهاز والمتصفح فقط في هذه المرحلة، ولا تُنشر للعامة ولا يراها مستخدمون آخرون. لا تضف أسماء المستفيدين أو بياناتهم الشخصية. استخدم «تصدير نسخة» للاحتفاظ بنسخة احتياطية.
+          <b style={{ color: "#bfe9e3" }}>{tr("تنبيه الشفافية والخصوصية:")}</b> {tx("تُحفظ هذه المسودات على هذا الجهاز والمتصفح فقط في هذه المرحلة، ولا تُنشر للعامة ولا يراها مستخدمون آخرون. لا تضف أسماء المستفيدين أو بياناتهم الشخصية. استخدم «تصدير نسخة» للاحتفاظ بنسخة احتياطية.")}
         </footer>
       </div>
     </main>
