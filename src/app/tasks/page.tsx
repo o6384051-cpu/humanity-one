@@ -10,6 +10,7 @@ const STORAGE_KEY = "humanity-one-tasks-v1";
 const priorityLabels = { low: "منخفضة", medium: "متوسطة", high: "عالية" };
 
 export default function TasksPage() {
+  const tx = (value: string) => translateText(value, language);
   const { language } = useLanguage();
   const tr = (value: string) => translateText(value, language);
   const [tasks, setTasks] = useState<Task[]>([]);
