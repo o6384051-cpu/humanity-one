@@ -50,6 +50,8 @@ const categoryLabel: Record<Resource["category"], string> = {
 type MatchProfile = { skills?: string; goal?: string; interest?: string; education?: string; internet?: string; location?: string };
 
 function OpportunityMatches({ items }: { items: Resource[] }) {
+  const { language: componentLanguage } = useLanguage();
+  const tx = (value: string) => translateText(value, componentLanguage);
   const [profile, setProfile] = useState<MatchProfile | null>(null);
   useEffect(() => {
     try {
@@ -102,6 +104,7 @@ function OpportunityMatches({ items }: { items: Resource[] }) {
 }
 
 export default function OpportunitiesPage() {
+  const tx = (value: string) => translateText(value, language);
   const { language } = useLanguage();
   const tr = (value: string) => translateText(value, language);
   const [category, setCategory] = useState<Category>("all");
