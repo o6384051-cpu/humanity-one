@@ -1075,6 +1075,14 @@ const RESOURCE_COPY: Record<string, string> = {
 };
 Object.assign(ENGLISH_COPY, RESOURCE_COPY);
 
+
+const LAST_MISSING_COPY: Record<string, string> = {
+  "تُحسب الأرقام داخل المتصفح ولا تُرسل إلى الخادم ولا تُحفظ تلقائيًا. لا نقدم تمويلًا ولا نضمن الربح. لا تدفع رسومًا لوسيط مقابل وعد بتمويل، واستشر الجهات الرسمية المختصة قبل بدء نشاط يتطلب ترخيصًا.": "Calculations run in your browser; they are not sent to the server or saved automatically. We do not provide funding or guarantee profit. Do not pay an intermediary for a funding promise, and consult the relevant official authorities before starting an activity that requires a license.",
+  "تُحفظ هذه المسودات على هذا الجهاز والمتصفح فقط في هذه المرحلة، ولا تُنشر للعامة ولا يراها مستخدمون آخرون. لا تضف أسماء المستفيدين أو بياناتهم الشخصية. استخدم «تصدير نسخة» للاحتفاظ بنسخة احتياطية.": "At this stage, these drafts are saved only on this device and in this browser. They are not public and cannot be seen by other users. Do not add beneficiaries' names or personal data. Use “Export a copy” to keep a backup.",
+  "المبادرة المرتبطة": "Related initiative"
+};
+Object.assign(ENGLISH_COPY, LAST_MISSING_COPY);
+
 export function translateText(value: string, language: AppLanguage): string {
   return language === "ar" ? value : (ENGLISH_COPY[value] ?? value);
 }
