@@ -111,9 +111,9 @@ export default function ResumeBuilderPage() {
               <button type="button" onClick={() => window.print()} style={{ border: "1px solid #426273", borderRadius: 9, padding: "8px 10px", background: "transparent", color: "#d8e7eb", font: "inherit", display: "inline-flex", alignItems: "center", gap: 6 }}><Printer size={15} /> {tr("طباعة")}</button>
             </div>
             <article style={{ background: "#fff", color: "#1b2930", borderRadius: 8, padding: "clamp(16px,3vw,28px)", minHeight: 420, lineHeight: 1.8, overflowWrap: "anywhere" }}>
-              <h2 style={{ color: "#14564f", fontSize: 25, margin: "0 0 2px" }}>{data.fullName || "اسمك الكامل"}</h2>
-              <strong style={{ color: "#52656d" }}>{data.role || "المسمى الوظيفي المستهدف"}</strong>
-              <p style={{ color: "#52656d", fontSize: 12, borderBottom: "1px solid #dce4e7", paddingBottom: 10 }}>{[data.city, data.phone, data.email].filter(Boolean).join(" · ") || "بيانات التواصل الاختيارية"}</p>
+              <h2 style={{ color: "#14564f", fontSize: 25, margin: "0 0 2px" }}>{data.fullName || tr("اسمك الكامل")}</h2>
+              <strong style={{ color: "#52656d" }}>{data.role || tr("المسمى الوظيفي المستهدف")}</strong>
+              <p style={{ color: "#52656d", fontSize: 12, borderBottom: "1px solid #dce4e7", paddingBottom: 10 }}>{[data.city, data.phone, data.email].filter(Boolean).join(" · ") || tr("بيانات التواصل الاختيارية")}</p>
               {([
                 ["نبذة مهنية", data.summary],
                 ["المهارات", data.skills],
