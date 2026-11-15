@@ -96,17 +96,17 @@ export default function TasksPage() {
 
       {!ready ? <p style={{ color: "#a9bdc8" }}>{tr("جارٍ تحميل المهام...")}</p> : visible.length === 0 ? <section style={{ ...panel, textAlign: "center", padding: 34 }}>
         <CheckSquare size={30} color="#83d9ce" style={{ margin: "0 auto 10px" }} />
-        <h2 style={{ margin: "0 0 8px", fontSize: 18 }}>{tasks.length ? "لا توجد مهام في هذا العرض" : "لا توجد مهام بعد"}</h2>
+        <h2 style={{ margin: "0 0 8px", fontSize: 18 }}>{tasks.length ? tr("لا توجد مهام في هذا العرض") : tr("لا توجد مهام بعد")}</h2>
         <p style={{ color: "#a9bdc8", margin: 0, lineHeight: 1.8 }}>{tr("أضف أول خطوة عملية لتبدأ متابعة التقدم.")}</p>
       </section> : <div style={{ display: "grid", gap: 9 }}>
         {visible.map((task) => <article key={task.id} style={{ ...panel, display: "flex", alignItems: "center", gap: 12, opacity: task.completed ? .7 : 1 }}>
-          <button type="button" onClick={() => setTasks((current) => current.map((item) => item.id === task.id ? { ...item, completed: !item.completed } : item))} aria-label={task.completed ? "إعادة فتح المهمة" : "إكمال المهمة"} style={{ background: "transparent", border: 0, color: task.completed ? "#83d9ce" : "#8fa8b5", cursor: "pointer", padding: 0 }}><>{task.completed ? <CheckCircle2 size={22} /> : <Circle size={22} />}</></button>
+          <button type="button" onClick={() => setTasks((current) => current.map((item) => item.id === task.id ? { ...item, completed: !item.completed } : item))} aria-label={task.completed ? tr("إعادة فتح المهمة") : tr("إكمال المهمة")} style={{ background: "transparent", border: 0, color: task.completed ? "#83d9ce" : "#8fa8b5", cursor: "pointer", padding: 0 }}><>{task.completed ? <CheckCircle2 size={22} /> : <Circle size={22} />}</></button>
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ color: task.completed ? "#91aab6" : "#edf6f7", textDecoration: task.completed ? "line-through" : "none", fontWeight: 600 }}>{task.title}</div>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 12, marginTop: 6, color: "#91aab6", fontSize: 12 }}>
               {task.initiative && <span>{task.initiative}</span>}
               {task.dueDate && <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}><CalendarDays size={13} /> {task.dueDate}</span>}
-              <span>الأولوية: {priorityLabels[task.priority]}</span>
+              <span>{tr("الأولوية:")} {tr(priorityLabels[task.priority])}</span>
             </div>
           </div>
           <button type="button" onClick={() => removeTask(task.id)} aria-label={tr("حذف المهمة")} style={{ background: "transparent", border: 0, color: "#91aab6", cursor: "pointer" }}><Trash2 size={16} /></button>
