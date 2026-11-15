@@ -1465,17 +1465,31 @@ export function translateText(value: string, language: AppLanguage): string {
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const [language, setLanguage] = useState<AppLanguage>("ar");
+  const [isHydrated, setIsHydrated] = useState(false);
 
+  // Restore the saved preference before writing anything back to storage.
+  // This prevents the initial Arabic default from overwriting a saved English choice.
   useEffect(() => {
-    const saved = window.localStorage.getItem(LANGUAGE_KEY);
-    if (saved === "ar" || saved === "en") setLanguage(saved);
+    try {
+      const saved = window.localStorage.getItem(LANGUAGE_KEY);
+      if (saved === "ar" || saved === "en") setLanguage(saved);
+    } catch {
+      // Storage can be unavailable in private or restricted browser contexts.
+    } finally {
+      setIsHydrated(true);
+    }
   }, []);
 
   useEffect(() => {
+    if (!isHydrated) return;
     document.documentElement.lang = language;
     document.documentElement.dir = language === "ar" ? "rtl" : "ltr";
-    window.localStorage.setItem(LANGUAGE_KEY, language);
-  }, [language]);
+    try {
+      window.localStorage.setItem(LANGUAGE_KEY, language);
+    } catch {
+      // Keep the current in-memory language even if storage is unavailable.
+    }
+  }, [language, isHydrated]);
 
   const value = useMemo(
     () => ({
