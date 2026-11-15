@@ -210,6 +210,9 @@ export default function Dashboard() {
           <footer className="ho-footer">
             <span>HUMANITY ONE © 2026</span>
             <Link href="/mail" aria-label="Open HUMANITY ONE internal mail" style={{display:"inline-flex",alignItems:"center",gap:7,color:"#80dacf",textDecoration:"none"}}><Mail size={15} /> {tr("مركز المراسلات","Internal Mail")}</Link>
+            <a href="mailto:humanityone.contact@gmail.com" aria-label="Email HUMANITY ONE" style={{display:"inline-flex",alignItems:"center",gap:7,color:"#80dacf",textDecoration:"none",direction:"ltr"}}>
+              <Mail size={15} /> humanityone.contact@gmail.com
+            </a>
             <span><span className="status-dot"></span> {tr("نسخة تجريبية — بعض الخدمات قيد التطوير","Beta version — some services are still in development")}</span>
           </footer>
         </div>
