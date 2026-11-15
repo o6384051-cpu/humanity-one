@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
+import { useLanguage, translateText } from "../../../components/LanguageProvider";
 
 type Item = {
   id: string;
@@ -32,6 +33,8 @@ const statusOptions = [
 ] as const;
 
 export default function AssistanceAdmin() {
+  const { language } = useLanguage();
+  const tx = (value: string) => translateText(value, language);
   const [items, setItems] = useState<Item[]>([]);
   const [notes, setNotes] = useState<Record<string, string>>({});
   const [error, setError] = useState("");
@@ -117,10 +120,10 @@ export default function AssistanceAdmin() {
   return (
     <main dir="rtl" style={{ minHeight: "100vh", background: "#08131f", color: "#e8f1f5", padding: 22 }}>
       <div style={{ maxWidth: 1100, margin: "auto" }}>
-        <Link href="/" style={{ color: "#83d9ce" }}>← الرئيسية</Link>
+        <Link href="/" style={{ color: "#83d9ce" }}>{tx("← الرئيسية")}</Link>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
-          <div><h1 style={{ fontSize: 28, fontWeight: 700 }}>مراجعة طلبات المساعدة</h1>
-            <p style={{ color: "#a9bdc9" }}>لوحة داخلية لفريق المراجعة المخوّل. حافظ على سرية بيانات المستفيدين.</p></div>
+          <div><h1 style={{ fontSize: 28, fontWeight: 700 }}>{tx("مراجعة طلبات المساعدة")}</h1>
+            <p style={{ color: "#a9bdc9" }}>{tx("لوحة داخلية لفريق المراجعة المخوّل. حافظ على سرية بيانات المستفيدين.")}</p></div>
           <button onClick={() => void load()} disabled={loading} style={{ padding: "10px 15px", border: 0, borderRadius: 8, background: "#287c73", color: "white" }}>
             {loading ? "جارٍ التحديث..." : "تحديث القائمة"}
           </button>
@@ -128,7 +131,7 @@ export default function AssistanceAdmin() {
 
         {error && <p role="alert" style={{ color: "#ffb4a9", background: "#3b2025", padding: 10, borderRadius: 8 }}>{error}</p>}
 
-        <section aria-label="ملخص الطلبات" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(135px,1fr))", gap: 10, margin: "18px 0" }}>
+        <section aria-label={tx("ملخص الطلبات")} style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(135px,1fr))", gap: 10, margin: "18px 0" }}>
           {[
             ["إجمالي المعروض", counts.total], ["عاجل مفتوح", counts.urgent], ["طلبات جديدة", counts.pending],
             ["تحت الدراسة", counts.review], ["تمت الموافقة", counts.approved], ["غير موافق عليها", counts.rejected],
@@ -137,25 +140,25 @@ export default function AssistanceAdmin() {
 
         <section style={{ ...panel, display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(210px,1fr))", gap: 12 }}>
           <label>بحث في الطلبات
-            <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="اسم المستفيد أو الهاتف أو المدينة أو التفاصيل" style={{ ...input, display: "block", marginTop: 6 }} />
+            <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder={tx("اسم المستفيد أو الهاتف أو المدينة أو التفاصيل")} style={{ ...input, display: "block", marginTop: 6 }} />
           </label>
           <label>تصفية حسب الحالة
             <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} style={{ ...input, display: "block", marginTop: 6 }}>
-              <option value="ALL">كل الحالات</option>
+              <option value="ALL">{tx("كل الحالات")}</option>
               {Object.entries(statusNames).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
             </select>
           </label>
           <label>ترتيب الطلبات
             <select value={sortMode} onChange={(e) => setSortMode(e.target.value)} style={{ ...input, display: "block", marginTop: 6 }}>
-              <option value="URGENT_NEWEST">العاجلة أولًا ثم الأحدث</option>
-              <option value="NEWEST">آخر تحديث أولًا</option>
-              <option value="OLDEST">الأقدم أولًا</option>
+              <option value="URGENT_NEWEST">{tx("العاجلة أولًا ثم الأحدث")}</option>
+              <option value="NEWEST">{tx("آخر تحديث أولًا")}</option>
+              <option value="OLDEST">{tx("الأقدم أولًا")}</option>
             </select>
           </label>
         </section>
 
         <p style={{ color: "#a9bdc9", marginTop: 14 }}>عدد النتائج: {filtered.length}</p>
-        {loading ? <p>جارٍ تحميل الطلبات...</p> : filtered.length === 0 ? <div style={{ ...panel, marginTop: 12 }}>لا توجد طلبات تطابق البحث والتصفية.</div> :
+        {loading ? <p>{tx("جارٍ تحميل الطلبات...")}</p> : filtered.length === 0 ? <div style={{ ...panel, marginTop: 12 }}>{tx("لا توجد طلبات تطابق البحث والتصفية.")}</div> :
           filtered.map((x) => (
             <article key={x.id} style={{ ...panel, marginTop: 13 }}>
               <div style={{ display: "flex", justifyContent: "space-between", gap: 8, flexWrap: "wrap" }}>
@@ -167,7 +170,7 @@ export default function AssistanceAdmin() {
                 المستفيد: {x.user.name || "بدون اسم"} · {x.user.email} · {x.user.beneficiaryProfile?.phone || "لا يوجد هاتف"} · {x.city}
                 {x.user.beneficiaryProfile?.area ? " · " + x.user.beneficiaryProfile.area : ""}
               </p>
-              <div style={{ color: "#a9bdc9", fontSize: 12, display: "grid", gap: 5 }}><span>رقم الطلب: <b dir="ltr">{x.id.slice(-8).toUpperCase()}</b></span><span>تاريخ التقديم: {new Date(x.createdAt).toLocaleString("ar-EG")}</span><span>آخر تحديث: {new Date(x.updatedAt || x.createdAt).toLocaleString("ar-EG")}</span></div>
+              <div style={{ color: "#a9bdc9", fontSize: 12, display: "grid", gap: 5 }}><span>{tx("رقم الطلب:")} <b dir="ltr">{x.id.slice(-8).toUpperCase()}</b></span><span>تاريخ التقديم: {new Date(x.createdAt).toLocaleString("ar-EG")}</span><span>آخر تحديث: {new Date(x.updatedAt || x.createdAt).toLocaleString("ar-EG")}</span></div>
 
               {x.files?.length > 0 && <section style={{ margin: "12px 0", padding: 12, background: "#0b1b29", borderRadius: 8 }}>
                 <b>المستندات المرفقة ({x.files.length})</b>
@@ -180,7 +183,7 @@ export default function AssistanceAdmin() {
               </section>}
 
               {x.reviewEvents?.length > 0 && <section style={{ marginTop: 14, padding: 12, background: "#0b1b29", borderRadius: 8 }}>
-                <b>سجل المراجعة والتغييرات</b>
+                <b>{tx("سجل المراجعة والتغييرات")}</b>
                 <ol style={{ marginTop: 8, paddingRight: 20 }}>
                   {x.reviewEvents.map((event) => <li key={event.id} style={{ marginBottom: 8, color: "#c5d4df" }}>
                     <span>{event.fromStatus ? (statusNames[event.fromStatus] || event.fromStatus) + " ← " : ""}{statusNames[event.toStatus] || event.toStatus}</span>
@@ -194,7 +197,7 @@ export default function AssistanceAdmin() {
 
               <label style={{ display: "block", marginTop: 12 }}>ملاحظة المراجعة
                 <textarea value={notes[x.id] ?? x.adminNote ?? ""} onChange={(e) => setNotes({ ...notes, [x.id]: e.target.value })}
-                  maxLength={1500} placeholder="ملاحظة أو توجيه للمستفيد" style={{ ...input, display: "block", minHeight: 75, marginTop: 6 }} />
+                  maxLength={1500} placeholder={tx("ملاحظة أو توجيه للمستفيد")} style={{ ...input, display: "block", minHeight: 75, marginTop: 6 }} />
               </label>
               <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 10 }}>
                 {statusOptions.map(([status, label]) => <button key={status} disabled={savingId === x.id}
