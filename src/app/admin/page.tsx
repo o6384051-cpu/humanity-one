@@ -24,6 +24,7 @@ const panel: React.CSSProperties = { background: "#101a2b", border: "1px solid #
 const linkStyle: React.CSSProperties = { display: "block", padding: 14, background: "#122438", border: "1px solid #29445b", borderRadius: 10, color: "#e8f2ff", textDecoration: "none" };
 
 export default function AdminDashboardPage() {
+  const tx = (value: string) => translateText(value, language);
   const { language } = useLanguage();
   const tr = (value: string) => translateText(value, language);
   const [data, setData] = useState<Overview | null>(null);
