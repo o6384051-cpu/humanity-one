@@ -2,8 +2,11 @@
 
 import Link from "next/link";
 import { FormEvent, useEffect, useState } from "react";
+import { useLanguage, translateText } from "../../../components/LanguageProvider";
 
 export default function ResetPasswordPage() {
+  const { language } = useLanguage();
+  const tx = (value: string) => translateText(value, language);
   const [token, setToken] = useState("");
   const [password, setPassword] = useState("");
   const [confirmation, setConfirmation] = useState("");
@@ -43,9 +46,9 @@ export default function ResetPasswordPage() {
 
   return <main dir="rtl" style={{ minHeight: "100vh", display: "grid", placeItems: "center", padding: 18, background: "radial-gradient(circle at 85% 0%,#16384a 0,transparent 38%),#08131f", color: "#e8f1f5", fontFamily: "Cairo,system-ui,sans-serif" }}>
     <section style={{ width: "100%", maxWidth: 460, padding: 24, border: "1px solid #294454", borderRadius: 16, background: "#102333" }}>
-      <Link href="/beneficiary" style={{ color: "#83d9ce" }}>← العودة لتسجيل الدخول</Link>
-      <h1 style={{ fontSize: 25, margin: "18px 0 8px" }}>تعيين كلمة مرور جديدة</h1>
-      {!token && !message ? <p style={{ color: "#ffc5c5" }}>رابط الاستعادة غير موجود أو غير صالح. اطلب رابطًا جديدًا.</p> : null}
+      <Link href="/beneficiary" style={{ color: "#83d9ce" }}>{tx("← العودة لتسجيل الدخول")}</Link>
+      <h1 style={{ fontSize: 25, margin: "18px 0 8px" }}>{tx("تعيين كلمة مرور جديدة")}</h1>
+      {!token && !message ? <p style={{ color: "#ffc5c5" }}>{tx("رابط الاستعادة غير موجود أو غير صالح. اطلب رابطًا جديدًا.")}</p> : null}
       <form onSubmit={submit} style={{ display: "grid", gap: 13, marginTop: 18 }}>
         <label style={{ display: "grid", gap: 7, fontSize: 13 }}>كلمة المرور الجديدة
           <input required type="password" minLength={10} maxLength={128} autoComplete="new-password" value={password} onChange={event => setPassword(event.target.value)} style={field} disabled={!token || busy} />
@@ -53,12 +56,12 @@ export default function ResetPasswordPage() {
         <label style={{ display: "grid", gap: 7, fontSize: 13 }}>تأكيد كلمة المرور
           <input required type="password" minLength={10} maxLength={128} autoComplete="new-password" value={confirmation} onChange={event => setConfirmation(event.target.value)} style={field} disabled={!token || busy} />
         </label>
-        <small style={{ color: "#91a6b5" }}>استخدم 10 أحرف على الأقل.</small>
+        <small style={{ color: "#91a6b5" }}>{tx("استخدم 10 أحرف على الأقل.")}</small>
         <button disabled={!token || busy} style={{ ...button, opacity: !token || busy ? 0.55 : 1 }}>{busy ? "جارٍ الحفظ…" : "حفظ كلمة المرور الجديدة"}</button>
       </form>
-      {message && <p role="status" style={{ marginTop: 16, padding: 12, border: "1px solid #287d69", borderRadius: 9, color: "#b9f3df", lineHeight: 1.8 }}>{message} <Link href="/beneficiary" style={{ textDecoration: "underline" }}>تسجيل الدخول</Link></p>}
+      {message && <p role="status" style={{ marginTop: 16, padding: 12, border: "1px solid #287d69", borderRadius: 9, color: "#b9f3df", lineHeight: 1.8 }}>{message} <Link href="/beneficiary" style={{ textDecoration: "underline" }}>{tx("تسجيل الدخول")}</Link></p>}
       {error && <p role="alert" style={{ marginTop: 16, color: "#ffc5c5" }}>{error}</p>}
-      <p style={{ marginTop: 18, color: "#91a6b5", fontSize: 12, lineHeight: 1.8 }}>الرابط صالح لمدة 30 دقيقة ويُستخدم مرة واحدة فقط. لا تشارك الرابط مع أي شخص.</p>
+      <p style={{ marginTop: 18, color: "#91a6b5", fontSize: 12, lineHeight: 1.8 }}>{tx("الرابط صالح لمدة 30 دقيقة ويُستخدم مرة واحدة فقط. لا تشارك الرابط مع أي شخص.")}</p>
     </section>
   </main>;
 }
