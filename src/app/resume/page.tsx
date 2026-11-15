@@ -24,8 +24,8 @@ const empty: Resume = {
 };
 
 export default function ResumeBuilderPage() {
-  const tx = (value: string) => translateText(value, language);
   const { language } = useLanguage();
+  const tx = (value: string) => translateText(value, language);
   const tr = (value: string) => translateText(value, language);
   const [data, setData] = useState<Resume>(empty);
   const update = (key: keyof Resume, value: string) => setData((old) => ({ ...old, [key]: value }));
