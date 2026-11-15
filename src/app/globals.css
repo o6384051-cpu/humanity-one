@@ -123,3 +123,6 @@ html[dir="ltr"] .ho-prompt-tools{direction:ltr}
 html[dir="ltr"] .ho-sidebar{transform-origin:left center}
 html[dir="ltr"] .ho-sidebar.is-open{transform:translateX(0)}
 @media(max-width:760px){html[dir="ltr"] .ho-sidebar{transform:translateX(-105%)}html[dir="ltr"] .ho-sidebar.is-open{transform:translateX(0)}html[dir="ltr"] .ho-main{margin-left:0}}
+
+html[dir="ltr"] .ho-language-switcher{left:auto;right:14px}
+html[dir="ltr"] [dir="rtl"]{direction:ltr!important;text-align:left!important;unicode-bidi:plaintext}
