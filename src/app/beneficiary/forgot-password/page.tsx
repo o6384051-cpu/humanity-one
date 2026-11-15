@@ -2,8 +2,11 @@
 
 import Link from "next/link";
 import { FormEvent, useState } from "react";
+import { useLanguage, translateText } from "../../../components/LanguageProvider";
 
 export default function ForgotPasswordPage() {
+  const { language } = useLanguage();
+  const tx = (value: string) => translateText(value, language);
   const [email, setEmail] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -32,9 +35,9 @@ export default function ForgotPasswordPage() {
 
   return <main dir="rtl" style={{ minHeight: "100vh", display: "grid", placeItems: "center", padding: 18, background: "radial-gradient(circle at 85% 0%,#16384a 0,transparent 38%),#08131f", color: "#e8f1f5", fontFamily: "Cairo,system-ui,sans-serif" }}>
     <section style={{ width: "100%", maxWidth: 460, padding: 24, border: "1px solid #294454", borderRadius: 16, background: "#102333" }}>
-      <Link href="/beneficiary" style={{ color: "#83d9ce" }}>← العودة لتسجيل الدخول</Link>
-      <h1 style={{ fontSize: 25, margin: "18px 0 8px" }}>نسيت كلمة المرور؟</h1>
-      <p style={{ color: "#a9bdc9", lineHeight: 1.8 }}>أدخل البريد الإلكتروني المسجل في حسابك، وسنرسل رابطًا آمنًا لإعادة تعيين كلمة المرور إذا كان الحساب موجودًا.</p>
+      <Link href="/beneficiary" style={{ color: "#83d9ce" }}>{tx("← العودة لتسجيل الدخول")}</Link>
+      <h1 style={{ fontSize: 25, margin: "18px 0 8px" }}>{tx("نسيت كلمة المرور؟")}</h1>
+      <p style={{ color: "#a9bdc9", lineHeight: 1.8 }}>{tx("أدخل البريد الإلكتروني المسجل في حسابك، وسنرسل رابطًا آمنًا لإعادة تعيين كلمة المرور إذا كان الحساب موجودًا.")}</p>
       <form onSubmit={submit} style={{ display: "grid", gap: 13, marginTop: 18 }}>
         <label style={{ display: "grid", gap: 7, fontSize: 13 }}>البريد الإلكتروني
           <input required type="email" maxLength={160} autoComplete="email" value={email} onChange={event => setEmail(event.target.value)} style={field} />
@@ -43,7 +46,7 @@ export default function ForgotPasswordPage() {
       </form>
       {message && <p role="status" style={{ marginTop: 16, padding: 12, border: "1px solid #287d69", borderRadius: 9, color: "#b9f3df", lineHeight: 1.8 }}>{message}</p>}
       {error && <p role="alert" style={{ marginTop: 16, color: "#ffc5c5" }}>{error}</p>}
-      <p style={{ marginTop: 18, color: "#91a6b5", fontSize: 12, lineHeight: 1.8 }}>لأمان حسابك، لا نكشف ما إذا كان البريد مسجلًا لدينا. الرابط صالح لمدة 30 دقيقة ويُستخدم مرة واحدة.</p>
+      <p style={{ marginTop: 18, color: "#91a6b5", fontSize: 12, lineHeight: 1.8 }}>{tx("لأمان حسابك، لا نكشف ما إذا كان البريد مسجلًا لدينا. الرابط صالح لمدة 30 دقيقة ويُستخدم مرة واحدة.")}</p>
     </section>
   </main>;
 }
