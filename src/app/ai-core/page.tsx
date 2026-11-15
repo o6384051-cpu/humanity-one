@@ -174,7 +174,7 @@ export default function AICorePage() {
 
   function deleteChat(id: string) {
     if (busy && active?.id === id) return;
-    if (!window.confirm("هل تريد حذف هذه المحادثة نهائيًا من هذا المتصفح؟")) return;
+    if (!window.confirm(tr("هل تريد حذف هذه المحادثة نهائيًا من هذا المتصفح؟"))) return;
     const remaining = sessions.filter((session) => session.id !== id);
     const next = remaining.length ? remaining : [makeSession()];
     setSessions(next);
