@@ -102,3 +102,24 @@ button{cursor:pointer}
 .ho-shell.ho-light .ho-top-popover{background:#fff;color:#20334a;border-color:#d7e1eb}
 .ho-shell.ho-light .ho-top-popover b{color:#20334a}
 .ho-shell.ho-light .ho-top-popover p{color:#52677e}
+
+
+/* Language preference and layout direction */
+.ho-language-switcher{position:fixed;top:14px;left:14px;z-index:120;display:inline-flex;align-items:center;gap:7px;padding:8px 12px;border:1px solid rgba(91,211,205,.35);border-radius:999px;background:rgba(12,25,40,.94);color:#8ce8df;font-size:11px;font-weight:800;box-shadow:0 6px 22px #0004;backdrop-filter:blur(12px)}
+.ho-language-switcher:hover{background:#173448;border-color:#65d9d1}
+.ho-language-switcher span{font-size:14px;line-height:1}
+html[dir="ltr"] body{direction:ltr}
+html[dir="ltr"] .ho-sidebar{right:auto;left:0;border-left:0;border-right:1px solid var(--line)}
+html[dir="ltr"] .ho-main{margin-right:0;margin-left:258px}
+html[dir="ltr"] .ho-nav button,.ho-settings{text-align:left}
+html[dir="ltr"] .ho-nav button.active:before{right:auto;left:0}
+html[dir="ltr"] .ho-nav-dot{margin-right:0;margin-left:auto}
+html[dir="ltr"] .ho-icon-btn i{left:auto;right:8px}
+html[dir="ltr"] .ho-orbit{left:auto;right:9%}
+html[dir="ltr"] .ho-service-card{text-align:left}
+html[dir="ltr"] .ho-card-arrow{left:auto;right:14px}
+html[dir="ltr"] .ho-top-popover{text-align:left;left:auto;right:0}
+html[dir="ltr"] .ho-prompt-tools{direction:ltr}
+html[dir="ltr"] .ho-sidebar{transform-origin:left center}
+html[dir="ltr"] .ho-sidebar.is-open{transform:translateX(0)}
+@media(max-width:760px){html[dir="ltr"] .ho-sidebar{transform:translateX(-105%)}html[dir="ltr"] .ho-sidebar.is-open{transform:translateX(0)}html[dir="ltr"] .ho-main{margin-left:0}}
