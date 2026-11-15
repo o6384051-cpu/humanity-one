@@ -12,11 +12,56 @@ const prompts: Record<string, string> = {
   review: "أنت مراجع سلامة. اكشف المخاطر والخصوصية وعدم اليقين.",
 };
 
-function safeProviderError(status: number) {
-  if (status === 401 || status === 403) return "تعذر التحقق من مفتاح خدمة الذكاء الاصطناعي. راجع إعداد المفتاح لدى مزود الخدمة.";
-  if (status === 429) return "وصلت خدمة الذكاء الاصطناعي إلى حد الاستخدام أو الحصة المجانية. حاول لاحقًا.";
-  if (status >= 500) return "خدمة الذكاء الاصطناعي تواجه عطلًا مؤقتًا. حاول لاحقًا.";
-  return "رفض مزود الذكاء الاصطناعي الطلب. راجع إعداد النموذج والخدمة.";
+type ProviderErrorCategory =
+  | "authentication"
+  | "quota_or_rate_limit"
+  | "model_configuration"
+  | "unsupported_parameter"
+  | "invalid_request"
+  | "provider_unavailable"
+  | "unknown_rejection";
+
+function classifyProviderError(status: number, data: any): ProviderErrorCategory {
+  if (status === 401 || status === 403) return "authentication";
+  if (status === 429) return "quota_or_rate_limit";
+  if (status >= 500) return "provider_unavailable";
+
+  // Inspect only structured error metadata in memory. Never log or return raw provider text.
+  const error = data?.error;
+  const details = [error?.code, error?.type, error?.param, error?.message]
+    .filter((value) => typeof value === "string")
+    .join(" ")
+    .toLowerCase();
+
+  if (/model|model_not_found|not found|does not exist|unsupported model/.test(details)) {
+    return "model_configuration";
+  }
+  if (/unsupported|unknown parameter|invalid parameter|unrecognized|unexpected field|max_tokens|max_completion_tokens/.test(details)) {
+    return "unsupported_parameter";
+  }
+  if (/invalid_argument|invalid request|bad request|malformed/.test(details) || status === 400) {
+    return "invalid_request";
+  }
+  return "unknown_rejection";
+}
+
+function safeProviderError(category: ProviderErrorCategory) {
+  switch (category) {
+    case "authentication":
+      return "تعذر التحقق من إعداد مصادقة خدمة الذكاء الاصطناعي.";
+    case "quota_or_rate_limit":
+      return "وصلت خدمة الذكاء الاصطناعي إلى حد الاستخدام أو الحصة المجانية. حاول لاحقًا.";
+    case "provider_unavailable":
+      return "خدمة الذكاء الاصطناعي تواجه عطلًا مؤقتًا. حاول لاحقًا.";
+    case "model_configuration":
+      return "مزود الذكاء الاصطناعي لم يتعرف على النموذج المحدد. يلزم فحص توافق اسم النموذج.";
+    case "unsupported_parameter":
+      return "مزود الذكاء الاصطناعي رفض أحد إعدادات الطلب. يلزم تعديل توافق صيغة الطلب.";
+    case "invalid_request":
+      return "مزود الذكاء الاصطناعي رفض صيغة الطلب. تم تحديد نوع الخطأ دون تسجيل محتوى المحادثة أو الأسرار.";
+    default:
+      return "رفض مزود الذكاء الاصطناعي الطلب. يلزم فحص إعداد النموذج وصيغة الطلب.";
+  }
 }
 
 export async function POST(req: NextRequest) {
@@ -65,9 +110,10 @@ export async function POST(req: NextRequest) {
     try { data = raw ? JSON.parse(raw) : {}; } catch { /* handled as invalid provider response */ }
 
     if (!upstream.ok) {
-      // Log only status and a coarse category. Never log provider body, prompt, or credentials.
-      console.error("[ai-chat] provider_error", { status: upstream.status, category: upstream.status === 429 ? "quota_or_rate_limit" : upstream.status === 401 || upstream.status === 403 ? "authentication" : upstream.status >= 500 ? "provider_unavailable" : "request_rejected" });
-      return NextResponse.json({ error: safeProviderError(upstream.status) }, {
+      const category = classifyProviderError(upstream.status, data);
+      // Log only status and an allowlisted category. Never log provider body, prompt, or credentials.
+      console.error("[ai-chat] provider_error", { status: upstream.status, category });
+      return NextResponse.json({ error: safeProviderError(category) }, {
         status: upstream.status === 429 ? 429 : upstream.status === 401 || upstream.status === 403 ? 503 : 502,
         headers: { "Cache-Control": "no-store" },
       });
