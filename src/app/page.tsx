@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useLanguage } from '../components/LanguageProvider';
+import { useLanguage, translateText } from '../components/LanguageProvider';
 import { Home, Bot, FolderKanban, CheckSquare, BookOpen, BarChart3, Settings, Search, Bell, Mail, Sun, Leaf, CheckCircle2, Users, Lightbulb, Send, ShieldCheck, HeartHandshake, BadgeInfo } from 'lucide-react';
 
 export default function Dashboard() {
