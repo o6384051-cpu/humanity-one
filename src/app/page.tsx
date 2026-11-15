@@ -51,6 +51,7 @@ export default function Dashboard() {
           <Link href="/agents"><Users size={18} />{tr("فريق الوكلاء","Agent Team")}</Link>
           <Link href="/memory"><BookOpen size={18} />{tr("الذاكرة والخصوصية","Memory & Privacy")}</Link>
           <Link href="/admin"><ShieldCheck size={18} />{tr("إدارة المنظومة","Administration")}</Link>
+          <Link href="/mail"><Mail size={18} />{tr("مركز المراسلات","Internal Mail")}</Link>
           <Link href="/opportunities"><HeartHandshake size={18} />{tr("مركز الفرص الإنسانية","Humanitarian Opportunities")}</Link>
           <Link href="/beneficiary"><HeartHandshake size={18} />{tr("منصة المستفيدين وطلبات المساعدة","Beneficiary Support Requests")}</Link>
           <Link href="/fees"><BadgeInfo size={18} />{tr("الرسوم والخدمات المجانية","Fees & Free Services")}</Link>
@@ -81,6 +82,7 @@ export default function Dashboard() {
             <div className="ho-breadcrumb">{tr("الرئيسية","Home")} <b>{tr("لوحة التحكم","Dashboard")}</b></div>
           </div>
           <div className="ho-top-actions">
+            <Link href="/mail" aria-label={tr("مركز المراسلات","Internal Mail")} title={tr("مركز المراسلات","Internal Mail")} style={{ display: "inline-flex", alignItems: "center", gap: 7, height: 36, padding: "0 12px", border: "1px solid rgba(83,211,205,.35)", borderRadius: 10, background: "rgba(56,185,183,.12)", color: "#69e0d7", fontSize: 11, fontWeight: 800, textDecoration: "none", whiteSpace: "nowrap" }}><Mail size={16} />{tr("المراسلات","Mail")}</Link>
             <Link href="/admin" aria-label={tr("لوحة المدير","Admin dashboard")} title={tr("لوحة المدير","Admin dashboard")} style={{ display: "inline-flex", alignItems: "center", gap: 7, height: 36, padding: "0 12px", border: "1px solid rgba(83,211,205,.35)", borderRadius: 10, background: "rgba(56,185,183,.12)", color: "#69e0d7", fontSize: 11, fontWeight: 800, textDecoration: "none", whiteSpace: "nowrap" }}><ShieldCheck size={16} />{tr("لوحة المدير","Admin")}</Link>
             <form className="ho-search" onSubmit={handleSearch}>
               <Search size={16} />
@@ -211,7 +213,7 @@ export default function Dashboard() {
           
           <footer className="ho-footer">
             <span>HUMANITY ONE © 2026</span>
-            <a href="mailto:humanityone.contact@gmail.com" aria-label="Email HUMANITY ONE" style={{display:"inline-flex",alignItems:"center",gap:7,color:"#80dacf",textDecoration:"none"}}><Mail size={15} /> humanityone.contact@gmail.com</a>
+            <a href="mailto:humanityone.contact@gmail.com" aria-label="Email HUMANITY ONE" style={{display:"inline-flex",alignItems:"center",gap:7,color:"#80dacf",textDecoration:"none"}}><Mail size={15} /> {tr("مركز المراسلات","Internal Mail")}</Link>
             <span><span className="status-dot"></span> {tr("نسخة تجريبية — بعض الخدمات قيد التطوير","Beta version — some services are still in development")}</span>
           </footer>
         </div>
