@@ -95,7 +95,7 @@ export default function SmallBusinessPage() {
         <h3 style={{ fontSize: 15, margin: "10px 0" }}>{tr("بنود التكلفة التي أدخلتها بنفسك")}</h3>
         <div style={{ display: "grid", gap: 9 }}>
           {items.map((item) => <div key={item.id} style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(105px,1fr))", gap: 7, alignItems: "center" }}>
-            <input aria-label={tr("اسم البند")} value={item.name} onChange={(e) => updateItem(item.id, "name", e.target.value)} style={field} placeholder={tr("اسم البند")}/>
+            <input aria-label={tr("اسم البند")} value={item.name === "مواد خام أو بضاعة" || item.name === "تغليف وتجهيز" ? tr(item.name) : item.name} onChange={(e) => updateItem(item.id, "name", e.target.value)} style={field} placeholder={tr("اسم البند")}/>
             <input aria-label={tr("الكمية")} inputMode="decimal" value={item.quantity} onChange={(e) => updateItem(item.id, "quantity", e.target.value)} style={field} placeholder={tr("الكمية")}/>
             <input aria-label={tr("الوحدة")} value={tr(item.unit)} onChange={(e) => updateItem(item.id, "unit", e.target.value)} style={field} placeholder={tr("الوحدة")}/>
             <input aria-label={tr("تكلفة الوحدة")} inputMode="decimal" value={item.unitCost} onChange={(e) => updateItem(item.id, "unitCost", e.target.value)} style={field} placeholder={tr("تكلفة الوحدة")}/>
