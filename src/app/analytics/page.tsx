@@ -1,9 +1,10 @@
 "use client";
 import Link from "next/link";
 import {useEffect,useState} from "react";
-import {useLanguage} from "../../components/LanguageProvider";
+import {useLanguage, translateText} from "../../components/LanguageProvider";
 const KEYS={initiatives:"humanity-one-initiatives-v1",tasks:"humanity-one-tasks-v1",memory:"humanity-one-approved-memory-v1",chats:"humanity-one-chat-v2"};
 export default function AnalyticsPage(){
+ const tx=(value:string)=>translateText(value,language);
  const {language}=useLanguage();const tr=(ar:string,en:string)=>language==="ar"?ar:en;
  const [stats,setStats]=useState({initiatives:0,active:0,tasks:0,completed:0,memory:0,chats:0});
  useEffect(()=>{try{const read=(k:string)=>JSON.parse(localStorage.getItem(k)||"[]");const p=read(KEYS.initiatives),t=read(KEYS.tasks),m=read(KEYS.memory),c=read(KEYS.chats);setStats({initiatives:Array.isArray(p)?p.length:0,active:Array.isArray(p)?p.filter((x:any)=>x.status==="active").length:0,tasks:Array.isArray(t)?t.length:0,completed:Array.isArray(t)?t.filter((x:any)=>x.completed).length:0,memory:Array.isArray(m)?m.length:0,chats:Array.isArray(c)?c.length:0});}catch{}},[]);
