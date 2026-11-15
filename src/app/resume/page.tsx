@@ -75,13 +75,13 @@ export default function ResumeBuilderPage() {
     <main dir="rtl" style={{ minHeight: "100vh", padding: "clamp(18px,4vw,48px)", color: "#e8f1f5", background: "linear-gradient(145deg,#07131d,#0b1d2b 58%,#102a34)" }}>
       <div style={{ maxWidth: 1120, margin: "0 auto" }}>
         <Link href="/personal-plan" style={{ display: "inline-flex", alignItems: "center", gap: 8, color: "#8bded2", textDecoration: "none", marginBottom: 24 }}>
-          <ArrowRight size={17} /> العودة إلى خطتي الشخصية
+          <ArrowRight size={17} /> {tx("العودة إلى خطتي الشخصية")}
         </Link>
         <header style={{ marginBottom: 22 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 9, color: "#83d9ce", fontSize: 13 }}><FileText size={18} /> {tr("أداة مجانية دون تسجيل")}</div>
           <h1 style={{ fontSize: "clamp(27px,4vw,39px)", margin: "9px 0" }}>{tr("أنشئ سيرتك الذاتية")}</h1>
           <p style={{ color: "#a9bdc8", lineHeight: 1.9, maxWidth: 780, margin: 0 }}>
-            اكتب معلوماتك المهنية فقط، وشاهد معاينة مباشرة، ثم نزّل نسخة نصية يمكنك تعديلها أو تنسيقها. إذا لم تكن لديك خبرة، ركّز على مهاراتك ومشروعاتك وتدريبك.
+            {tx("اكتب معلوماتك المهنية فقط، وشاهد معاينة مباشرة، ثم نزّل نسخة نصية يمكنك تعديلها أو تنسيقها. إذا لم تكن لديك خبرة، ركّز على مهاراتك ومشروعاتك وتدريبك.")}
           </p>
         </header>
 
@@ -101,7 +101,7 @@ export default function ResumeBuilderPage() {
             <label style={labelStyle}>{tr("التعليم (كل مؤهل في سطر)")}<textarea maxLength={1000} rows={3} value={data.education} onChange={(e) => update("education", e.target.value)} style={field} placeholder={tr("المؤهل – المؤسسة – سنة التخرج")} /></label>
             <label style={labelStyle}>{tr("الدورات والشهادات (اختياري)")}<textarea maxLength={1000} rows={3} value={data.courses} onChange={(e) => update("courses", e.target.value)} style={field} placeholder={tr("اسم الدورة – الجهة – السنة")} /></label>
             <button type="submit" disabled={!data.fullName.trim()} style={{ border: 0, borderRadius: 10, padding: 13, background: data.fullName.trim() ? "#17635b" : "#355365", color: "white", font: "inherit", cursor: data.fullName.trim() ? "pointer" : "not-allowed", display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
-              <Download size={17} /> تنزيل السيرة الذاتية
+              <Download size={17} /> {tx("تنزيل السيرة الذاتية")}
             </button>
           </form>
 
@@ -129,7 +129,7 @@ export default function ResumeBuilderPage() {
 
         <footer style={{ ...panel, marginTop: 16, color: "#91aab6", fontSize: 12, lineHeight: 1.9 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 7, color: "#bfe9e3", marginBottom: 5 }}><ShieldCheck size={16} /> {tr("الخصوصية")}</div>
-          لا يتم إرسال البيانات إلى خادم أو حفظها في حساب. تجنب إدخال رقمك القومي أو بياناتك البنكية أو معلومات لا تحتاجها جهة التوظيف. راجع بيانات التواصل قبل مشاركة السيرة الذاتية.
+          {tx("لا يتم إرسال البيانات إلى خادم أو حفظها في حساب. تجنب إدخال رقمك القومي أو بياناتك البنكية أو معلومات لا تحتاجها جهة التوظيف. راجع بيانات التواصل قبل مشاركة السيرة الذاتية.")}
         </footer>
       </div>
     </main>
