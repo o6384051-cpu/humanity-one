@@ -51,7 +51,7 @@ export default function PostJobPage() {
         <h2 style={{ margin:0, color:"#82d9cd" }}>{tx("بيانات صاحب العمل والمنشأة")}</h2>
         <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(220px,1fr))", gap:12 }}>
           <label style={label}>{tx("اسم المسؤول عن الإعلان")}<input required minLength={2} maxLength={100} value={values.employerName} onChange={e=>change("employerName",e.target.value)} style={input}/></label>
-          <label style={label}>نوع النشاط{select("businessType",businessTypes)}</label>
+          <label style={label}>{tx("نوع النشاط")}{select("businessType",businessTypes)}</label>
           <label style={label}>{tx("اسم المنشأة")}<input required minLength={2} maxLength={120} value={values.businessName} onChange={e=>change("businessName",e.target.value)} style={input}/></label>
           <label style={label}>{tx("المحافظة / المدينة")}<input required minLength={2} maxLength={80} value={values.city} onChange={e=>change("city",e.target.value)} style={input}/></label>
           <label style={label}>{tx("المنطقة / العنوان المختصر")}<input maxLength={100} value={values.area} onChange={e=>change("area",e.target.value)} style={input}/></label>
@@ -63,13 +63,13 @@ export default function PostJobPage() {
         <label style={label}>{tx("وصف العمل والمهام")}<textarea required minLength={20} maxLength={2500} rows={5} value={values.description} onChange={e=>change("description",e.target.value)} style={input}/></label>
         <label style={label}>{tx("المهارات المطلوبة (اختياري)")}<input maxLength={500} value={values.skills} onChange={e=>change("skills",e.target.value)} style={input}/></label>
         <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(220px,1fr))", gap:12 }}>
-          <label style={label}>الخبرة{select("experienceLevel",experienceLevels)}</label>
-          <label style={label}>المؤهل المطلوب{select("educationRequirement",educationLevels)}</label>
-          <label style={label}>نوع العمل{select("employmentType",employmentTypes)}</label>
+          <label style={label}>{tx("الخبرة")}{select("experienceLevel",experienceLevels)}</label>
+          <label style={label}>{tx("المؤهل المطلوب")}{select("educationRequirement",educationLevels)}</label>
+          <label style={label}>{tx("نوع العمل")}{select("employmentType",employmentTypes)}</label>
           <label style={label}>{tx("الوردية / المواعيد")}<input maxLength={100} value={values.shift} onChange={e=>change("shift",e.target.value)} placeholder={tx("مثال: صباحي، 8 ساعات")} style={input}/></label>
           <label style={label}>{tx("الحد الأدنى للأجر (جنيه)")}<input type="number" min="0" max="10000000" value={values.salaryMin} onChange={e=>change("salaryMin",e.target.value)} style={input}/></label>
           <label style={label}>{tx("الحد الأعلى للأجر (جنيه)")}<input type="number" min="0" max="10000000" value={values.salaryMax} onChange={e=>change("salaryMax",e.target.value)} style={input}/></label>
-          <label style={label}>فترة الأجر{select("salaryPeriod",salaryPeriods)}</label>
+          <label style={label}>{tx("فترة الأجر")}{select("salaryPeriod",salaryPeriods)}</label>
           <label style={label}>{tx("عدد العمال المطلوبين")}<input required type="number" min="1" max="500" value={values.openings} onChange={e=>change("openings",e.target.value)} style={input}/></label>
         </div>
         <label style={{ display:"flex", alignItems:"flex-start", gap:9, color:"#c5d6dd", fontSize:13, lineHeight:1.8 }}><input required type="checkbox" style={{ marginTop:5 }}/> {tx("أقر بأن بيانات المنشأة والوظيفة صحيحة، وأنه لا توجد رسوم على العامل مقابل التقديم أو الحصول على الوظيفة.")}</label>
