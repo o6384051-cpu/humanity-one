@@ -19,6 +19,7 @@ const domains = [
 type Result = { answer: string; plan: string; agents: { id: string; label: string; status: string; model?: string }[]; model: string; models?: { planner: string; specialist: string; reviewer: string }; limitations: string[] };
 
 export default function AgentsPage() {
+  const tx = (value: string) => translateText(value, language);
   const { language } = useLanguage();
   const tr = (value: string) => translateText(value, language);
   const [domain, setDomain] = useState<(typeof domains)[number]["id"]>("general");
