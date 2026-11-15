@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 const siteUrl = "https://humanity-one-wc35.vercel.app";
+const socialImage = "/opengraph-image";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -21,12 +22,26 @@ export const metadata: Metadata = {
     description:
       "منصة إنسانية لربط الناس بفرص العمل والتعلم والمبادرات والمشروعات المجتمعية.",
     locale: "ar_EG",
+    images: [
+      {
+        url: socialImage,
+        width: 1200,
+        height: 630,
+        alt: "HUMANITY ONE — فرص العمل والتعلم والدعم المجتمعي",
+      },
+    ],
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: "HUMANITY ONE | معًا من أجل مستقبل أفضل",
     description:
       "منصة إنسانية لفرص العمل والتعلم والمبادرات والمشروعات المجتمعية.",
+    images: [
+      {
+        url: socialImage,
+        alt: "HUMANITY ONE — فرص العمل والتعلم والدعم المجتمعي",
+      },
+    ],
   },
   robots: {
     index: true,
