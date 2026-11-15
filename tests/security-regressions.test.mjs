@@ -51,3 +51,62 @@ test("admin sessions re-check the current database role and privileged user chan
   assert.match(users, /actor\.role !== ["']SUPER_ADMIN["']/);
   assert.match(users, /target\.role === ["']SUPER_ADMIN["']/);
 });
+
+
+test("beneficiary sessions are revalidated against the database and restricted to USER", async () => {
+  const auth = await source("src/lib/beneficiary-auth.ts");
+  assert.match(auth, /jwt\.verify\(token,secret\)/);
+  assert.match(auth, /prisma\.user\.findUnique/);
+  assert.match(auth, /user\.role!==\"USER\"/);
+  assert.match(auth, /expiresIn:\"14d\"/);
+});
+
+test("rate limiting fails closed and stores keyed digests rather than raw identifiers", async () => {
+  const limiter = await source("src/lib/rate-limit.ts");
+  assert.match(limiter, /createHmac\(\"sha256\", secret\)/);
+  assert.match(limiter, /return \{ allowed: false, retryAfter: 60, unavailable: true \}/);
+  assert.match(limiter, /Fail closed/);
+  assert.match(limiter, /ON CONFLICT \(\"key\"\) DO UPDATE/);
+});
+
+test("admin beneficiary endpoints require a freshly validated admin session", async () => {
+  const routes = [
+    "src/app/api/admin/assistance/route.ts",
+    "src/app/api/admin/beneficiaries/route.ts",
+    "src/app/api/admin/overview/route.ts",
+    "src/app/api/admin/assistance/files/[id]/route.ts",
+  ];
+  for (const path of routes) {
+    const code = await source(path);
+    assert.match(code, /getAdminSession\(\)/, path);
+    assert.match(code, /!admin|!actor/, path);
+    assert.match(code, /403/, path);
+  }
+});
+
+test("admin assistance and beneficiary listings do not cache sensitive responses", async () => {
+  const assistance = await source("src/app/api/admin/assistance/route.ts");
+  const beneficiaries = await source("src/app/api/admin/beneficiaries/route.ts");
+  const overview = await source("src/app/api/admin/overview/route.ts");
+  assert.match(assistance, /Cache-Control.*no-store, private/);
+  assert.match(beneficiaries, /Cache-Control.*no-store, private/);
+  assert.match(overview, /Cache-Control.*no-store, private/);
+  assert.doesNotMatch(beneficiaries, /passwordHash/);
+  assert.doesNotMatch(assistance, /passwordHash/);
+});
+
+test("founder bootstrap is rate-limited, compares its secret in constant time, and refuses repeat setup", async () => {
+  const bootstrap = await source("src/app/api/admin/bootstrap/route.ts");
+  assert.match(bootstrap, /rateLimit\(req, \"founder-bootstrap\", 5/);
+  assert.match(bootstrap, /timingSafeEqual\(/);
+  assert.match(bootstrap, /findFirst\(\{ where: \{ role: \"SUPER_ADMIN\" \}/);
+  assert.match(bootstrap, /status: 409/);
+  assert.match(bootstrap, /password\.length < 12/);
+});
+
+test("admin file downloads require an admin session and prevent browser caching and MIME sniffing", async () => {
+  const route = await source("src/app/api/admin/assistance/files/[id]/route.ts");
+  assert.match(route, /getAdminSession\(\)/);
+  assert.match(route, /Cache-Control.*private, no-store/);
+  assert.match(route, /X-Content-Type-Options.*nosniff/);
+});
