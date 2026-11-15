@@ -17,6 +17,8 @@ const field: React.CSSProperties = { width: "100%", boxSizing: "border-box", bac
 const button: React.CSSProperties = { border: 0, borderRadius: 10, padding: "11px 16px", background: "#17645b", color: "white", cursor: "pointer", font: "inherit", fontWeight: 700 };
 
 function ApplicationForm({ job, onClose }: { job: Job; onClose: () => void }) {
+  const { language: formLanguage } = useLanguage();
+  const tr = (value: string) => translateText(value, formLanguage);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [experience, setExperience] = useState("");
@@ -69,7 +71,7 @@ export default function JobsPage() {
     return text.includes(query.trim().toLocaleLowerCase("ar")) && (!city || job.city.includes(city.trim()));
   }), [jobs, query, city]);
 
-  return <main dir="rtl" style={{ minHeight: "100vh", padding: "clamp(18px,4vw,48px)", color: "#e8f1f5", background: "linear-gradient(145deg,#07131d,#0b1d2b 58%,#102a34)" }}>
+  return <main dir={language === "ar" ? "rtl" : "ltr"} style={{ minHeight: "100vh", padding: "clamp(18px,4vw,48px)", color: "#e8f1f5", background: "linear-gradient(145deg,#07131d,#0b1d2b 58%,#102a34)" }}>
     <div style={{ maxWidth: 1050, margin: "0 auto" }}>
       <Link href="/opportunities" style={{ color: "#8bded2", display: "inline-flex", gap: 8, alignItems: "center", textDecoration: "none", marginBottom: 22 }}><ArrowRight size={17} /> {tr("مركز الفرص")}</Link>
       <header style={{ marginBottom: 22 }}>
