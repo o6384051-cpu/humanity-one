@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { ArrowRight, CheckCircle2, ShieldCheck, Info } from "lucide-react";
-import { useLanguage } from "../../components/LanguageProvider";
+import { useLanguage, translateText } from "../../components/LanguageProvider";
 
 const freeServices: [string,string][] = [
   ["إنشاء حساب المستفيد واستخدام ملفه الشخصي.","Create a beneficiary account and use the personal profile."],
@@ -13,6 +13,7 @@ const freeServices: [string,string][] = [
 ];
 
 export default function FeesPage() {
+  const tx = (value: string) => translateText(value, language);
   const { language } = useLanguage();
   const tr = (ar: string, en: string) => language === "ar" ? ar : en;
   return (
