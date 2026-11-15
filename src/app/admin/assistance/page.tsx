@@ -125,17 +125,17 @@ export default function AssistanceAdmin() {
           <div><h1 style={{ fontSize: 28, fontWeight: 700 }}>{tx("مراجعة طلبات المساعدة")}</h1>
             <p style={{ color: "#a9bdc9" }}>{tx("لوحة داخلية لفريق المراجعة المخوّل. حافظ على سرية بيانات المستفيدين.")}</p></div>
           <button onClick={() => void load()} disabled={loading} style={{ padding: "10px 15px", border: 0, borderRadius: 8, background: "#287c73", color: "white" }}>
-            {loading ? "جارٍ التحديث..." : "تحديث القائمة"}
+            {loading ? tx("جارٍ التحديث...") : tx("تحديث القائمة")}
           </button>
         </div>
 
-        {error && <p role="alert" style={{ color: "#ffb4a9", background: "#3b2025", padding: 10, borderRadius: 8 }}>{error}</p>}
+        {error && <p role="alert" style={{ color: "#ffb4a9", background: "#3b2025", padding: 10, borderRadius: 8 }}>{tx(error)}</p>}
 
         <section aria-label={tx("ملخص الطلبات")} style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(135px,1fr))", gap: 10, margin: "18px 0" }}>
           {[
             ["إجمالي المعروض", counts.total], ["عاجل مفتوح", counts.urgent], ["طلبات جديدة", counts.pending],
             ["تحت الدراسة", counts.review], ["تمت الموافقة", counts.approved], ["غير موافق عليها", counts.rejected],
-          ].map(([label, value]) => <div key={label} style={panel}><div style={{ color: "#a9bdc9", fontSize: 13 }}>{label}</div><strong style={{ fontSize: 25 }}>{value}</strong></div>)}
+          ].map(([label, value]) => <div key={label} style={panel}><div style={{ color: "#a9bdc9", fontSize: 13 }}>{tx(String(label))}</div><strong style={{ fontSize: 25 }}>{value}</strong></div>)}
         </section>
 
         <section style={{ ...panel, display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(210px,1fr))", gap: 12 }}>
@@ -157,7 +157,7 @@ export default function AssistanceAdmin() {
           </label>
         </section>
 
-        <p style={{ color: "#a9bdc9", marginTop: 14 }}>عدد النتائج: {filtered.length}</p>
+        <p style={{ color: "#a9bdc9", marginTop: 14 }}>{tx("عدد النتائج:")} {filtered.length}</p>
         {loading ? <p>{tx("جارٍ تحميل الطلبات...")}</p> : filtered.length === 0 ? <div style={{ ...panel, marginTop: 12 }}>{tx("لا توجد طلبات تطابق البحث والتصفية.")}</div> :
           filtered.map((x) => (
             <article key={x.id} style={{ ...panel, marginTop: 13 }}>
@@ -167,10 +167,10 @@ export default function AssistanceAdmin() {
               </div>
               <p style={{ whiteSpace: "pre-wrap" }}>{x.description}</p>
               <p style={{ color: "#a9bdc9", fontSize: 13 }}>
-                المستفيد: {x.user.name || "بدون اسم"} · {x.user.email} · {x.user.beneficiaryProfile?.phone || "لا يوجد هاتف"} · {x.city}
+                {tx("المستفيد:")} {x.user.name || tx("بدون اسم")} · {x.user.email} · {x.user.beneficiaryProfile?.phone || tx("لا يوجد هاتف")} · {x.city}
                 {x.user.beneficiaryProfile?.area ? " · " + x.user.beneficiaryProfile.area : ""}
               </p>
-              <div style={{ color: "#a9bdc9", fontSize: 12, display: "grid", gap: 5 }}><span>{tx("رقم الطلب:")} <b dir="ltr">{x.id.slice(-8).toUpperCase()}</b></span><span>تاريخ التقديم: {new Date(x.createdAt).toLocaleString(language === "ar" ? "ar-EG" : "en-EG")}</span><span>آخر تحديث: {new Date(x.updatedAt || x.createdAt).toLocaleString(language === "ar" ? "ar-EG" : "en-EG")}</span></div>
+              <div style={{ color: "#a9bdc9", fontSize: 12, display: "grid", gap: 5 }}><span>{tx("رقم الطلب:")} <b dir="ltr">{x.id.slice(-8).toUpperCase()}</b></span><span>{tx("تاريخ التقديم:")} {new Date(x.createdAt).toLocaleString(language === "ar" ? "ar-EG" : "en-EG")}</span><span>{tx("آخر تحديث:")} {new Date(x.updatedAt || x.createdAt).toLocaleString(language === "ar" ? "ar-EG" : "en-EG")}</span></div>
 
               {x.files?.length > 0 && <section style={{ margin: "12px 0", padding: 12, background: "#0b1b29", borderRadius: 8 }}>
                 <b>{tx("المستندات المرفقة")} ({x.files.length})</b>
@@ -190,7 +190,7 @@ export default function AssistanceAdmin() {
                     <small style={{ display: "block", color: "#91a6b5" }}>
                       {new Date(event.createdAt).toLocaleString(language === "ar" ? "ar-EG" : "en-EG")} · {event.admin?.name || tx("مشرف")}
                     </small>
-                    {event.note && <small style={{ display: "block", color: "#a9bdc9" }}>الملاحظة المسجلة: {event.note}</small>}
+                    {event.note && <small style={{ display: "block", color: "#a9bdc9" }}>{tx("الملاحظة المسجلة:")} {event.note}</small>}
                   </li>)}
                 </ol>
               </section>}
