@@ -207,7 +207,7 @@ export default function Dashboard() {
           
           <footer className="ho-footer">
             <span>HUMANITY ONE © 2026</span>
-            <span><span className="status-dot"></span> نسخة تجريبية — بعض الخدمات قيد التطوير</span>
+            <span><span className="status-dot"></span> {tr("نسخة تجريبية — بعض الخدمات قيد التطوير","Beta version — some services are still in development")}</span>
           </footer>
         </div>
       </main>
