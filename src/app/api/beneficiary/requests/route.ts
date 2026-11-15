@@ -26,7 +26,7 @@ export async function GET() {
       take: 50,
       select: {
         id: true, category: true, urgency: true, description: true, city: true, status: true,
-        adminNote: true, reviewedAt: true, createdAt: true,
+        adminNote: true, reviewedAt: true, createdAt: true, updatedAt: true,
         reviewEvents: {
           select: { id: true, fromStatus: true, toStatus: true, createdAt: true },
           orderBy: { createdAt: "asc" },
