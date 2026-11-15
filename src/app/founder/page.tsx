@@ -64,7 +64,7 @@ export default function FounderAdminPage() {
     const data = await response.json(); setMessage(response.ok ? "تم تحديث الصلاحية." : data.error); if (response.ok) await loadUsers();
   }
   async function removeUser(id: string) {
-    if (!window.confirm("هل تريد حذف هذا الحساب نهائيًا؟")) return;
+    if (!window.confirm(tr("هل تريد حذف هذا الحساب نهائيًا؟"))) return;
     const response = await fetch("/api/admin/users?id=" + encodeURIComponent(id), { method: "DELETE" });
     const data = await response.json(); setMessage(response.ok ? "تم حذف الحساب." : data.error); if (response.ok) await loadUsers();
   }
