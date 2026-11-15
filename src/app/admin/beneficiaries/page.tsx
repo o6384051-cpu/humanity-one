@@ -43,19 +43,19 @@ export default function BeneficiaryManagementPage() {
           <button disabled={loading} style={{ padding: "10px 16px", border: 0, borderRadius: 9, background: "#55d3ca", color: "#08212a", fontWeight: 800 }}>{tx("بحث")}</button>
           <button type="button" onClick={() => { setQuery(""); void load(""); }} style={{ padding: "10px 16px", border: "1px solid #36506a", borderRadius: 9, background: "#14283a", color: "#eef5ff" }}>{tx("مسح")}</button>
         </form>
-        <p style={{ color: "#9aabc0", marginTop: 10 }}>المعروض: {new Intl.NumberFormat("ar-EG").format(users.length)} حساب (بحد أقصى 200 نتيجة).</p>
+        <p style={{ color: "#9aabc0", marginTop: 10 }}>{tx("المعروض:")} {new Intl.NumberFormat(language === "ar" ? "ar-EG" : "en-EG").format(users.length)} {tx("حساب (بحد أقصى 200 نتيجة).")}</p>
       </section>
       {error && <p role="alert" style={{ color: "#ffaaaa" }}>{error}</p>}
       {loading ? <p>{tx("جارٍ تحميل البيانات...")}</p> : users.length === 0 ? <section style={panel}>{tx("لا توجد حسابات تطابق البحث.")}</section> : users.map(user => {
         const profile = user.beneficiaryProfile;
         return <article key={user.id} style={panel}>
           <div style={{ display: "flex", justifyContent: "space-between", gap: 10, flexWrap: "wrap" }}>
-            <div><b style={{ fontSize: 17 }}>{user.name || "بدون اسم"}</b><p style={{ color: "#aebdce" }}>{user.email}</p></div>
-            <span style={{ color: "#63d8d0" }}>{new Intl.NumberFormat("ar-EG").format(user._count.assistanceRequests)} طلب مساعدة</span>
+            <div><b style={{ fontSize: 17 }}>{user.name || tx("بدون اسم")}</b><p style={{ color: "#aebdce" }}>{user.email}</p></div>
+            <span style={{ color: "#63d8d0" }}>{new Intl.NumberFormat(language === "ar" ? "ar-EG" : "en-EG").format(user._count.assistanceRequests)} {tx("طلب مساعدة")}</span>
           </div>
-          <p style={{ color: "#aebdce", marginTop: 8 }}>{profile?.phone || "لا يوجد هاتف"} · {profile?.city || "المدينة غير محددة"} {profile?.area ? "· " + profile.area : ""}</p>
-          <p style={{ color: "#9aabc0", fontSize: 13 }}>العمل: {profile?.employmentStatus || "غير محدد"} · التعليم: {profile?.educationLevel || "غير محدد"}</p>
-          <small style={{ color: "#8499ad" }}>تاريخ التسجيل: {new Date(user.createdAt).toLocaleDateString("ar-EG")}</small>
+          <p style={{ color: "#aebdce", marginTop: 8 }}>{profile?.phone || tx("لا يوجد هاتف")} · {profile?.city || tx("المدينة غير محددة")} {profile?.area ? "· " + profile.area : ""}</p>
+          <p style={{ color: "#9aabc0", fontSize: 13 }}>{tx("العمل:")} {tx(profile?.employmentStatus || "غير محدد")} · {tx("التعليم:")} {tx(profile?.educationLevel || "غير محدد")}</p>
+          <small style={{ color: "#8499ad" }}>تاريخ التسجيل: {new Date(user.createdAt).toLocaleDateString(language === "ar" ? "ar-EG" : "en-EG")}</small>
           <div style={{ marginTop: 12 }}><Link href="/admin/assistance" style={{ color: "#63d8d0" }}>{tx("فتح مراجعة طلبات المساعدة ←")}</Link></div>
         </article>;
       })}
