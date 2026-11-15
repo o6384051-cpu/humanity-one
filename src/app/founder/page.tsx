@@ -7,6 +7,7 @@ type User = { id: string; name: string | null; email: string; role: string; crea
 type SessionUser = { id: string; name: string | null; email: string; role: string };
 
 export default function FounderAdminPage() {
+  const tx = (value: string) => translateText(value, language);
   const { language } = useLanguage();
   const tr = (value: string) => translateText(value, language);
   const [session, setSession] = useState<SessionUser | null>(null);
