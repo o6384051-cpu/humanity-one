@@ -46,7 +46,7 @@ export default function AdminDashboardPage() {
   useEffect(() => { void load(); }, [load]);
 
   const number = (value: number) => new Intl.NumberFormat("ar-EG").format(value);
-  const roleName = (role: string) => role === "SUPER_ADMIN" ? "المؤسس" : role === "ADMIN" ? "إداري" : "مشرف";
+  const roleName = (role: string) => role === "SUPER_ADMIN" ? tr("المؤسس") : role === "ADMIN" ? tr("إداري") : tr("مشرف");
 
   return <main dir="rtl" style={{ minHeight: "100vh", padding: 20, background: "#080d18", color: "#e8edf7", fontFamily: "Cairo, sans-serif" }}>
     <div style={{ maxWidth: 1100, margin: "0 auto", display: "grid", gap: 18 }}>
