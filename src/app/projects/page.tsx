@@ -90,7 +90,7 @@ export default function ProjectsPage() {
   }
 
   function deleteInitiative(id: string) {
-    if (!window.confirm("هل تريد حذف هذه المبادرة من هذا الجهاز؟")) return;
+    if (!window.confirm(tr("هل تريد حذف هذه المبادرة من هذا الجهاز؟"))) return;
     setItems((current) => current.filter((item) => item.id !== id));
   }
 
