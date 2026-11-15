@@ -12,6 +12,8 @@ model User {
   email               String               @unique
   name                String?
   passwordHash        String
+  passwordResetTokenHash String?
+  passwordResetExpiresAt DateTime?
   avatar              String?
   role                String               @default("USER")
   createdAt           DateTime             @default(now())
