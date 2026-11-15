@@ -57,10 +57,10 @@ export default function ResetPasswordPage() {
           <input required type="password" minLength={10} maxLength={128} autoComplete="new-password" value={confirmation} onChange={event => setConfirmation(event.target.value)} style={field} disabled={!token || busy} />
         </label>
         <small style={{ color: "#91a6b5" }}>{tx("استخدم 10 أحرف على الأقل.")}</small>
-        <button disabled={!token || busy} style={{ ...button, opacity: !token || busy ? 0.55 : 1 }}>{busy ? "جارٍ الحفظ…" : "حفظ كلمة المرور الجديدة"}</button>
+        <button disabled={!token || busy} style={{ ...button, opacity: !token || busy ? 0.55 : 1 }}>{busy ? tx("جارٍ الحفظ…") : tx("حفظ كلمة المرور الجديدة")}</button>
       </form>
-      {message && <p role="status" style={{ marginTop: 16, padding: 12, border: "1px solid #287d69", borderRadius: 9, color: "#b9f3df", lineHeight: 1.8 }}>{message} <Link href="/beneficiary" style={{ textDecoration: "underline" }}>{tx("تسجيل الدخول")}</Link></p>}
-      {error && <p role="alert" style={{ marginTop: 16, color: "#ffc5c5" }}>{error}</p>}
+      {message && <p role="status" style={{ marginTop: 16, padding: 12, border: "1px solid #287d69", borderRadius: 9, color: "#b9f3df", lineHeight: 1.8 }}>{tx(message)} <Link href="/beneficiary" style={{ textDecoration: "underline" }}>{tx("تسجيل الدخول")}</Link></p>}
+      {error && <p role="alert" style={{ marginTop: 16, color: "#ffc5c5" }}>{tx(error)}</p>}
       <p style={{ marginTop: 18, color: "#91a6b5", fontSize: 12, lineHeight: 1.8 }}>{tx("الرابط صالح لمدة 30 دقيقة ويُستخدم مرة واحدة فقط. لا تشارك الرابط مع أي شخص.")}</p>
     </section>
   </main>;
