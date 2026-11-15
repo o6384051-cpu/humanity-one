@@ -1062,6 +1062,19 @@ const SCREEN_COPY: Record<string, string> = {
 };
 Object.assign(ENGLISH_COPY, SCREEN_COPY);
 
+
+const RESOURCE_COPY: Record<string, string> = {
+  "خدمات تدريب وتأسيس وتمويل وتسويق ودعم وتطوير المشروعات الصغيرة والمتوسطة.": "Training, business setup, financing, marketing, support, and development services for small and medium enterprises.",
+  "تابع برامج التدريب المهني والمبادرات التي تعلنها وزارة العمل.": "Follow vocational training programs and initiatives announced by the Ministry of Labour.",
+  "تحقق من متطلبات كل دورة وشروط الحصول على الشهادة.": "Check each course's requirements and certificate conditions.",
+  "التمويل ليس مضمونًا؛ راجع الشروط والتكلفة ومقدم الخدمة مباشرة.": "Funding is not guaranteed; check the terms, costs, and service provider directly.",
+  "تختلف الدورات ومواعيدها حسب الإعلان والمحافظة.": "Courses and schedules vary by announcement and governorate.",
+  "حرف ومهن عملية": "Trades and practical occupations",
+  "مصادر موثوقة": "Trusted sources",
+  "تم تجهيز الخطة": "The plan is ready"
+};
+Object.assign(ENGLISH_COPY, RESOURCE_COPY);
+
 export function translateText(value: string, language: AppLanguage): string {
   return language === "ar" ? value : (ENGLISH_COPY[value] ?? value);
 }
