@@ -40,7 +40,7 @@ export default function PostJobPage() {
     } catch(error) { setMessage(error instanceof Error ? error.message : "حدث خطأ غير متوقع."); }
     finally { setBusy(false); }
   }
-  const select = (key:string, options:string[]) => <select value={values[key]} onChange={e=>change(key,e.target.value)} style={input}>{options.map(item=><option key={item}>{item}</option>)}</select>;
+  const select = (key:string, options:string[]) => <select value={values[key]} onChange={e=>change(key,e.target.value)} style={input}>{options.map(item=><option key={item} value={item}>{tx(item)}</option>)}</select>;
   return <main dir="rtl" style={{ minHeight:"100vh", padding:"clamp(18px,4vw,48px)", color:"#e8f1f5", background:"linear-gradient(145deg,#07131d,#0b1d2b 58%,#102a34)" }}>
     <div style={{ maxWidth:850, margin:"0 auto" }}>
       <Link href="/jobs" style={{ color:"#8bded2", display:"inline-flex", gap:8, alignItems:"center", textDecoration:"none", marginBottom:22 }}><ArrowRight size={17}/> {tx("العودة إلى الوظائف")}</Link>
