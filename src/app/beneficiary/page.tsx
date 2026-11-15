@@ -12,6 +12,7 @@ const categories=[["FOOD","غذاء واحتياجات أساسية"],["HOUSING"
 const labels:Record<string,string>={PENDING:"قيد المراجعة",IN_REVIEW:"تحت الدراسة",APPROVED:"تمت الموافقة",REJECTED:"لم تتم الموافقة",CLOSED:"مغلق"};
 const initial:Profile={phone:"",city:"",area:"",employmentStatus:"",educationLevel:"",skills:"",householdSize:null,monthlyIncome:null,goals:""};
 export default function BeneficiaryPage(){
+  const tx = (value: string) => translateText(value, language);
   const { language } = useLanguage();
   const tr = (value: string) => translateText(value, language);
  const [user,setUser]=useState<{name:string|null;email:string}|null>(null),[mode,setMode]=useState<"register"|"login">("register");
