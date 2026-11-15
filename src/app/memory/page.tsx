@@ -9,6 +9,7 @@ type Note = { id: string; text: string; createdAt: string };
 const KEY = "humanity-one-approved-memory-v1";
 
 export default function MemoryPage() {
+  const tx = (value: string) => translateText(value, language);
   const { language } = useLanguage();
   const tr = (value: string) => translateText(value, language);
   const [notes, setNotes] = useState<Note[]>([]);
@@ -55,7 +56,7 @@ export default function MemoryPage() {
       <header style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 22 }}><Brain size={30}/><div><h1 style={{ fontSize: 28, fontWeight: 800 }}>{tr("ذاكرة HUMANITY ONE")}</h1><p style={{ opacity: .7 }}>{tr("أنت تختار ما يُحفظ، ويمكنك مراجعته وتصديره أو حذفه.")}</p></div></header>
       <section style={{ border: "1px solid #ffffff22", borderRadius: 16, padding: 16, marginBottom: 18 }}>
         <label style={{ display: "flex", gap: 12, alignItems: "center", fontWeight: 700 }}><input type="checkbox" checked={enabled} onChange={e => setEnabled(e.target.checked)}/> {tr("تفعيل استخدام هذه الملاحظات في تجارب الذاكرة المحلية")}</label>
-        <p style={{ marginTop: 10, opacity: .7, lineHeight: 1.7 }}><ShieldCheck size={15} style={{ display: "inline", marginLeft: 5 }}/> هذه النسخة تحفظ البيانات داخل تخزين المتصفح على هذا الجهاز فقط. لا توجد مزامنة سحابية أو تشفير مخصص لهذه الملاحظات. لا تحفظ كلمات مرور أو بيانات صحية أو أسرارًا.</p>
+        <p style={{ marginTop: 10, opacity: .7, lineHeight: 1.7 }}><ShieldCheck size={15} style={{ display: "inline", marginLeft: 5 }}/> {tx("هذه النسخة تحفظ البيانات داخل تخزين المتصفح على هذا الجهاز فقط. لا توجد مزامنة سحابية أو تشفير مخصص لهذه الملاحظات. لا تحفظ كلمات مرور أو بيانات صحية أو أسرارًا.")}</p>
       </section>
       <form onSubmit={addNote} style={{ border: "1px solid #ffffff22", borderRadius: 16, padding: 16 }}>
         <label htmlFor="memory-note" style={{ display: "block", fontWeight: 700, marginBottom: 8 }}>{tr("معلومة تريد تذكرها")}</label>
