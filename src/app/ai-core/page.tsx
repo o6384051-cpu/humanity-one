@@ -7,6 +7,7 @@ import {
   X, PanelRightClose, ChevronDown, RotateCcw
 } from "lucide-react";
 import "./ai-core.css";
+import { useLanguage, translateText } from "../../components/LanguageProvider";
 
 type Msg = { id: string; role: "user" | "assistant"; content: string };
 type ChatSession = { id: string; title: string; messages: Msg[]; updatedAt: number };
@@ -32,6 +33,8 @@ function makeSession(): ChatSession {
 }
 
 export default function AICorePage() {
+  const { language } = useLanguage();
+  const tr = (value: string) => translateText(value, language);
   const [sessions, setSessions] = useState<ChatSession[]>(() => [makeSession()]);
   const [activeId, setActiveId] = useState("");
   const [role, setRole] = useState<(typeof roles)[number]["id"]>("coordinator");
@@ -188,39 +191,39 @@ export default function AICorePage() {
     <main className="humanity-chat" dir="rtl">
       <aside className={`hc-sidebar ${sidebarOpen ? "is-open" : ""}`}>
         <div className="hc-side-top">
-          <a className="hc-brand" href="/"><span className="hc-brand-icon"><HeartHandshake size={21} /></span><span><b>HUMANITY ONE</b><small>ذكاء يصنع أثرًا</small></span></a>
-          <button className="hc-icon-button hc-mobile-close" onClick={() => setSidebarOpen(false)} aria-label="إغلاق القائمة"><X size={19} /></button>
+          <a className="hc-brand" href="/"><span className="hc-brand-icon"><HeartHandshake size={21} /></span><span><b>HUMANITY ONE</b><small>{tr("ذكاء يصنع أثرًا")}</small></span></a>
+          <button className="hc-icon-button hc-mobile-close" onClick={() => setSidebarOpen(false)} aria-label={tr("إغلاق القائمة")}><X size={19} /></button>
         </div>
-        <button className="hc-new-chat" onClick={newChat}><Plus size={18} /> محادثة جديدة</button>
-        <div className="hc-history-label">محادثاتك</div>
+        <button className="hc-new-chat" onClick={newChat}><Plus size={18} /> {tr("محادثة جديدة")}</button>
+        <div className="hc-history-label">{tr("محادثاتك")}</div>
         <div className="hc-history">
           {sessions.map((session) => (
             <div key={session.id} className={`hc-history-row ${active?.id === session.id ? "active" : ""}`}>
               <button className="hc-history-item" onClick={() => chooseChat(session.id)}>
                 <MessageSquare size={16} /><span>{session.title || "محادثة جديدة"}</span>
               </button>
-              <button className="hc-history-delete" onClick={() => deleteChat(session.id)} disabled={busy && active?.id === session.id} aria-label="حذف المحادثة" title="حذف المحادثة"><X size={14} /></button>
+              <button className="hc-history-delete" onClick={() => deleteChat(session.id)} disabled={busy && active?.id === session.id} aria-label={tr("حذف المحادثة")} title={tr("حذف المحادثة")}><X size={14} /></button>
             </div>
           ))}
         </div>
         <div className="hc-side-bottom">
-          <div className="hc-privacy"><ShieldCheck size={17} /><span><b>الخصوصية أولًا</b><small>لا تشارك كلمات المرور أو البيانات الحساسة</small></span></div>
-          <a href="/" className="hc-back-home">العودة إلى المنصة الرئيسية</a>
+          <div className="hc-privacy"><ShieldCheck size={17} /><span><b>{tr("الخصوصية أولًا")}</b><small>{tr("لا تشارك كلمات المرور أو البيانات الحساسة")}</small></span></div>
+          <a href="/" className="hc-back-home">{tr("العودة إلى المنصة الرئيسية")}</a>
         </div>
       </aside>
 
-      {sidebarOpen && <button className="hc-overlay" onClick={() => setSidebarOpen(false)} aria-label="إغلاق القائمة" />}
+      {sidebarOpen && <button className="hc-overlay" onClick={() => setSidebarOpen(false)} aria-label={tr("إغلاق القائمة")} />}
 
       <section className="hc-main">
         <header className="hc-topbar">
           <div className="hc-topbar-start">
-            <button className="hc-icon-button hc-menu-button" onClick={() => setSidebarOpen(true)} aria-label="فتح القائمة"><Menu size={20} /></button>
-            <div><span className="hc-breadcrumb">HUMANITY ONE</span><b>المساعد الذكي</b></div>
+            <button className="hc-icon-button hc-menu-button" onClick={() => setSidebarOpen(true)} aria-label={tr("فتح القائمة")}><Menu size={20} /></button>
+            <div><span className="hc-breadcrumb">HUMANITY ONE</span><b>{tr("المساعد الذكي")}</b></div>
           </div>
           <div className="hc-topbar-actions">
             <span className="hc-status"><i /> {status}</span>
-            <button className="hc-export" onClick={exportCurrentChat} disabled={!messages.length} title="تصدير المحادثة"><Download size={16} /><span>تصدير</span></button>
-            <button className="hc-icon-button" onClick={newChat} title="محادثة جديدة" aria-label="محادثة جديدة"><Plus size={18} /></button>
+            <button className="hc-export" onClick={exportCurrentChat} disabled={!messages.length} title={tr("تصدير المحادثة")}><Download size={16} /><span>{tr("تصدير")}</span></button>
+            <button className="hc-icon-button" onClick={newChat} title={tr("محادثة جديدة")} aria-label={tr("محادثة جديدة")}><Plus size={18} /></button>
           </div>
         </header>
 
@@ -241,9 +244,9 @@ export default function AICorePage() {
           {messages.length === 0 ? (
             <div className="hc-welcome">
               <div className="hc-welcome-symbol"><Sparkles size={25} /></div>
-              <p className="hc-eyebrow">معًا نصنع أثرًا إنسانيًا</p>
-              <h1>كيف يمكنني مساعدتك <em>اليوم؟</em></h1>
-              <p className="hc-welcome-copy">اسأل، خطط، تعلّم، أو ابدأ مبادرة جديدة. اختر أحد الاقتراحات أو اكتب ما تحتاج إليه.</p>
+              <p className="hc-eyebrow">{tr("معًا نصنع أثرًا إنسانيًا")}</p>
+              <h1>{tr("كيف يمكنني مساعدتك")} <em>{tr("اليوم؟")}</em></h1>
+              <p className="hc-welcome-copy">{tr("اسأل، خطط، تعلّم، أو ابدأ مبادرة جديدة. اختر أحد الاقتراحات أو اكتب ما تحتاج إليه.")}</p>
               <div className="hc-suggestions">
                 {suggestions.map((suggestion) => <button key={suggestion} onClick={() => sendMessage(undefined, suggestion)}>{suggestion}<span>←</span></button>)}
               </div>
@@ -255,26 +258,26 @@ export default function AICorePage() {
                 <div className="hc-message-body">
                   <div className="hc-message-name">{message.role === "user" ? "أنت" : "HUMANITY ONE"}</div>
                   <p>{message.content}</p>
-                  {message.role === "assistant" && <button className="hc-copy" onClick={() => copyMessage(message)} aria-label="نسخ الرد">{copiedId === message.id ? <Check size={14} /> : <Copy size={14} />}{copiedId === message.id ? "تم النسخ" : "نسخ"}</button>}
+                  {message.role === "assistant" && <button className="hc-copy" onClick={() => copyMessage(message)} aria-label={tr("نسخ الرد")}>{copiedId === message.id ? <Check size={14} /> : <Copy size={14} />}{copiedId === message.id ? "تم النسخ" : "نسخ"}</button>}
                 </div>
               </article>)}
-              {busy && <div className="hc-thinking"><span /><span /><span /> يكتب المساعد...</div>}
+              {busy && <div className="hc-thinking"><span /><span /><span /> {tr("يكتب المساعد...")}</div>}
               <div ref={endRef} />
             </div>
           )}
 
           <div className="hc-composer-area">
             <form className="hc-composer" onSubmit={(event) => sendMessage(event)}>
-              <textarea ref={textareaRef} value={input} onChange={(event) => setInput(event.target.value)} onKeyDown={(event) => { if (event.key === "Enter" && !event.shiftKey) { event.preventDefault(); sendMessage(); } }} placeholder="اكتب رسالتك هنا..." rows={1} aria-label="رسالتك" />
+              <textarea ref={textareaRef} value={input} onChange={(event) => setInput(event.target.value)} onKeyDown={(event) => { if (event.key === "Enter" && !event.shiftKey) { event.preventDefault(); sendMessage(); } }} placeholder={tr("اكتب رسالتك هنا...")} rows={1} aria-label={tr("رسالتك")} />
               <div className="hc-composer-bottom">
-                <span>Enter للإرسال · Shift + Enter لسطر جديد</span>
+                <span>{tr("Enter للإرسال · Shift + Enter لسطر جديد")}</span>
                 <div>
-                  {messages.length > 0 && <button type="button" className="hc-clear" onClick={clearCurrent} disabled={busy} title="مسح المحادثة"><Trash2 size={16} /></button>}
-                  <button type="submit" className="hc-send" disabled={busy || !input.trim()} aria-label="إرسال الرسالة">{busy ? <RotateCcw size={17} className="hc-spin" /> : <Send size={17} />}</button>
+                  {messages.length > 0 && <button type="button" className="hc-clear" onClick={clearCurrent} disabled={busy} title={tr("مسح المحادثة")}><Trash2 size={16} /></button>}
+                  <button type="submit" className="hc-send" disabled={busy || !input.trim()} aria-label={tr("إرسال الرسالة")}>{busy ? <RotateCcw size={17} className="hc-spin" /> : <Send size={17} />}</button>
                 </div>
               </div>
             </form>
-            <p className="hc-disclaimer">قد يخطئ الذكاء الاصطناعي؛ راجع المعلومات المهمة قبل استخدامها. لا ترسل بيانات شخصية حساسة.</p>
+            <p className="hc-disclaimer">{tr("قد يخطئ الذكاء الاصطناعي؛ راجع المعلومات المهمة قبل استخدامها. لا ترسل بيانات شخصية حساسة.")}</p>
           </div>
         </div>
       </section>
