@@ -29,8 +29,8 @@ function makeSteps(p: Profile): Step[] {
 }
 
 export default function PersonalPlanPage() {
-  const tx = (value: string) => translateText(value, language);
   const { language } = useLanguage();
+  const tx = (value: string) => translateText(value, language);
   const tr = (value: string) => translateText(value, language);
   const [profile, setProfile] = useState<Profile>(blank);
   const [plan, setPlan] = useState<SavedPlan | null>(null);
