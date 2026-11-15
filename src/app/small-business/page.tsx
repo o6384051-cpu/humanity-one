@@ -37,24 +37,24 @@ export default function SmallBusinessPage() {
   const revenue = n(customers) * n(price);
   const operating = n(monthlyFixed) + variableCost;
   const remainder = revenue - operating;
-  const money = (v: number) => new Intl.NumberFormat("ar-EG", { maximumFractionDigits: 2 }).format(v) + " (بالعملة التي أدخلتها)";
+  const money = (v: number) => new Intl.NumberFormat(language === "ar" ? "ar-EG" : "en-EG", { maximumFractionDigits: 2 }).format(v) + " " + tr("(بالعملة التي أدخلتها)");
   const updateItem = (id: number, key: keyof Item, value: string) => setItems((old) => old.map((x) => x.id === id ? { ...x, [key]: value } : x));
   const addItem = () => setItems((old) => [...old, { id: Date.now(), name: "", quantity: "1", unit: "وحدة", unitCost: "" }]);
   const removeItem = (id: number) => setItems((old) => old.filter((x) => x.id !== id));
   const report = [
-    "خطة مشروع أولية - HUMANITY ONE",
-    "الفكرة: " + idea,
-    "الميزانية المتاحة: " + (budget || "لم تُحدد"),
-    "العملاء المتوقعون شهريًا (تقدير المستخدم): " + (customers || "لم يُحدد"),
-    "سعر البيع للوحدة: " + (price || "لم يُحدد"),
-    "المصروفات الثابتة الشهرية: " + (monthlyFixed || "لم تُحدد"),
-    "قائمة البنود:",
-    ...items.map((x) => [x.name, "الكمية " + x.quantity, x.unit, "تكلفة الوحدة " + (x.unitCost || "غير محددة")].join(" - ")),
-    "إجمالي البنود المدخلة: " + totalSetup,
-    "الإيراد التقديري: " + revenue,
-    "المتبقي الحسابي قبل الضرائب والتكاليف غير المدخلة: " + remainder,
-    "ملاحظات: " + notes,
-    "هذه أرقام أدخلها المستخدم وليست أسعار سوق أو ضمان ربح."
+    tr("خطة مشروع أولية - HUMANITY ONE"),
+    tr("الفكرة:") + " " + tr(idea),
+    tr("الميزانية المتاحة:") + " " + (budget || tr("لم تُحدد")),
+    tr("العملاء المتوقعون شهريًا (تقدير المستخدم):") + " " + (customers || tr("لم يُحدد")),
+    tr("سعر البيع للوحدة:") + " " + (price || tr("لم يُحدد")),
+    tr("المصروفات الثابتة الشهرية:") + " " + (monthlyFixed || tr("لم تُحدد")),
+    tr("قائمة البنود:"),
+    ...items.map((x) => [tr(x.name), tr("الكمية") + " " + x.quantity, tr(x.unit), tr("تكلفة الوحدة") + " " + (x.unitCost || tr("غير محددة"))].join(" - ")),
+    tr("إجمالي البنود المدخلة:") + " " + totalSetup,
+    tr("الإيراد التقديري:") + " " + revenue,
+    tr("المتبقي الحسابي قبل الضرائب والتكاليف غير المدخلة:") + " " + remainder,
+    tr("ملاحظات:") + " " + notes,
+    tr("هذه أرقام أدخلها المستخدم وليست أسعار سوق أو ضمان ربح.")
   ].join("\n");
   const download = () => {
     const url = URL.createObjectURL(new Blob(["\uFEFF" + report], { type: "text/plain;charset=utf-8" }));
@@ -76,11 +76,11 @@ export default function SmallBusinessPage() {
       <section style={{ ...panel, display: "grid", gap: 13, marginBottom: 15 }}>
         <h2 style={{ margin: 0, fontSize: 19 }}>{tr("1. اختر فكرة وابدأ بخطوة صغيرة")}</h2>
         <label style={label}>{tx("نوع النشاط")}
-          <select value={idea} onChange={(e) => setIdea(e.target.value)} style={field}>{ideas.map((x) => <option key={x.name}>{x.name}</option>)}</select>
+          <select value={idea} onChange={(e) => setIdea(e.target.value)} style={field}>{ideas.map((x) => <option key={x.name} value={x.name}>{tr(x.name)}</option>)}</select>
         </label>
         <div style={{ background: "#0a1b27", borderRadius: 10, padding: 13, lineHeight: 1.9 }}>
-          <strong style={{ color: "#bfe9e3" }}>{tr("ما قد تحتاجه:")}</strong><p style={{ margin: "3px 0 10px", color: "#b7cbd2" }}>{selected.need}</p>
-          <strong style={{ color: "#bfe9e3" }}>{tr("أول خطوة مقترحة:")}</strong><p style={{ margin: "3px 0 0", color: "#b7cbd2" }}>{selected.first}</p>
+          <strong style={{ color: "#bfe9e3" }}>{tr("ما قد تحتاجه:")}</strong><p style={{ margin: "3px 0 10px", color: "#b7cbd2" }}>{tr(selected.need)}</p>
+          <strong style={{ color: "#bfe9e3" }}>{tr("أول خطوة مقترحة:")}</strong><p style={{ margin: "3px 0 0", color: "#b7cbd2" }}>{tr(selected.first)}</p>
         </div>
         <label style={label}>{tr("الميزانية المتاحة (أدخل المبلغ والعملة بنفسك)")}<input inputMode="decimal" value={budget} onChange={(e) => setBudget(e.target.value)} style={field} placeholder={tr("مثال: 5000 جنيه")} /></label>
       </section>
@@ -95,9 +95,9 @@ export default function SmallBusinessPage() {
         <h3 style={{ fontSize: 15, margin: "10px 0" }}>{tr("بنود التكلفة التي أدخلتها بنفسك")}</h3>
         <div style={{ display: "grid", gap: 9 }}>
           {items.map((item) => <div key={item.id} style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(105px,1fr))", gap: 7, alignItems: "center" }}>
-            <input aria-label={tr("اسم البند")} value={item.name} onChange={(e) => updateItem(item.id, "name", e.target.value)} style={field} placeholder={tr("اسم البند")}/>
+            <input aria-label={tr("اسم البند")} value={tr(item.name)} onChange={(e) => updateItem(item.id, "name", e.target.value)} style={field} placeholder={tr("اسم البند")}/>
             <input aria-label={tr("الكمية")} inputMode="decimal" value={item.quantity} onChange={(e) => updateItem(item.id, "quantity", e.target.value)} style={field} placeholder={tr("الكمية")}/>
-            <input aria-label={tr("الوحدة")} value={item.unit} onChange={(e) => updateItem(item.id, "unit", e.target.value)} style={field} placeholder={tr("الوحدة")}/>
+            <input aria-label={tr("الوحدة")} value={tr(item.unit)} onChange={(e) => updateItem(item.id, "unit", e.target.value)} style={field} placeholder={tr("الوحدة")}/>
             <input aria-label={tr("تكلفة الوحدة")} inputMode="decimal" value={item.unitCost} onChange={(e) => updateItem(item.id, "unitCost", e.target.value)} style={field} placeholder={tr("تكلفة الوحدة")}/>
             <button type="button" onClick={() => removeItem(item.id)} style={{ border: "1px solid #704b4b", color: "#ffd4d4", background: "transparent", borderRadius: 8, padding: 9 }}>{tr("حذف")}</button>
           </div>)}
