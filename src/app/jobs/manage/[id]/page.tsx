@@ -78,7 +78,7 @@ export default function EmployerApplicationsPage() {
       <h1 style={{ fontSize: "clamp(27px,4vw,38px)", margin: "9px 0" }}>{tx("متابعة المتقدمين للوظيفة")}</h1>
       <p style={{ color: "#a9bdc8", lineHeight: 1.9 }}>{tx("هذه الصفحة لا تظهر للعامة. الدخول يتم برابط سري أُنشئ عند نشر الإعلان، ولا نعرض بيانات المتقدمين إلا لصاحب الرابط.")}</p>
       {loading && <section style={panel}>{tx("جارٍ تحميل طلبات التقديم...")}</section>}
-      {error && <section role="alert" style={{ ...panel, color: "#ffb4a8", lineHeight: 1.9 }}>{error}<p style={{ color: "#a9bdc8", fontSize: 13 }}>{tx("إذا فقدت الرابط السري، لأمان بيانات العمال لن نعرض الطلبات دون إثبات ملكية الإعلان.")}</p></section>}
+      {error && <section role="alert" style={{ ...panel, color: "#ffb4a8", lineHeight: 1.9 }}>{tx(error)}<p style={{ color: "#a9bdc8", fontSize: 13 }}>{tx("إذا فقدت الرابط السري، لأمان بيانات العمال لن نعرض الطلبات دون إثبات ملكية الإعلان.")}</p></section>}
       {job && <>
         <section style={{ ...panel, marginBottom: 14 }}>
           <div style={{ color: "#82d9cd", fontSize: 13 }}>{job.businessName} · {job.city}</div>
@@ -95,7 +95,7 @@ export default function EmployerApplicationsPage() {
               </div>
               <p style={{ margin: "10px 0", color: "#bfe9e3" }}>{tx("الهاتف:")} <a href={`tel:${application.phone}`} style={{ color: "#8bded2" }}>{application.phone}</a></p>
               {application.experience && <p style={{ color: "#c5d6dd", whiteSpace: "pre-wrap", lineHeight: 1.8 }}>الخبرة والمهارات: {application.experience}</p>}
-              {application.message && <p style={{ color: "#c5d6dd", whiteSpace: "pre-wrap", lineHeight: 1.8 }}>رسالة المتقدم: {application.message}</p>}
+              {application.message && <p style={{ color: "#c5d6dd", whiteSpace: "pre-wrap", lineHeight: 1.8 }}>{tx("رسالة المتقدم:")} {application.message}</p>}
             </article>)}
           </section>}
       </>}
