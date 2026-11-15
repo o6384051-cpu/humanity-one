@@ -120,7 +120,7 @@ export default function OpportunitiesPage() {
     <main dir="rtl" style={{ minHeight: "100vh", padding: "clamp(18px, 4vw, 48px)", color: "#e8f1f5", background: "linear-gradient(145deg,#07131d,#0b1d2b 58%,#102a34)" }}>
       <div style={{ maxWidth: 1120, margin: "0 auto" }}>
         <Link href="/" style={{ display: "inline-flex", alignItems: "center", gap: 8, color: "#8bded2", textDecoration: "none", marginBottom: 24 }}>
-          <ArrowRight size={17} /> العودة إلى HUMANITY ONE
+          <ArrowRight size={17} /> {tx("العودة إلى HUMANITY ONE")}
         </Link>
 
         <header style={{ marginBottom: 24 }}>
