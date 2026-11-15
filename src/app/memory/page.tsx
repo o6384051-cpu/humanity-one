@@ -9,8 +9,8 @@ type Note = { id: string; text: string; createdAt: string };
 const KEY = "humanity-one-approved-memory-v1";
 
 export default function MemoryPage() {
-  const tx = (value: string) => translateText(value, language);
   const { language } = useLanguage();
+  const tx = (value: string) => translateText(value, language);
   const tr = (value: string) => translateText(value, language);
   const [notes, setNotes] = useState<Note[]>([]);
   const [draft, setDraft] = useState("");
