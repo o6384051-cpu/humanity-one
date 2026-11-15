@@ -186,7 +186,7 @@ export default function AssistanceAdmin() {
                 <b>{tx("سجل المراجعة والتغييرات")}</b>
                 <ol style={{ marginTop: 8, paddingRight: 20 }}>
                   {x.reviewEvents.map((event) => <li key={event.id} style={{ marginBottom: 8, color: "#c5d4df" }}>
-                    <span>{event.fromStatus ? tx(statusNames[event.fromStatus] || event.fromStatus) + " ← " : ""}{tx(statusNames[event.toStatus] || event.toStatus)</span>
+                    <span>{event.fromStatus ? tx(statusNames[event.fromStatus] || event.fromStatus) + " ← " : ""}{tx(statusNames[event.toStatus] || event.toStatus)}</span>
                     <small style={{ display: "block", color: "#91a6b5" }}>
                       {new Date(event.createdAt).toLocaleString(language === "ar" ? "ar-EG" : "en-EG")} · {event.admin?.name || tx("مشرف")}
                     </small>
