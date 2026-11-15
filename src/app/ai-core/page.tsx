@@ -257,7 +257,7 @@ export default function AICorePage() {
               {messages.map((message) => <article key={message.id} className={`hc-message ${message.role}`}>
                 <div className="hc-message-avatar">{message.role === "user" ? "أ" : <Bot size={18} />}</div>
                 <div className="hc-message-body">
-                  <div className="hc-message-name">{message.role === "user" ? "أنت" : "HUMANITY ONE"}</div>
+                  <div className="hc-message-name">{message.role === "user" ? tr("أنت") : "HUMANITY ONE"}</div>
                   <p>{message.content}</p>
                   {message.role === "assistant" && <button className="hc-copy" onClick={() => copyMessage(message)} aria-label={tr("نسخ الرد")}>{copiedId === message.id ? <Check size={14} /> : <Copy size={14} />}{copiedId === message.id ? tr("تم النسخ") : tr("نسخ")}</button>}
                 </div>
