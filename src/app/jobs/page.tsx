@@ -37,7 +37,7 @@ function ApplicationForm({ job, onClose }: { job: Job; onClose: () => void }) {
     finally { setBusy(false); }
   }
   return <form onSubmit={submit} style={{ display: "grid", gap: 10, marginTop: 14, padding: 14, background: "#071722", borderRadius: 12 }}>
-    <strong>التقديم على: {job.jobTitle}</strong>
+    <strong>{tr("التقديم على:")} {job.jobTitle}</strong>
     <input required minLength={2} maxLength={100} value={name} onChange={e => setName(e.target.value)} placeholder={tr("اسمك")} style={field} />
     <input required value={phone} onChange={e => setPhone(e.target.value)} placeholder={tr("رقم هاتف للتواصل")} style={field} />
     <textarea maxLength={1200} value={experience} onChange={e => setExperience(e.target.value)} placeholder={tr("خبرتك العملية أو الحرفة التي تتقنها (اختياري)")} rows={3} style={field} />
