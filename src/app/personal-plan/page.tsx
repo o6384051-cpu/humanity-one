@@ -11,20 +11,26 @@ type SavedPlan = { profile: Profile; steps: Step[]; createdAt: string };
 const KEY = "humanity-one-personal-plan-v1";
 const blank: Profile = { skills: "", education: "ثانوي أو ما يعادله", goal: "الحصول على عمل أو دخل", hours: "5", interest: "أي فرصة مناسبة", internet: "متاح", location: "" };
 
-function makeSteps(p: Profile): Step[] {
-  const skill = p.skills.trim() || "مهاراتك الحالية";
-  const focus = p.interest === "مشروع صغير" ? "مشروع صغير بتكلفة منخفضة" : p.interest === "عمل رقمي" ? "العمل الرقمي" : p.interest === "حرفة أو عمل يدوي" ? "حرفة أو عمل يدوي" : "فرص العمل المناسبة";
-  const internet = p.internet === "غير متاح بانتظام" ? "ابحث عن مركز شباب أو مكتبة عامة أو مكان يتيح اتصالًا مجانيًا" : "استخدم هاتفك أو جهازك للبحث والتعلم";
+function makeSteps(p: Profile, language: "ar" | "en"): Step[] {
+  const en = language === "en";
+  const skill = p.skills.trim() || (en ? "your current skills" : "مهاراتك الحالية");
+  const focusAr = p.interest === "مشروع صغير" ? "مشروع صغير بتكلفة منخفضة" : p.interest === "عمل رقمي" ? "العمل الرقمي" : p.interest === "حرفة أو عمل يدوي" ? "حرفة أو عمل يدوي" : "فرص العمل المناسبة";
+  const focus = en ? translateText(focusAr, language) : focusAr;
+  const internet = p.internet === "غير متاح بانتظام"
+    ? (en ? "Look for a youth center, public library, or place that offers free internet access" : "ابحث عن مركز شباب أو مكتبة عامة أو مكان يتيح اتصالًا مجانيًا")
+    : (en ? "Use your phone or computer to search and learn" : "استخدم هاتفك أو جهازك للبحث والتعلم");
   const hours = Math.max(2, Math.min(20, Number(p.hours) || 5));
+  const education = translateText(p.education, language);
+  const goal = translateText(p.goal, language);
   return [
-    { id: "w1a", week: 1, title: "جرد المهارات والإمكانات", detail: `اكتب 5 أشياء تستطيع القيام بها، ومنها: ${skill}. ضع في اعتبارك مستوى تعليمك (${p.education}) وحدّد الأدوات المتاحة والوقت الذي يمكنك الالتزام به.`, done: false },
-    { id: "w1b", week: 1, title: "اختيار مسار واحد", detail: `ابدأ بمسار واضح: ${focus}. لا تدفع مقابل تدريب أو توظيف قبل التحقق من الجهة والشروط.`, done: false },
-    { id: "w2a", week: 2, title: "تعلم مهارة صغيرة قابلة للتطبيق", detail: `خصص نحو ${hours} ساعات أسبوعيًا لتعلم مهارة مرتبطة بهدفك: ${p.goal}. اختر درسًا مجانيًا وطبّق ما تتعلمه.`, done: false },
-    { id: "w2b", week: 2, title: "إنشاء نموذج عمل", detail: "أنجز مثالًا عمليًا واحدًا يثبت مهارتك: تصميم، كتابة، إصلاح، منتج تجريبي أو خدمة بسيطة.", done: false },
-    { id: "w3a", week: 3, title: "تجهيز ملف التقديم", detail: "اكتب سيرة ذاتية قصيرة أو صفحة تعرض مهاراتك ونموذج عملك ووسيلة تواصل آمنة.", done: false },
-    { id: "w3b", week: 3, title: "التواصل مع جهات موثوقة", detail: `${internet}. راجع مركز الفرص في HUMANITY ONE وقدّم فقط عبر القنوات الرسمية.`, done: false },
-    { id: "w4a", week: 4, title: "تنفيذ محاولات واقعية", detail: "قدّم على فرص مناسبة أو اعرض خدمتك على نطاق صغير. سجّل الردود وما تعلمته دون دفع أموال لوسطاء.", done: false },
-    { id: "w4b", week: 4, title: "مراجعة النتائج وتعديل المسار", detail: "راجع ما أنجزته، وحدد العقبة الأكبر، ثم اختر خطوة واحدة للأسبوع التالي. عدم الحصول على رد ليس فشلًا؛ عدّل الطريقة واستمر.", done: false },
+    { id: "w1a", week: 1, title: en ? "Review your skills and resources" : "جرد المهارات والإمكانات", detail: en ? `List five things you can do, including: ${skill}. Consider your education level (${education}), the tools available to you, and the time you can commit.` : `اكتب 5 أشياء تستطيع القيام بها، ومنها: ${skill}. ضع في اعتبارك مستوى تعليمك (${p.education}) وحدّد الأدوات المتاحة والوقت الذي يمكنك الالتزام به.`, done: false },
+    { id: "w1b", week: 1, title: en ? "Choose one clear path" : "اختيار مسار واحد", detail: en ? `Start with one clear path: ${focus}. Do not pay for training or recruitment before verifying the organization and its terms.` : `ابدأ بمسار واضح: ${focusAr}. لا تدفع مقابل تدريب أو توظيف قبل التحقق من الجهة والشروط.`, done: false },
+    { id: "w2a", week: 2, title: en ? "Learn one practical skill" : "تعلم مهارة صغيرة قابلة للتطبيق", detail: en ? `Set aside about ${hours} hours per week to learn a skill related to your goal: ${goal}. Choose a free lesson and put what you learn into practice.` : `خصص نحو ${hours} ساعات أسبوعيًا لتعلم مهارة مرتبطة بهدفك: ${p.goal}. اختر درسًا مجانيًا وطبّق ما تتعلمه.`, done: false },
+    { id: "w2b", week: 2, title: en ? "Create a work sample" : "إنشاء نموذج عمل", detail: en ? "Create one practical example that demonstrates your skills: a design, a piece of writing, a repair, a sample product, or a simple service." : "أنجز مثالًا عمليًا واحدًا يثبت مهارتك: تصميم، كتابة، إصلاح، منتج تجريبي أو خدمة بسيطة.", done: false },
+    { id: "w3a", week: 3, title: en ? "Prepare your application profile" : "تجهيز ملف التقديم", detail: en ? "Write a short resume or a page that presents your skills, work sample, and a safe way to contact you." : "اكتب سيرة ذاتية قصيرة أو صفحة تعرض مهاراتك ونموذج عملك ووسيلة تواصل آمنة.", done: false },
+    { id: "w3b", week: 3, title: en ? "Contact trusted organizations" : "التواصل مع جهات موثوقة", detail: en ? `${internet}. Visit the HUMANITY ONE opportunities hub and apply only through official channels.` : `${internet}. راجع مركز الفرص في HUMANITY ONE وقدّم فقط عبر القنوات الرسمية.`, done: false },
+    { id: "w4a", week: 4, title: en ? "Take practical steps" : "تنفيذ محاولات واقعية", detail: en ? "Apply for suitable opportunities or offer your service on a small scale. Track responses and lessons learned; never pay intermediaries." : "قدّم على فرص مناسبة أو اعرض خدمتك على نطاق صغير. سجّل الردود وما تعلمته دون دفع أموال لوسطاء.", done: false },
+    { id: "w4b", week: 4, title: en ? "Review and adjust your approach" : "مراجعة النتائج وتعديل المسار", detail: en ? "Review what you achieved, identify the biggest obstacle, and choose one step for next week. Not receiving a response is not failure; adjust your approach and keep going." : "راجع ما أنجزته، وحدد العقبة الأكبر، ثم اختر خطوة واحدة للأسبوع التالي. عدم الحصول على رد ليس فشلًا؛ عدّل الطريقة واستمر.", done: false },
   ];
 }
 
@@ -59,12 +65,13 @@ export default function PersonalPlanPage() {
 
   function generate(e: React.FormEvent) {
     e.preventDefault();
-    const next: SavedPlan = { profile, steps: makeSteps(profile), createdAt: new Date().toISOString() };
+    const next: SavedPlan = { profile, steps: makeSteps(profile, language), createdAt: new Date().toISOString() };
     setPlan(next);
   }
   function exportPlan() {
     if (!plan) return;
-    const blob = new Blob([JSON.stringify(plan, null, 2)], { type: "application/json;charset=utf-8" });
+    const exportSteps = makeSteps(plan.profile, language).map(step => ({ ...step, done: plan.steps.find(saved => saved.id === step.id)?.done ?? false }));
+    const blob = new Blob([JSON.stringify({ ...plan, steps: exportSteps }, null, 2)], { type: "application/json;charset=utf-8" });
     const url = URL.createObjectURL(blob); const a = document.createElement("a");
     a.href = url; a.download = "humanity-one-personal-plan.json"; a.click(); URL.revokeObjectURL(url);
   }
@@ -110,11 +117,11 @@ export default function PersonalPlanPage() {
 
       {plan && <section style={{ display: "grid", gap: 14 }}>
         <div style={{ ...panel, display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: 12 }}>
-          <div><div style={{ color: "#83d9ce", fontSize: 13 }}>{tr("خطة 4 أسابيع")}</div><h2 style={{ margin: "7px 0", fontSize: 21 }}>هدفك: {plan.profile.goal}</h2><p style={{ margin: 0, color: "#a9bdc8", fontSize: 13 }}>المجال: {plan.profile.interest} · التعليم: {plan.profile.education} · الوقت المتاح: {plan.profile.hours} ساعات أسبوعيًا{plan.profile.location ? ` · المنطقة: ${plan.profile.location}` : ""}</p></div>
+          <div><div style={{ color: "#83d9ce", fontSize: 13 }}>{tr("خطة 4 أسابيع")}</div><h2 style={{ margin: "7px 0", fontSize: 21 }}>هدفك: {plan.profile.goal}</h2><p style={{ margin: 0, color: "#a9bdc8", fontSize: 13 }}>{tr("المجال:")} {tr(plan.profile.interest)} · {tr("التعليم:")} {tr(plan.profile.education)} · {tr("الوقت المتاح:")} {plan.profile.hours} {tr("ساعات أسبوعيًا")}{plan.profile.location ? ` · المنطقة: ${plan.profile.location}` : ""}</p></div>
           <div style={{ minWidth: 125 }}><strong style={{ fontSize: 25, color: "#83d9ce" }}>{completed}/{plan.steps.length}</strong><div style={{ color: "#a9bdc8", fontSize: 12 }}>{tr("خطوات مكتملة")}</div><div style={{ height: 7, background: "#294454", borderRadius: 9, marginTop: 8, overflow: "hidden" }}><div style={{ width: (completed / plan.steps.length * 100) + "%", height: "100%", background: "#65c9b8" }} /></div></div>
         </div>
         {[1,2,3,4].map(week => <section key={week} style={panel}>
-          <h3 style={{ margin: "0 0 13px", color: "#dff6f2", fontSize: 17 }}>الأسبوع {week}</h3>
+          <h3 style={{ margin: "0 0 13px", color: "#dff6f2", fontSize: 17 }}>{tr("الأسبوع")} {week}</h3>
           <div style={{ display: "grid", gap: 12 }}>{plan.steps.filter(s => s.week === week).map(step => <label key={step.id} style={{ display: "flex", alignItems: "start", gap: 10, cursor: "pointer" }}>
             <input type="checkbox" checked={step.done} onChange={e => setPlan(current => current ? { ...current, steps: current.steps.map(s => s.id === step.id ? { ...s, done: e.target.checked } : s) } : current)} style={{ marginTop: 4, accentColor: "#65c9b8", width: 17, height: 17 }} />
             <span style={{ flex: 1 }}><strong style={{ color: step.done ? "#83d9ce" : "#edf6f7", textDecoration: step.done ? "line-through" : "none" }}>{step.title}</strong><span style={{ display: "block", color: "#a9bdc8", fontSize: 13, lineHeight: 1.8, marginTop: 4 }}>{step.detail}</span></span>
@@ -129,7 +136,7 @@ export default function PersonalPlanPage() {
 
       <footer style={{ ...panel, marginTop: 18, color: "#91aab6", fontSize: 12, lineHeight: 1.9 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 7, color: "#bfe9e3", marginBottom: 5 }}><ShieldCheck size={16} /> {tr("الخصوصية والواقعية")}</div>
-        هذه خطة إرشادية أولية وليست وعدًا بوظيفة أو دخل أو تمويل. لا تتطلب دفع رسوم. تحقق من أي جهة قبل مشاركة بياناتك أو قبول عرض. تُحفظ الخطة على هذا الجهاز والمتصفح فقط ويمكنك تصدير نسخة منها.
+        {tx("هذه خطة إرشادية أولية وليست وعدًا بوظيفة أو دخل أو تمويل. لا تتطلب دفع رسوم. تحقق من أي جهة قبل مشاركة بياناتك أو قبول عرض. تُحفظ الخطة على هذا الجهاز والمتصفح فقط ويمكنك تصدير نسخة منها.")}
       </footer>
     </div>
   </main>;
