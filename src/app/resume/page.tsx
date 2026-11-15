@@ -24,6 +24,7 @@ const empty: Resume = {
 };
 
 export default function ResumeBuilderPage() {
+  const tx = (value: string) => translateText(value, language);
   const { language } = useLanguage();
   const tr = (value: string) => translateText(value, language);
   const [data, setData] = useState<Resume>(empty);
@@ -95,7 +96,7 @@ export default function ResumeBuilderPage() {
             </div>
             <label style={labelStyle}>{tr("المدينة أو المحافظة (اختياري)")}<input maxLength={100} value={data.city} onChange={(e) => update("city", e.target.value)} style={field} /></label>
             <label style={labelStyle}>{tr("نبذة مهنية قصيرة")}<textarea maxLength={700} rows={4} value={data.summary} onChange={(e) => update("summary", e.target.value)} style={field} placeholder={tr("اكتب ما تجيده ونوع العمل الذي تبحث عنه.")} /></label>
-            <label style={labelStyle}>{tr("المهارات (مهارة في كل سطر)")}<textarea maxLength={1200} rows={4} value={data.skills} onChange={(e) => update("skills", e.target.value)} style={field} placeholder={"التواصل مع العملاء\nالعمل ضمن فريق\nاستخدام الحاسب"} /></label>
+            <label style={labelStyle}>{tr("المهارات (مهارة في كل سطر)")}<textarea maxLength={1200} rows={4} value={data.skills} onChange={(e) => update("skills", e.target.value)} style={field} placeholder={tx("التواصل مع العملاء\\nالعمل ضمن فريق\\nاستخدام الحاسب")} /></label>
             <label style={labelStyle}>{tr("الخبرات أو الأعمال السابقة (كل خبرة في سطر)")}<textarea maxLength={1800} rows={5} value={data.experience} onChange={(e) => update("experience", e.target.value)} style={field} placeholder={tr("المسمى – جهة العمل – الفترة – أهم المهام. يمكنك كتابة الأعمال الحرة أو التطوعية.")} /></label>
             <label style={labelStyle}>{tr("التعليم (كل مؤهل في سطر)")}<textarea maxLength={1000} rows={3} value={data.education} onChange={(e) => update("education", e.target.value)} style={field} placeholder={tr("المؤهل – المؤسسة – سنة التخرج")} /></label>
             <label style={labelStyle}>{tr("الدورات والشهادات (اختياري)")}<textarea maxLength={1000} rows={3} value={data.courses} onChange={(e) => update("courses", e.target.value)} style={field} placeholder={tr("اسم الدورة – الجهة – السنة")} /></label>
