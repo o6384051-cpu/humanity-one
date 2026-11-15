@@ -47,26 +47,35 @@ export async function POST(req: NextRequest) {
       data: { passwordResetTokenHash: tokenHash, passwordResetExpiresAt: expiresAt },
     });
 
-    const appUrl = (process.env.NEXT_PUBLIC_APP_URL || "https://humanity-one-wc35.vercel.app").replace(/\/+$/, "");
+    const appUrl = (process.env.NEXT_PUBLIC_APP_URL || "https://humanity-one-wc35.vercel.app").replace(/\\/+$/, "");
     const resetUrl = `${appUrl}/beneficiary/reset-password?token=${token}`;
-    const response = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
-      body: JSON.stringify({
-        from,
-        to: [user.email],
-        subject: "إعادة تعيين كلمة مرور HUMANITY ONE",
-        text: `وصلنا طلب لإعادة تعيين كلمة مرور حسابك في HUMANITY ONE. افتح الرابط التالي خلال 30 دقيقة لإعداد كلمة مرور جديدة: ${resetUrl}\nإذا لم تطلب ذلك، فتجاهل هذه الرسالة.`,
-        html: `<div dir="rtl" style="font-family:Arial,sans-serif;line-height:1.9"><h2>إعادة تعيين كلمة المرور</h2><p>وصلنا طلب لإعادة تعيين كلمة مرور حسابك في HUMANITY ONE.</p><p><a href="${resetUrl}">اضغط هنا لإعداد كلمة مرور جديدة</a></p><p>الرابط صالح لمدة 30 دقيقة ويُستخدم مرة واحدة فقط.</p><p>إذا لم تطلب ذلك، فتجاهل هذه الرسالة.</p></div>`,
-      }),
-      cache: "no-store",
-    });
 
-    if (!response.ok) {
+    try {
+      const response = await fetch("https://api.resend.com/emails", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
+        body: JSON.stringify({
+          from,
+          to: [user.email],
+          subject: "إعادة تعيين كلمة مرور HUMANITY ONE",
+          text: `وصلنا طلب لإعادة تعيين كلمة مرور حسابك في HUMANITY ONE. افتح الرابط التالي خلال 30 دقيقة لإعداد كلمة مرور جديدة: ${resetUrl}\nإذا لم تطلب ذلك، فتجاهل هذه الرسالة.`,
+          html: `<div dir="rtl" style="font-family:Arial,sans-serif;line-height:1.9"><h2>إعادة تعيين كلمة المرور</h2><p>وصلنا طلب لإعادة تعيين كلمة مرور حسابك في HUMANITY ONE.</p><p><a href="${resetUrl}">اضغط هنا لإعداد كلمة مرور جديدة</a></p><p>الرابط صالح لمدة 30 دقيقة ويُستخدم مرة واحدة فقط.</p><p>إذا لم تطلب ذلك، فتجاهل هذه الرسالة.</p></div>`,
+        }),
+        cache: "no-store",
+      });
+
+      if (!response.ok) {
+        await prisma.user.updateMany({
+          where: { id: user.id, passwordResetTokenHash: tokenHash },
+          data: { passwordResetTokenHash: null, passwordResetExpiresAt: null },
+        });
+      }
+    } catch {
+      // Do not reveal whether an address belongs to an account when email delivery fails.
       await prisma.user.updateMany({
         where: { id: user.id, passwordResetTokenHash: tokenHash },
         data: { passwordResetTokenHash: null, passwordResetExpiresAt: null },
-      });
+      }).catch(() => undefined);
     }
 
     return NextResponse.json({ message: genericMessage }, { headers: { "Cache-Control": "no-store" } });
