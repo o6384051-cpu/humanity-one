@@ -158,7 +158,7 @@ export default function AICorePage() {
   function exportCurrentChat() {
     if (!active || !active.messages.length) return;
     const transcript = active.messages.map((message) =>
-      (message.role === "user" ? "أنت" : "HUMANITY ONE") + ":\n" + message.content
+      (message.role === "user" ? tr("أنت") : "HUMANITY ONE") + ":\n" + message.content
     ).join("\n\n------------------------------\n\n");
     const blob = new Blob(["HUMANITY ONE — " + active.title + "\n\n" + transcript], { type: "text/plain;charset=utf-8" });
     const url = URL.createObjectURL(blob);
@@ -222,7 +222,7 @@ export default function AICorePage() {
             <div><span className="hc-breadcrumb">HUMANITY ONE</span><b>{tr("المساعد الذكي")}</b></div>
           </div>
           <div className="hc-topbar-actions">
-            <span className="hc-status"><i /> {status}</span>
+            <span className="hc-status"><i /> {status.startsWith("متصل · ") ? `${tr("متصل")} · ${status.slice("متصل · ".length)}` : tr(status)}</span>
             <button className="hc-export" onClick={exportCurrentChat} disabled={!messages.length} title={tr("تصدير المحادثة")}><Download size={16} /><span>{tr("تصدير")}</span></button>
             <button className="hc-icon-button" onClick={newChat} title={tr("محادثة جديدة")} aria-label={tr("محادثة جديدة")}><Plus size={18} /></button>
           </div>
@@ -232,12 +232,12 @@ export default function AICorePage() {
           <div className="hc-role-wrap">
             <button className="hc-role-select" onClick={() => setRoleMenuOpen((open) => !open)} aria-expanded={roleMenuOpen}>
               <span className="hc-role-avatar"><activeRole.icon size={18} /></span>
-              <span><b>{activeRole.name}</b><small>{activeRole.description}</small></span>
+              <span><b>{tr(activeRole.name)}</b><small>{tr(activeRole.description)}</small></span>
               <ChevronDown size={16} />
             </button>
             {roleMenuOpen && <div className="hc-role-menu">
               {roles.map((item) => <button key={item.id} onClick={() => { setRole(item.id); setRoleMenuOpen(false); }}>
-                <item.icon size={17} /><span><b>{item.name}</b><small>{item.description}</small></span>{role === item.id && <Check size={16} />}
+                <item.icon size={17} /><span><b>{tr(item.name)}</b><small>{tr(item.description)}</small></span>{role === item.id && <Check size={16} />}
               </button>)}
             </div>}
           </div>
@@ -249,7 +249,7 @@ export default function AICorePage() {
               <h1>{tr("كيف يمكنني مساعدتك")} <em>{tr("اليوم؟")}</em></h1>
               <p className="hc-welcome-copy">{tr("اسأل، خطط، تعلّم، أو ابدأ مبادرة جديدة. اختر أحد الاقتراحات أو اكتب ما تحتاج إليه.")}</p>
               <div className="hc-suggestions">
-                {suggestions.map((suggestion) => <button key={suggestion} onClick={() => sendMessage(undefined, suggestion)}>{suggestion}<span>←</span></button>)}
+                {suggestions.map((suggestion) => <button key={suggestion} onClick={() => sendMessage(undefined, suggestion)}>{tr(suggestion)}<span>←</span></button>)}
               </div>
             </div>
           ) : (
@@ -259,7 +259,7 @@ export default function AICorePage() {
                 <div className="hc-message-body">
                   <div className="hc-message-name">{message.role === "user" ? "أنت" : "HUMANITY ONE"}</div>
                   <p>{message.content}</p>
-                  {message.role === "assistant" && <button className="hc-copy" onClick={() => copyMessage(message)} aria-label={tr("نسخ الرد")}>{copiedId === message.id ? <Check size={14} /> : <Copy size={14} />}{copiedId === message.id ? "تم النسخ" : "نسخ"}</button>}
+                  {message.role === "assistant" && <button className="hc-copy" onClick={() => copyMessage(message)} aria-label={tr("نسخ الرد")}>{copiedId === message.id ? <Check size={14} /> : <Copy size={14} />}{copiedId === message.id ? tr("تم النسخ") : tr("نسخ")}</button>}
                 </div>
               </article>)}
               {busy && <div className="hc-thinking"><span /><span /><span /> {tr("يكتب المساعد...")}</div>}
