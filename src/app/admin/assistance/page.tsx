@@ -139,16 +139,16 @@ export default function AssistanceAdmin() {
         </section>
 
         <section style={{ ...panel, display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(210px,1fr))", gap: 12 }}>
-          <label>بحث في الطلبات
+          <label>{tx("بحث في الطلبات")}
             <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder={tx("اسم المستفيد أو الهاتف أو المدينة أو التفاصيل")} style={{ ...input, display: "block", marginTop: 6 }} />
           </label>
-          <label>تصفية حسب الحالة
+          <label>{tx("تصفية حسب الحالة")}
             <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} style={{ ...input, display: "block", marginTop: 6 }}>
               <option value="ALL">{tx("كل الحالات")}</option>
               {Object.entries(statusNames).map(([value, label]) => <option key={value} value={value}>{tx(label)}</option>)}
             </select>
           </label>
-          <label>ترتيب الطلبات
+          <label>{tx("ترتيب الطلبات")}
             <select value={sortMode} onChange={(e) => setSortMode(e.target.value)} style={{ ...input, display: "block", marginTop: 6 }}>
               <option value="URGENT_NEWEST">{tx("العاجلة أولًا ثم الأحدث")}</option>
               <option value="NEWEST">{tx("آخر تحديث أولًا")}</option>
