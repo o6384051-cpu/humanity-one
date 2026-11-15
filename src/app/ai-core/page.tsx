@@ -33,8 +33,8 @@ function makeSession(): ChatSession {
 }
 
 export default function AICorePage() {
-  const tx = (value: string) => translateText(value, language);
   const { language } = useLanguage();
+  const tx = (value: string) => translateText(value, language);
   const tr = (value: string) => translateText(value, language);
   const [sessions, setSessions] = useState<ChatSession[]>(() => [makeSession()]);
   const [activeId, setActiveId] = useState("");
