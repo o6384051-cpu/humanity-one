@@ -201,7 +201,7 @@ export default function AICorePage() {
           {sessions.map((session) => (
             <div key={session.id} className={`hc-history-row ${active?.id === session.id ? "active" : ""}`}>
               <button className="hc-history-item" onClick={() => chooseChat(session.id)}>
-                <MessageSquare size={16} /><span>{session.title || "محادثة جديدة"}</span>
+                <MessageSquare size={16} /><span>{tr(session.title || "محادثة جديدة")}</span>
               </button>
               <button className="hc-history-delete" onClick={() => deleteChat(session.id)} disabled={busy && active?.id === session.id} aria-label={tr("حذف المحادثة")} title={tr("حذف المحادثة")}><X size={14} /></button>
             </div>
