@@ -83,7 +83,7 @@ export default function EmployerApplicationsPage() {
         <section style={{ ...panel, marginBottom: 14 }}>
           <div style={{ color: "#82d9cd", fontSize: 13 }}>{job.businessName} · {job.city}</div>
           <h2 style={{ margin: "7px 0" }}>{job.jobTitle}</h2>
-          <div style={{ display: "flex", alignItems: "center", gap: 8, color: "#b5c7cf" }}><Users size={17}/> {job.applications.length} {tr("طلب تقديم معروض (بحد أقصى 100)")}</div>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, color: "#b5c7cf" }}><Users size={17}/> {job.applications.length} {tx("طلب تقديم معروض (بحد أقصى 100)")}</div>
         </section>
         <div style={{ display: "flex", justifyContent: "flex-start", marginBottom: 12 }}><button type="button" onClick={() => void load(token)} style={{ ...button, display: "inline-flex", alignItems: "center", gap: 7 }}><RefreshCw size={16}/> {tx("تحديث الطلبات")}</button></div>
         {job.applications.length === 0 ? <section style={panel}>{tx("لم يصل أي طلب تقديم بعد. سنعرض الطلبات الجديدة هنا عند تحديث الصفحة.")}</section> :
