@@ -6,6 +6,7 @@ import { useLanguage } from '../components/LanguageProvider';
 import { Home, Bot, FolderKanban, CheckSquare, BookOpen, BarChart3, Settings, Search, Bell, Mail, Sun, Leaf, CheckCircle2, Users, Lightbulb, Send, ShieldCheck, HeartHandshake, BadgeInfo } from 'lucide-react';
 
 export default function Dashboard() {
+  const tx = (value: string) => translateText(value, language);
   const router = useRouter();
   const { language } = useLanguage();
   const tr = (ar: string, en: string) => language === 'ar' ? ar : en;
@@ -34,7 +35,7 @@ export default function Dashboard() {
           <div><strong>HUMANITY <b>ONE</b></strong><small>Together for a Better Tomorrow</small></div>
         </div>
         <div className="ho-workspace">
-          <div className="ho-avatar">أ</div>
+          <div className="ho-avatar">{tx("أ")}</div>
           <div><b>{tr("مساحة العمل","Workspace")}</b><small>{tr("ابدأ مبادرتك الإنسانية","Start your humanitarian initiative")}</small></div>
         </div>
         <div className="ho-nav-label">{tr("القائمة الرئيسية","MAIN MENU")}</div>
@@ -95,7 +96,7 @@ export default function Dashboard() {
               {messagesOpen && <div className="ho-top-popover"><b>{tr("الرسائل","Messages")}</b><p>{tr("صندوق الرسائل المباشر لم يتم تفعيله بعد.","Direct messaging is not enabled yet.")}</p><Link href="/ai-core" onClick={() => setMessagesOpen(false)}>{tr("افتح المساعد الذكي للتواصل الآن","Open the AI assistant to continue")}</Link></div>}
             </div>
             <button type="button" className="ho-icon-btn" aria-label={lightMode ? tr("تفعيل الوضع الداكن","Enable dark mode") : tr("تفعيل الوضع الفاتح","Enable light mode")} title={lightMode ? tr("الوضع الداكن","Dark mode") : tr("الوضع الفاتح","Light mode")} onClick={() => setLightMode((mode) => !mode)}>{lightMode ? <Sun size={18} /> : <Sun size={18} />}</button>
-            <div className="ho-user">أ</div>
+            <div className="ho-user">{tx("أ")}</div>
           </div>
         </header>
 
