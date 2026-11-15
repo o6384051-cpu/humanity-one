@@ -46,7 +46,7 @@ export default function TasksPage() {
   }
 
   function removeTask(id: string) {
-    if (!window.confirm("هل تريد حذف هذه المهمة؟")) return;
+    if (!window.confirm(tr("هل تريد حذف هذه المهمة؟"))) return;
     setTasks((current) => current.filter((task) => task.id !== id));
   }
 
