@@ -6,9 +6,9 @@ import { useLanguage, translateText } from '../components/LanguageProvider';
 import { Home, Bot, FolderKanban, CheckSquare, BookOpen, BarChart3, Settings, Search, Bell, Mail, Sun, Leaf, CheckCircle2, Users, Lightbulb, Send, ShieldCheck, HeartHandshake, BadgeInfo } from 'lucide-react';
 
 export default function Dashboard() {
-  const tx = (value: string) => translateText(value, language);
   const router = useRouter();
   const { language } = useLanguage();
+  const tx = (value: string) => translateText(value, language);
   const tr = (ar: string, en: string) => language === 'ar' ? ar : en;
   const [searchQuery, setSearchQuery] = useState('');
   const [assistantQuery, setAssistantQuery] = useState('');
