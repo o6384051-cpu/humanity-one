@@ -42,10 +42,10 @@ export default function ForgotPasswordPage() {
         <label style={{ display: "grid", gap: 7, fontSize: 13 }}>{tx("البريد الإلكتروني")}
           <input required type="email" maxLength={160} autoComplete="email" value={email} onChange={event => setEmail(event.target.value)} style={field} />
         </label>
-        <button disabled={busy} style={{ ...button, opacity: busy ? 0.65 : 1 }}>{busy ? "جارٍ الإرسال…" : "إرسال رابط الاستعادة"}</button>
+        <button disabled={busy} style={{ ...button, opacity: busy ? 0.65 : 1 }}>{busy ? tx("جارٍ الإرسال…") : tx("إرسال رابط الاستعادة")}</button>
       </form>
-      {message && <p role="status" style={{ marginTop: 16, padding: 12, border: "1px solid #287d69", borderRadius: 9, color: "#b9f3df", lineHeight: 1.8 }}>{message}</p>}
-      {error && <p role="alert" style={{ marginTop: 16, color: "#ffc5c5" }}>{error}</p>}
+      {message && <p role="status" style={{ marginTop: 16, padding: 12, border: "1px solid #287d69", borderRadius: 9, color: "#b9f3df", lineHeight: 1.8 }}>{tx(message)}</p>}
+      {error && <p role="alert" style={{ marginTop: 16, color: "#ffc5c5" }}>{tx(error)}</p>}
       <p style={{ marginTop: 18, color: "#91a6b5", fontSize: 12, lineHeight: 1.8 }}>{tx("لأمان حسابك، لا نكشف ما إذا كان البريد مسجلًا لدينا. الرابط صالح لمدة 30 دقيقة ويُستخدم مرة واحدة.")}</p>
     </section>
   </main>;
