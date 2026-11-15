@@ -1,9 +1,10 @@
 "use client";
 import Link from "next/link";
 import {useEffect,useState} from "react";
-import {useLanguage} from "../../components/LanguageProvider";
+import {useLanguage, translateText} from "../../components/LanguageProvider";
 const KEYS=["humanity-one-initiatives-v1","humanity-one-tasks-v1","humanity-one-approved-memory-v1","humanity-one-approved-memory-v1:enabled","humanity-one-chat-v2"];
 export default function SettingsPage(){
+ const tx=(value:string)=>translateText(value,language);
  const {language}=useLanguage();const tr=(ar:string,en:string)=>language==="ar"?ar:en;
  const [bytes,setBytes]=useState(0),[message,setMessage]=useState("");
  const refresh=()=>{let total=0;for(const key of KEYS){const value=localStorage.getItem(key);if(value)total+=new Blob([value]).size;}setBytes(total);};
