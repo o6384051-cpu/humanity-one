@@ -209,7 +209,7 @@ export default function ProjectsPage() {
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, marginTop: "auto", paddingTop: 10, borderTop: "1px solid #294454" }}>
                   <span style={{ display: "flex", alignItems: "center", gap: 6, color: "#91aab6", fontSize: 11 }}><CalendarDays size={13} /> {new Date(item.createdAt).toLocaleDateString(language === "ar" ? "ar-EG" : "en-EG")}</span>
                   <select value={item.status} onChange={(e) => updateStatus(item.id, e.target.value as Initiative["status"])} aria-label={tr("حالة المبادرة")} style={{ ...fieldStyle, width: "auto", maxWidth: 145, padding: "7px 9px", fontSize: 12 }}>
-                    {Object.entries(statusLabels).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+                    {Object.entries(statusLabels).map(([value, label]) => <option key={value} value={value}>{tr(label)}</option>)}
                   </select>
                 </div>
               </article>;
