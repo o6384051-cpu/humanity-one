@@ -52,15 +52,15 @@ export default function AdminDashboardPage() {
     <div style={{ maxWidth: 1100, margin: "0 auto", display: "grid", gap: 18 }}>
       <header style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 }}>
         <div><Link href="/" style={{ color: "#63d8d0", textDecoration: "none" }}>{tr("← الرئيسية")}</Link><h1 style={{ fontSize: 28, fontWeight: 800, marginTop: 12 }}>{tr("مركز تحكم HUMANITY ONE")}</h1><p style={{ color: "#9aabc0" }}>{tr("متابعة تشغيل المنظومة من بياناتها الفعلية.")}</p></div>
-        <button onClick={() => void load()} disabled={loading} style={{ padding: "10px 15px", borderRadius: 9, border: "1px solid #36536b", background: "#14283a", color: "#e8edf7" }}>{loading ? "جارٍ التحديث..." : "تحديث البيانات"}</button>
+        <button onClick={() => void load()} disabled={loading} style={{ padding: "10px 15px", borderRadius: 9, border: "1px solid #36536b", background: "#14283a", color: "#e8edf7" }}>{loading ? tr("جارٍ التحديث...") : tr("تحديث البيانات")}</button>
       </header>
 
       {loading && <p style={{ color: "#b8c8d9" }}>{tr("جارٍ قراءة بيانات النظام...")}</p>}
-      {error && <section role="alert" style={{ ...panel, borderColor: "#75414a" }}><p style={{ color: "#ffb2b2" }}>{error}</p><p style={{ color: "#b8c8d9", marginTop: 8 }}>{tr("إذا لم تكن قد سجلت الدخول، افتح صفحة المؤسس أولًا.")}</p><Link href="/founder" style={{ color: "#63d8d0" }}>{tr("فتح تسجيل دخول الإدارة")}</Link></section>}
+      {error && <section role="alert" style={{ ...panel, borderColor: "#75414a" }}><p style={{ color: "#ffb2b2" }}>{tr(error)}</p><p style={{ color: "#b8c8d9", marginTop: 8 }}>{tr("إذا لم تكن قد سجلت الدخول، افتح صفحة المؤسس أولًا.")}</p><Link href="/founder" style={{ color: "#63d8d0" }}>{tr("فتح تسجيل دخول الإدارة")}</Link></section>}
 
       {data && <>
         <section style={{ ...panel, display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 10 }}>
-          <div><b>{data.actor.name || data.actor.email}</b><p style={{ color: "#63d8d0", marginTop: 4 }}>الصلاحية: {roleName(data.actor.role)}</p></div>
+          <div><b>{data.actor.name || data.actor.email}</b><p style={{ color: "#63d8d0", marginTop: 4 }}>{tr("الصلاحية:")} {roleName(data.actor.role)}</p></div>
           <div style={{ color: "#9aabc0", fontSize: 12 }}>{tr("آخر قراءة:")} {new Date(data.generatedAt).toLocaleString(language === "ar" ? "ar-EG" : "en-EG")}</div>
         </section>
 
@@ -69,7 +69,7 @@ export default function AdminDashboardPage() {
             ["إجمالي الحسابات", data.stats.users], ["فريق الإدارة", data.stats.administrators],
             ["المبادرات", data.stats.projects], ["المهام", data.stats.tasks],
             ["الوكلاء", data.stats.agents], ["طلبات التقديم", data.stats.applications], ["طلبات المساعدة", data.stats.assistance.total],
-          ].map(([label, value]) => <article key={String(label)} style={panel}><p style={{ color: "#9aabc0", fontSize: 13 }}>{label}</p><strong style={{ display: "block", fontSize: 27, marginTop: 7 }}>{number(Number(value))}</strong></article>)}
+          ].map(([label, value]) => <article key={String(label)} style={panel}><p style={{ color: "#9aabc0", fontSize: 13 }}>{tr(String(label))}</p><strong style={{ display: "block", fontSize: 27, marginTop: 7 }}>{number(Number(value))}</strong></article>)}
         </section>
 
         <section style={panel}>
@@ -95,7 +95,7 @@ export default function AdminDashboardPage() {
         <section style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))", gap: 10 }}>
           <Link href="/admin/beneficiaries" style={linkStyle}><b>{tr("إدارة حسابات المستفيدين")}</b><p style={{ color: "#9aabc0", marginTop: 5, fontSize: 13 }}>{tr("البحث في الحسابات والملفات الأساسية وعدد طلبات كل مستفيد.")}</p></Link>
           <Link href="/founder" style={linkStyle}><b>{tr("إدارة حسابات الفريق والصلاحيات")}</b><p style={{ color: "#9aabc0", marginTop: 5, fontSize: 13 }}>{tr("إضافة المشرفين وتعديل أدوارهم وإدارتهم.")}</p></Link>
-          <Link href="/admin/assistance" style={linkStyle}><b>{tr("طلبات المستفيدين والمساعدات")}</b><p style={{ color: "#9aabc0", marginTop: 5, fontSize: 13 }}>{tr("مراجعة الطلبات وتحديث حالتها وإرسال إشعار لصاحب الطلب.")}</p></Link>\n          <Link href="/admin/assistance" style={linkStyle}><b>{tr("طلبات المستفيدين والمساعدات")}</b><p style={{ color: "#9aabc0", marginTop: 5, fontSize: 13 }}>{tr("مراجعة الطلبات وتحديث حالتها وإرسال إشعار لصاحب الطلب.")}</p></Link>
+          <Link href="/admin/assistance" style={linkStyle}><b>{tr("طلبات المستفيدين والمساعدات")}</b><p style={{ color: "#9aabc0", marginTop: 5, fontSize: 13 }}>{tr("مراجعة الطلبات وتحديث حالتها وإرسال إشعار لصاحب الطلب.")}</p></Link>
           <Link href="/admin/jobs" style={linkStyle}><b>{tr("مراجعة الوظائف وطلبات التقديم")}</b><p style={{ color: "#9aabc0", marginTop: 5, fontSize: 13 }}>{tr("اعتماد الإعلانات أو رفضها ومراجعة طلبات التقديم.")}</p></Link>
           <Link href="/projects" style={linkStyle}><b>{tr("المبادرات والمشروعات")}</b><p style={{ color: "#9aabc0", marginTop: 5, fontSize: 13 }}>{tr("فتح مساحة المبادرات الحالية.")}</p></Link>
           <Link href="/tasks" style={linkStyle}><b>{tr("المهام")}</b><p style={{ color: "#9aabc0", marginTop: 5, fontSize: 13 }}>{tr("فتح مساحة متابعة المهام.")}</p></Link>
