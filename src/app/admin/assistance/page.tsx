@@ -145,7 +145,7 @@ export default function AssistanceAdmin() {
           <label>تصفية حسب الحالة
             <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} style={{ ...input, display: "block", marginTop: 6 }}>
               <option value="ALL">{tx("كل الحالات")}</option>
-              {Object.entries(statusNames).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+              {Object.entries(statusNames).map(([value, label]) => <option key={value} value={value}>{tx(label)}</option>)}
             </select>
           </label>
           <label>ترتيب الطلبات
@@ -162,22 +162,22 @@ export default function AssistanceAdmin() {
           filtered.map((x) => (
             <article key={x.id} style={{ ...panel, marginTop: 13 }}>
               <div style={{ display: "flex", justifyContent: "space-between", gap: 8, flexWrap: "wrap" }}>
-                <b>{categoryNames[x.category] || x.category} · {x.urgency === "URGENT" ? "عاجل" : "عادي"}</b>
-                <span style={{ color: "#83d9ce" }}>{statusNames[x.status] || x.status}</span>
+                <b>{tx(categoryNames[x.category] || x.category)} · {x.urgency === "URGENT" ? tx("عاجل") : tx("عادي")}</b>
+                <span style={{ color: "#83d9ce" }}>{tx(statusNames[x.status] || x.status)}</span>
               </div>
               <p style={{ whiteSpace: "pre-wrap" }}>{x.description}</p>
               <p style={{ color: "#a9bdc9", fontSize: 13 }}>
                 المستفيد: {x.user.name || "بدون اسم"} · {x.user.email} · {x.user.beneficiaryProfile?.phone || "لا يوجد هاتف"} · {x.city}
                 {x.user.beneficiaryProfile?.area ? " · " + x.user.beneficiaryProfile.area : ""}
               </p>
-              <div style={{ color: "#a9bdc9", fontSize: 12, display: "grid", gap: 5 }}><span>{tx("رقم الطلب:")} <b dir="ltr">{x.id.slice(-8).toUpperCase()}</b></span><span>تاريخ التقديم: {new Date(x.createdAt).toLocaleString("ar-EG")}</span><span>آخر تحديث: {new Date(x.updatedAt || x.createdAt).toLocaleString("ar-EG")}</span></div>
+              <div style={{ color: "#a9bdc9", fontSize: 12, display: "grid", gap: 5 }}><span>{tx("رقم الطلب:")} <b dir="ltr">{x.id.slice(-8).toUpperCase()}</b></span><span>تاريخ التقديم: {new Date(x.createdAt).toLocaleString(language === "ar" ? "ar-EG" : "en-EG")}</span><span>آخر تحديث: {new Date(x.updatedAt || x.createdAt).toLocaleString(language === "ar" ? "ar-EG" : "en-EG")}</span></div>
 
               {x.files?.length > 0 && <section style={{ margin: "12px 0", padding: 12, background: "#0b1b29", borderRadius: 8 }}>
-                <b>المستندات المرفقة ({x.files.length})</b>
+                <b>{tx("المستندات المرفقة")} ({x.files.length})</b>
                 <ul style={{ marginTop: 8, paddingRight: 20 }}>{x.files.map((file) => (
                   <li key={file.id} style={{ marginBottom: 6 }}>
                     <a href={`/api/admin/assistance/files/${encodeURIComponent(file.id)}`} style={{ color: "#83d9ce", textDecoration: "underline" }}>{file.originalName}</a>
-                    <span style={{ color: "#a9bdc9", fontSize: 12 }}> · {(file.size / 1024).toFixed(0)} كيلوبايت</span>
+                    <span style={{ color: "#a9bdc9", fontSize: 12 }}> · {(file.size / 1024).toFixed(0)} {tx("كيلوبايت")}</span>
                   </li>
                 ))}</ul>
               </section>}
@@ -186,16 +186,16 @@ export default function AssistanceAdmin() {
                 <b>{tx("سجل المراجعة والتغييرات")}</b>
                 <ol style={{ marginTop: 8, paddingRight: 20 }}>
                   {x.reviewEvents.map((event) => <li key={event.id} style={{ marginBottom: 8, color: "#c5d4df" }}>
-                    <span>{event.fromStatus ? (statusNames[event.fromStatus] || event.fromStatus) + " ← " : ""}{statusNames[event.toStatus] || event.toStatus}</span>
+                    <span>{event.fromStatus ? tx(statusNames[event.fromStatus] || event.fromStatus) + " ← " : ""}{tx(statusNames[event.toStatus] || event.toStatus)</span>
                     <small style={{ display: "block", color: "#91a6b5" }}>
-                      {new Date(event.createdAt).toLocaleString("ar-EG")} · {event.admin?.name || "مشرف"}
+                      {new Date(event.createdAt).toLocaleString(language === "ar" ? "ar-EG" : "en-EG")} · {event.admin?.name || tx("مشرف")}
                     </small>
                     {event.note && <small style={{ display: "block", color: "#a9bdc9" }}>الملاحظة المسجلة: {event.note}</small>}
                   </li>)}
                 </ol>
               </section>}
 
-              <label style={{ display: "block", marginTop: 12 }}>ملاحظة المراجعة
+              <label style={{ display: "block", marginTop: 12 }}>{tx("ملاحظة المراجعة")}
                 <textarea value={notes[x.id] ?? x.adminNote ?? ""} onChange={(e) => setNotes({ ...notes, [x.id]: e.target.value })}
                   maxLength={1500} placeholder={tx("ملاحظة أو توجيه للمستفيد")} style={{ ...input, display: "block", minHeight: 75, marginTop: 6 }} />
               </label>
@@ -203,7 +203,7 @@ export default function AssistanceAdmin() {
                 {statusOptions.map(([status, label]) => <button key={status} disabled={savingId === x.id}
                   onClick={() => void update(x.id, status)}
                   style={{ padding: "9px 13px", border: 0, borderRadius: 8, background: savingId === x.id ? "#42515b" : "#287c73", color: "white", cursor: savingId === x.id ? "wait" : "pointer" }}>
-                  {savingId === x.id ? "جارٍ الحفظ..." : label}
+                  {savingId === x.id ? tx("جارٍ الحفظ...") : tx(label)}
                 </button>)}
               </div>
             </article>
