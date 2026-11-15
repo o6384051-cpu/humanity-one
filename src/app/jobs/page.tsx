@@ -42,13 +42,14 @@ function ApplicationForm({ job, onClose }: { job: Job; onClose: () => void }) {
     <input required value={phone} onChange={e => setPhone(e.target.value)} placeholder={tr("رقم هاتف للتواصل")} style={field} />
     <textarea maxLength={1200} value={experience} onChange={e => setExperience(e.target.value)} placeholder={tr("خبرتك العملية أو الحرفة التي تتقنها (اختياري)")} rows={3} style={field} />
     <textarea maxLength={1200} value={message} onChange={e => setMessage(e.target.value)} placeholder={tr("رسالة لصاحب العمل (اختياري)")} rows={3} style={field} />
-    <p style={{ margin: 0, color: "#9fb6c2", fontSize: 12, lineHeight: 1.7 }}>لن تظهر بياناتك الشخصية للعامة. تُحفظ بيانات التقديم داخل قاعدة المنصة ولا تُعرض إلا للمخولين. لا ترسل رقمك القومي أو بياناتك البنكية أو أي معلومات حساسة.</p>
+    <p style={{ margin: 0, color: "#9fb6c2", fontSize: 12, lineHeight: 1.7 }}>{tx("لن تظهر بياناتك الشخصية للعامة. تُحفظ بيانات التقديم داخل قاعدة المنصة ولا تُعرض إلا للمخولين. لا ترسل رقمك القومي أو بياناتك البنكية أو أي معلومات حساسة.")}</p>
     {result && <p role="status" style={{ color: "#9ce4d6", margin: 0 }}>{result}</p>}
     <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}><button disabled={busy} style={button}>{busy ? "جارٍ الإرسال..." : "إرسال طلب التقديم"}</button><button type="button" onClick={onClose} style={{ ...button, background: "#294454" }}>{tr("إغلاق")}</button></div>
   </form>;
 }
 
 export default function JobsPage() {
+  const tx = (value: string) => translateText(value, language);
   const { language } = useLanguage();
   const tr = (value: string) => translateText(value, language);
   const [jobs, setJobs] = useState<Job[]>([]);
@@ -102,7 +103,7 @@ export default function JobsPage() {
           {selected === job.id && <ApplicationForm job={job} onClose={() => setSelected(null)} />}
         </article>)}
       </section>
-      <footer style={{ marginTop: 22, padding: 15, borderRadius: 12, background: "#0a1b27", color: "#91aab6", fontSize: 12, lineHeight: 1.9 }}><ShieldCheck size={16} style={{ verticalAlign: "middle", marginLeft: 6 }} /> تُراجع الإعلانات قبل نشرها، لكن المراجعة لا تعني ضمان التوظيف. بيانات التقديم محفوظة داخل المنصة ولا تظهر للعامة. لا تدفع رسومًا للحصول على وظيفة أو مقابلة، ولا ترسل بياناتك البنكية أو رقمك القومي.</footer>
+      <footer style={{ marginTop: 22, padding: 15, borderRadius: 12, background: "#0a1b27", color: "#91aab6", fontSize: 12, lineHeight: 1.9 }}><ShieldCheck size={16} style={{ verticalAlign: "middle", marginLeft: 6 }} /> {tx("تُراجع الإعلانات قبل نشرها، لكن المراجعة لا تعني ضمان التوظيف. بيانات التقديم محفوظة داخل المنصة ولا تظهر للعامة. لا تدفع رسومًا للحصول على وظيفة أو مقابلة، ولا ترسل بياناتك البنكية أو رقمك القومي.")}</footer>
     </div>
   </main>;
 }
