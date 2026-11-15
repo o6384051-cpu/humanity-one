@@ -1014,6 +1014,54 @@ const REMAINING_LABELS: Record<string, string> = {
 };
 Object.assign(ENGLISH_COPY, REMAINING_LABELS);
 
+
+const SCREEN_COPY: Record<string, string> = {
+  "المجال:": "Field:",
+  "التعليم:": "Education:",
+  "الوقت المتاح:": "Available time:",
+  "ساعات أسبوعيًا": "hours per week",
+  "الأسبوع": "Week",
+  "هذه خطة إرشادية أولية وليست وعدًا بوظيفة أو دخل أو تمويل. لا تتطلب دفع رسوم. تحقق من أي جهة قبل مشاركة بياناتك أو قبول عرض. تُحفظ الخطة على هذا الجهاز والمتصفح فقط ويمكنك تصدير نسخة منها.": "This is an initial guidance plan, not a promise of a job, income, or funding. No fee is required. Verify any organization before sharing data or accepting an offer. The plan is stored only in this device and browser; you can export a copy.",
+  "حساب (بحد أقصى 200 نتيجة).": "accounts (maximum 200 results).",
+  "طلب مساعدة": "Assistance request",
+  "المؤسس — صلاحية عليا": "Founder — highest privilege",
+  "جارٍ التنفيذ...": "Processing...",
+  "المستندات المرفقة": "Attached documents",
+  "إعلانات تنتظر المراجعة": "Listings awaiting review",
+  "فرص حقيقية من مصادرها": "Real opportunities from their sources",
+  "ابدأ من بوابات رسمية ومصادر معروفة للعمل والتعلم وبناء مشروع صغير. نعرض هنا روابط الجهات نفسها، لا إعلانات وظائف غير متحقق منها.": "Start with official portals and trusted sources for work, learning, and building a small business. We link directly to the organizations rather than unverified job ads.",
+  "المصدر:": "Source:",
+  "زيارة المصدر الرسمي": "Visit official source",
+  "هذه روابط لجهات ومصادر خارجية وليست ضمانًا بوجود وظيفة أو تمويل متاح الآن. لا تدفع رسومًا لشخص مقابل وعد بوظيفة، ولا تشارك رقمك القومي أو بياناتك البنكية إلا عبر بوابة رسمية موثوقة وبعد التأكد من سبب طلبها. آخر مراجعة للروابط: 11 نوفمبر 2026.": "These links lead to external organizations and sources; they do not guarantee that a job or funding is currently available. Never pay anyone for a job promise, and share your national ID or bank details only through a trusted official portal after confirming why they are required. Links last reviewed: November 11, 2026.",
+  "كل الفرص": "All opportunities",
+  "العمال والحرفيون": "Workers and tradespeople",
+  "عمال المصانع والإنتاج": "Factory and production workers",
+  "الحرف والمهن العملية": "Trades and practical occupations",
+  "المصانع والإنتاج": "Factories and production",
+  "المشروعات الصغيرة": "Small businesses",
+  "الدعم الإنساني": "Humanitarian support",
+  "منصة العمل المصرية": "Egyptian Work Platform",
+  "فرص الحرفيين وأصحاب المهن": "Opportunities for tradespeople and skilled workers",
+  "وظائف عمال المصانع والإنتاج": "Factory and production jobs",
+  "دليل المهن ومتطلبات كل حرفة": "Career and trade guide",
+  "بوابة الوظائف الحكومية": "Government jobs portal",
+  "مهارة-تك": "Mahara-Tech",
+  "إدراك": "Edraak",
+  "منصة المشروعات الصغيرة": "Small Business Development Agency",
+  "خدمات التدريب المهني": "Vocational training services",
+  "وزارة العمل المصرية": "Egyptian Ministry of Labour",
+  "وزارة التخطيط والتنمية الاقتصادية والتعاون الدولي": "Ministry of Planning, Economic Development and International Cooperation",
+  "الجهاز المركزي للتنظيم والإدارة": "Central Agency for Organization and Administration",
+  "معهد تكنولوجيا المعلومات ITI": "Information Technology Institute (ITI)",
+  "منصة إدراك": "Edraak Platform",
+  "جهاز تنمية المشروعات": "Micro, Small and Medium Enterprise Development Agency",
+  "يتوافق مع المجال الذي اخترته": "Matches the field you selected",
+  "قد يساعدك في هدفك العام؛ راجع الشروط بنفسك": "May support your broader goal; check the requirements yourself",
+  "ابدأ بمسار واضح": "Start with one clear path",
+  "اعتماد الإعلان": "Approve listing"
+};
+Object.assign(ENGLISH_COPY, SCREEN_COPY);
+
 export function translateText(value: string, language: AppLanguage): string {
   return language === "ar" ? value : (ENGLISH_COPY[value] ?? value);
 }
