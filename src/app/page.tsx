@@ -98,7 +98,7 @@ export default function Dashboard() {
             </div>
             <div className="ho-top-control">
               <button type="button" className="ho-icon-btn" aria-label={tr("الرسائل","Messages")} aria-expanded={messagesOpen} onClick={() => { setMessagesOpen((open) => !open); setNotificationsOpen(false); }}><Mail size={18} /></button>
-              {messagesOpen && <div className="ho-top-popover"><b>{tr("الرسائل","Messages")}</b><p>{tr("صندوق الرسائل المباشر لم يتم تفعيله بعد.","Direct messaging is not enabled yet.")}</p><Link href="/ai-core" onClick={() => setMessagesOpen(false)}>{tr("افتح المساعد الذكي للتواصل الآن","Open the AI assistant to continue")}</Link></div>}
+              {messagesOpen && <div className="ho-top-popover"><b>{tr("الرسائل","Messages")}</b><p>{tr("تم تفعيل مركز المراسلات الداخلي.","The internal mail center is available.")}</p><Link href="/mail" onClick={() => setMessagesOpen(false)}>{tr("افتح مركز المراسلات","Open the mail center")}</Link></div>}
             </div>
             <button type="button" className="ho-icon-btn" aria-label={lightMode ? tr("تفعيل الوضع الداكن","Enable dark mode") : tr("تفعيل الوضع الفاتح","Enable light mode")} title={lightMode ? tr("الوضع الداكن","Dark mode") : tr("الوضع الفاتح","Light mode")} onClick={() => setLightMode((mode) => !mode)}>{lightMode ? <Sun size={18} /> : <Sun size={18} />}</button>
             <div className="ho-user">{tx("أ")}</div>
@@ -213,7 +213,7 @@ export default function Dashboard() {
           
           <footer className="ho-footer">
             <span>HUMANITY ONE © 2026</span>
-            <a href="mailto:humanityone.contact@gmail.com" aria-label="Email HUMANITY ONE" style={{display:"inline-flex",alignItems:"center",gap:7,color:"#80dacf",textDecoration:"none"}}><Mail size={15} /> {tr("مركز المراسلات","Internal Mail")}</Link>
+            <Link href="/mail" aria-label="Open HUMANITY ONE internal mail" style={{display:"inline-flex",alignItems:"center",gap:7,color:"#80dacf",textDecoration:"none"}}><Mail size={15} /> {tr("مركز المراسلات","Internal Mail")}</Link>
             <span><span className="status-dot"></span> {tr("نسخة تجريبية — بعض الخدمات قيد التطوير","Beta version — some services are still in development")}</span>
           </footer>
         </div>
