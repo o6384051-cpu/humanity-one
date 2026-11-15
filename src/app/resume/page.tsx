@@ -35,21 +35,21 @@ export default function ResumeBuilderPage() {
     data.role.trim(),
     [data.city, data.phone, data.email].filter(Boolean).join(" | "),
     "",
-    "نبذة مهنية",
+    tx("نبذة مهنية"),
     data.summary.trim(),
     "",
-    "المهارات",
+    tx("المهارات"),
     ...lines(data.skills).map((v) => "• " + v),
     "",
-    "الخبرات العملية",
+    tx("الخبرات العملية"),
     ...lines(data.experience),
     "",
-    "التعليم",
+    tx("التعليم"),
     ...lines(data.education),
     "",
-    "الدورات والشهادات",
+    tx("الدورات والشهادات"),
     ...lines(data.courses),
-  ].join("\n"), [data]);
+  ].join("\n"), [data, language]);
   const field: React.CSSProperties = {
     width: "100%", boxSizing: "border-box", border: "1px solid #294454",
     borderRadius: 10, padding: 12, background: "#0a1b27", color: "#eef7f8",
@@ -120,7 +120,7 @@ export default function ResumeBuilderPage() {
                 ["الخبرات العملية", data.experience],
                 ["التعليم", data.education],
                 ["الدورات والشهادات", data.courses],
-              ] as const).map(([heading, value]) => value.trim() ? <section key={heading} style={{ marginTop: 15 }}><h3 style={{ color: "#14564f", fontSize: 15, borderBottom: "1px solid #dce4e7", margin: "0 0 6px" }}>{heading}</h3><p style={{ whiteSpace: "pre-wrap", margin: 0, fontSize: 13 }}>{value}</p></section> : null)}
+              ] as const).map(([heading, value]) => value.trim() ? <section key={heading} style={{ marginTop: 15 }}><h3 style={{ color: "#14564f", fontSize: 15, borderBottom: "1px solid #dce4e7", margin: "0 0 6px" }}>{tr(heading)}</h3><p style={{ whiteSpace: "pre-wrap", margin: 0, fontSize: 13 }}>{value}</p></section> : null)}
               {!hasContent && <p style={{ color: "#71838a" }}>{tr("ابدأ بملء النموذج لتظهر سيرتك الذاتية هنا.")}</p>}
             </article>
             <p style={{ color: "#91aab6", fontSize: 12, lineHeight: 1.8, marginBottom: 0 }}>{tr("المعاينة قابلة للطباعة. التنزيل الحالي بصيغة نصية UTF-8 لتتمكن من فتحها وتنسيقها في محرر مستندات.")}</p>
