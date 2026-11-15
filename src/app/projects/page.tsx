@@ -34,6 +34,7 @@ const statusLabels: Record<Initiative["status"], string> = {
 const blankForm = { title: "", category: "community", goal: "", beneficiaries: "", location: "", needs: "" };
 
 export default function ProjectsPage() {
+  const tx = (value: string) => translateText(value, language);
   const { language } = useLanguage();
   const tr = (value: string) => translateText(value, language);
   const [items, setItems] = useState<Initiative[]>([]);
