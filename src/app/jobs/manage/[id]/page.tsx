@@ -71,7 +71,7 @@ export default function EmployerApplicationsPage() {
     void load(saved);
   }, [id]);
 
-  return <main dir="rtl" style={{ minHeight: "100vh", padding: "clamp(18px,4vw,44px)", color: "#e8f1f5", background: "linear-gradient(145deg,#07131d,#0b1d2b 58%,#102a34)" }}>
+  return <main dir={language === "ar" ? "rtl" : "ltr"} style={{ minHeight: "100vh", padding: "clamp(18px,4vw,44px)", color: "#e8f1f5", background: "linear-gradient(145deg,#07131d,#0b1d2b 58%,#102a34)" }}>
     <div style={{ maxWidth: 900, margin: "0 auto" }}>
       <Link href="/jobs" style={{ color: "#8bded2", display: "inline-flex", alignItems: "center", gap: 8, textDecoration: "none", marginBottom: 22 }}><ArrowRight size={17}/> {tx("سوق العمل")}</Link>
       <div style={{ display: "flex", gap: 9, alignItems: "center", color: "#82d9cd" }}><LockKeyhole size={18}/> {tx("مساحة خاصة بصاحب الإعلان")}</div>
@@ -91,7 +91,7 @@ export default function EmployerApplicationsPage() {
             {job.applications.map((application, index) => <article key={application.id} style={panel}>
               <div style={{ display: "flex", justifyContent: "space-between", gap: 8, flexWrap: "wrap" }}>
                 <strong style={{ color: "#f3fbfc" }}>{index + 1}. {application.applicantName}</strong>
-                <span style={{ color: "#91aab6", fontSize: 12 }}>{new Date(application.createdAt).toLocaleString("ar-EG")}</span>
+                <span style={{ color: "#91aab6", fontSize: 12 }}>{new Date(application.createdAt).toLocaleString(language === "ar" ? "ar-EG" : "en-EG")}</span>
               </div>
               <p style={{ margin: "10px 0", color: "#bfe9e3" }}>{tx("الهاتف:")} <a href={`tel:${application.phone}`} style={{ color: "#8bded2" }}>{application.phone}</a></p>
               {application.experience && <p style={{ color: "#c5d6dd", whiteSpace: "pre-wrap", lineHeight: 1.8 }}>الخبرة والمهارات: {application.experience}</p>}
