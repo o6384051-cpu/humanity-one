@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { ArrowRight, Target, Download, RefreshCw, CheckCircle2, Circle, ShieldCheck } from "lucide-react";
+import { useLanguage, translateText } from "../../components/LanguageProvider";
 
 type Profile = { skills: string; education: string; goal: string; hours: string; interest: string; internet: string; location: string };
 type Step = { id: string; week: number; title: string; detail: string; done: boolean };
@@ -10,24 +11,33 @@ type SavedPlan = { profile: Profile; steps: Step[]; createdAt: string };
 const KEY = "humanity-one-personal-plan-v1";
 const blank: Profile = { skills: "", education: "ثانوي أو ما يعادله", goal: "الحصول على عمل أو دخل", hours: "5", interest: "أي فرصة مناسبة", internet: "متاح", location: "" };
 
-function makeSteps(p: Profile): Step[] {
-  const skill = p.skills.trim() || "مهاراتك الحالية";
-  const focus = p.interest === "مشروع صغير" ? "مشروع صغير بتكلفة منخفضة" : p.interest === "عمل رقمي" ? "العمل الرقمي" : p.interest === "حرفة أو عمل يدوي" ? "حرفة أو عمل يدوي" : "فرص العمل المناسبة";
-  const internet = p.internet === "غير متاح بانتظام" ? "ابحث عن مركز شباب أو مكتبة عامة أو مكان يتيح اتصالًا مجانيًا" : "استخدم هاتفك أو جهازك للبحث والتعلم";
+function makeSteps(p: Profile, language: "ar" | "en"): Step[] {
+  const en = language === "en";
+  const skill = p.skills.trim() || (en ? "your current skills" : "مهاراتك الحالية");
+  const focusAr = p.interest === "مشروع صغير" ? "مشروع صغير بتكلفة منخفضة" : p.interest === "عمل رقمي" ? "العمل الرقمي" : p.interest === "حرفة أو عمل يدوي" ? "حرفة أو عمل يدوي" : "فرص العمل المناسبة";
+  const focus = en ? translateText(focusAr, language) : focusAr;
+  const internet = p.internet === "غير متاح بانتظام"
+    ? (en ? "Look for a youth center, public library, or place that offers free internet access" : "ابحث عن مركز شباب أو مكتبة عامة أو مكان يتيح اتصالًا مجانيًا")
+    : (en ? "Use your phone or computer to search and learn" : "استخدم هاتفك أو جهازك للبحث والتعلم");
   const hours = Math.max(2, Math.min(20, Number(p.hours) || 5));
+  const education = translateText(p.education, language);
+  const goal = translateText(p.goal, language);
   return [
-    { id: "w1a", week: 1, title: "جرد المهارات والإمكانات", detail: `اكتب 5 أشياء تستطيع القيام بها، ومنها: ${skill}. ضع في اعتبارك مستوى تعليمك (${p.education}) وحدّد الأدوات المتاحة والوقت الذي يمكنك الالتزام به.`, done: false },
-    { id: "w1b", week: 1, title: "اختيار مسار واحد", detail: `ابدأ بمسار واضح: ${focus}. لا تدفع مقابل تدريب أو توظيف قبل التحقق من الجهة والشروط.`, done: false },
-    { id: "w2a", week: 2, title: "تعلم مهارة صغيرة قابلة للتطبيق", detail: `خصص نحو ${hours} ساعات أسبوعيًا لتعلم مهارة مرتبطة بهدفك: ${p.goal}. اختر درسًا مجانيًا وطبّق ما تتعلمه.`, done: false },
-    { id: "w2b", week: 2, title: "إنشاء نموذج عمل", detail: "أنجز مثالًا عمليًا واحدًا يثبت مهارتك: تصميم، كتابة، إصلاح، منتج تجريبي أو خدمة بسيطة.", done: false },
-    { id: "w3a", week: 3, title: "تجهيز ملف التقديم", detail: "اكتب سيرة ذاتية قصيرة أو صفحة تعرض مهاراتك ونموذج عملك ووسيلة تواصل آمنة.", done: false },
-    { id: "w3b", week: 3, title: "التواصل مع جهات موثوقة", detail: `${internet}. راجع مركز الفرص في HUMANITY ONE وقدّم فقط عبر القنوات الرسمية.`, done: false },
-    { id: "w4a", week: 4, title: "تنفيذ محاولات واقعية", detail: "قدّم على فرص مناسبة أو اعرض خدمتك على نطاق صغير. سجّل الردود وما تعلمته دون دفع أموال لوسطاء.", done: false },
-    { id: "w4b", week: 4, title: "مراجعة النتائج وتعديل المسار", detail: "راجع ما أنجزته، وحدد العقبة الأكبر، ثم اختر خطوة واحدة للأسبوع التالي. عدم الحصول على رد ليس فشلًا؛ عدّل الطريقة واستمر.", done: false },
+    { id: "w1a", week: 1, title: en ? "Review your skills and resources" : "جرد المهارات والإمكانات", detail: en ? `List five things you can do, including: ${skill}. Consider your education level (${education}), the tools available to you, and the time you can commit.` : `اكتب 5 أشياء تستطيع القيام بها، ومنها: ${skill}. ضع في اعتبارك مستوى تعليمك (${p.education}) وحدّد الأدوات المتاحة والوقت الذي يمكنك الالتزام به.`, done: false },
+    { id: "w1b", week: 1, title: en ? "Choose one clear path" : "اختيار مسار واحد", detail: en ? `Start with one clear path: ${focus}. Do not pay for training or recruitment before verifying the organization and its terms.` : `ابدأ بمسار واضح: ${focusAr}. لا تدفع مقابل تدريب أو توظيف قبل التحقق من الجهة والشروط.`, done: false },
+    { id: "w2a", week: 2, title: en ? "Learn one practical skill" : "تعلم مهارة صغيرة قابلة للتطبيق", detail: en ? `Set aside about ${hours} hours per week to learn a skill related to your goal: ${goal}. Choose a free lesson and put what you learn into practice.` : `خصص نحو ${hours} ساعات أسبوعيًا لتعلم مهارة مرتبطة بهدفك: ${p.goal}. اختر درسًا مجانيًا وطبّق ما تتعلمه.`, done: false },
+    { id: "w2b", week: 2, title: en ? "Create a work sample" : "إنشاء نموذج عمل", detail: en ? "Create one practical example that demonstrates your skills: a design, a piece of writing, a repair, a sample product, or a simple service." : "أنجز مثالًا عمليًا واحدًا يثبت مهارتك: تصميم، كتابة، إصلاح، منتج تجريبي أو خدمة بسيطة.", done: false },
+    { id: "w3a", week: 3, title: en ? "Prepare your application profile" : "تجهيز ملف التقديم", detail: en ? "Write a short resume or a page that presents your skills, work sample, and a safe way to contact you." : "اكتب سيرة ذاتية قصيرة أو صفحة تعرض مهاراتك ونموذج عملك ووسيلة تواصل آمنة.", done: false },
+    { id: "w3b", week: 3, title: en ? "Contact trusted organizations" : "التواصل مع جهات موثوقة", detail: en ? `${internet}. Visit the HUMANITY ONE opportunities hub and apply only through official channels.` : `${internet}. راجع مركز الفرص في HUMANITY ONE وقدّم فقط عبر القنوات الرسمية.`, done: false },
+    { id: "w4a", week: 4, title: en ? "Take practical steps" : "تنفيذ محاولات واقعية", detail: en ? "Apply for suitable opportunities or offer your service on a small scale. Track responses and lessons learned; never pay intermediaries." : "قدّم على فرص مناسبة أو اعرض خدمتك على نطاق صغير. سجّل الردود وما تعلمته دون دفع أموال لوسطاء.", done: false },
+    { id: "w4b", week: 4, title: en ? "Review and adjust your approach" : "مراجعة النتائج وتعديل المسار", detail: en ? "Review what you achieved, identify the biggest obstacle, and choose one step for next week. Not receiving a response is not failure; adjust your approach and keep going." : "راجع ما أنجزته، وحدد العقبة الأكبر، ثم اختر خطوة واحدة للأسبوع التالي. عدم الحصول على رد ليس فشلًا؛ عدّل الطريقة واستمر.", done: false },
   ];
 }
 
 export default function PersonalPlanPage() {
+  const { language } = useLanguage();
+  const tx = (value: string) => translateText(value, language);
+  const tr = (value: string) => translateText(value, language);
   const [profile, setProfile] = useState<Profile>(blank);
   const [plan, setPlan] = useState<SavedPlan | null>(null);
   const [ready, setReady] = useState(false);
@@ -49,83 +59,85 @@ export default function PersonalPlanPage() {
   }, [plan, ready]);
 
   const completed = useMemo(() => plan?.steps.filter(s => s.done).length ?? 0, [plan]);
+  const displaySteps = useMemo(() => plan ? makeSteps(plan.profile, language).map(step => ({ ...step, done: plan.steps.find(saved => saved.id === step.id)?.done ?? false })) : [], [plan, language]);
   const field: React.CSSProperties = { width: "100%", minWidth: 0, boxSizing: "border-box", border: "1px solid #294454", borderRadius: 10, padding: "12px", background: "#0a1b27", color: "#eef7f8", font: "inherit" };
   const panel: React.CSSProperties = { background: "rgba(17,38,52,.9)", border: "1px solid rgba(132,177,190,.18)", borderRadius: 16, padding: 18 };
   const button: React.CSSProperties = { display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8, border: "1px solid #3b7f78", borderRadius: 10, padding: "11px 15px", background: "#174c49", color: "#eafff9", cursor: "pointer", font: "inherit" };
 
   function generate(e: React.FormEvent) {
     e.preventDefault();
-    const next: SavedPlan = { profile, steps: makeSteps(profile), createdAt: new Date().toISOString() };
+    const next: SavedPlan = { profile, steps: makeSteps(profile, language), createdAt: new Date().toISOString() };
     setPlan(next);
   }
   function exportPlan() {
     if (!plan) return;
-    const blob = new Blob([JSON.stringify(plan, null, 2)], { type: "application/json;charset=utf-8" });
+    const exportSteps = makeSteps(plan.profile, language).map(step => ({ ...step, done: plan.steps.find(saved => saved.id === step.id)?.done ?? false }));
+    const blob = new Blob([JSON.stringify({ ...plan, steps: exportSteps }, null, 2)], { type: "application/json;charset=utf-8" });
     const url = URL.createObjectURL(blob); const a = document.createElement("a");
     a.href = url; a.download = "humanity-one-personal-plan.json"; a.click(); URL.revokeObjectURL(url);
   }
 
   return <main dir="rtl" style={{ minHeight: "100vh", padding: "clamp(18px,4vw,48px)", color: "#e8f1f5", background: "linear-gradient(145deg,#07131d,#0b1d2b 58%,#102a34)" }}>
     <div style={{ maxWidth: 1000, margin: "0 auto" }}>
-      <Link href="/" style={{ display: "inline-flex", alignItems: "center", gap: 8, color: "#8bded2", textDecoration: "none", marginBottom: 24 }}><ArrowRight size={17} /> العودة إلى HUMANITY ONE</Link>
-      <Link href="/resume" style={{ display: "inline-flex", alignItems: "center", gap: 8, color: "#8bded2", textDecoration: "none", marginBottom: 18 }}>إنشاء سيرتي الذاتية ←</Link>
-      <Link href="/small-business" style={{ display: "inline-flex", alignItems: "center", gap: 8, color: "#8bded2", textDecoration: "none", marginBottom: 18 }}>مساعد المشروعات الصغيرة ←</Link>
+      <Link href="/" style={{ display: "inline-flex", alignItems: "center", gap: 8, color: "#8bded2", textDecoration: "none", marginBottom: 24 }}><ArrowRight size={17} /> {tr("العودة إلى HUMANITY ONE")}</Link>
+      <Link href="/resume" style={{ display: "inline-flex", alignItems: "center", gap: 8, color: "#8bded2", textDecoration: "none", marginBottom: 18 }}>{tr("إنشاء سيرتي الذاتية ←")}</Link>
+      <Link href="/small-business" style={{ display: "inline-flex", alignItems: "center", gap: 8, color: "#8bded2", textDecoration: "none", marginBottom: 18 }}>{tr("مساعد المشروعات الصغيرة ←")}</Link>
       <header style={{ marginBottom: 22 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 9, color: "#83d9ce", fontSize: 13 }}><Target size={18} /> خطوات عملية تناسب ظروفك</div>
-        <h1 style={{ fontSize: "clamp(27px,4vw,39px)", margin: "9px 0" }}>خطتي لتحسين حياتي</h1>
-        <p style={{ color: "#a9bdc8", lineHeight: 1.9, maxWidth: 760, margin: 0 }}>أجب عن أسئلة بسيطة لتحصل على خطة أولية لمدة 4 أسابيع للتعلم والعمل أو بدء مشروع صغير. لا نطلب اسمك أو رقمك القومي أو بياناتك البنكية.</p>
+        <div style={{ display: "flex", alignItems: "center", gap: 9, color: "#83d9ce", fontSize: 13 }}><Target size={18} /> {tr("خطوات عملية تناسب ظروفك")}</div>
+        <h1 style={{ fontSize: "clamp(27px,4vw,39px)", margin: "9px 0" }}>{tr("خطتي لتحسين حياتي")}</h1>
+        <p style={{ color: "#a9bdc8", lineHeight: 1.9, maxWidth: 760, margin: 0 }}>{tx("أجب عن أسئلة بسيطة لتحصل على خطة أولية لمدة 4 أسابيع للتعلم والعمل أو بدء مشروع صغير. لا نطلب اسمك أو رقمك القومي أو بياناتك البنكية.")}</p>
       </header>
 
       {!plan && <form onSubmit={generate} style={{ ...panel, display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(100%,250px),1fr))", gap: 14 }}>
-        <label style={{ display: "grid", gap: 7, color: "#c5d6dd", fontSize: 13 }}>ما المهارات التي تمتلكها حاليًا؟
-          <textarea maxLength={500} rows={3} value={profile.skills} onChange={e => setProfile({ ...profile, skills: e.target.value })} placeholder="مثل: البيع، القيادة، الطبخ، الصيانة، الكمبيوتر..." style={{ ...field, resize: "vertical" }} />
+        <label style={{ display: "grid", gap: 7, color: "#c5d6dd", fontSize: 13 }}>{tr("ما المهارات التي تمتلكها حاليًا؟")}
+          <textarea maxLength={500} rows={3} value={profile.skills} onChange={e => setProfile({ ...profile, skills: e.target.value })} placeholder={tr("مثل: البيع، القيادة، الطبخ، الصيانة، الكمبيوتر...")} style={{ ...field, resize: "vertical" }} />
         </label>
-        <label style={{ display: "grid", gap: 7, color: "#c5d6dd", fontSize: 13 }}>مستوى التعليم
-          <select value={profile.education} onChange={e => setProfile({ ...profile, education: e.target.value })} style={field}><option>بدون مؤهل رسمي</option><option>ابتدائي أو إعدادي</option><option>ثانوي أو ما يعادله</option><option>دبلوم فني</option><option>جامعي</option><option>دراسات عليا</option></select>
+        <label style={{ display: "grid", gap: 7, color: "#c5d6dd", fontSize: 13 }}>{tr("مستوى التعليم")}
+          <select value={profile.education} onChange={e => setProfile({ ...profile, education: e.target.value })} style={field}><option value="بدون مؤهل رسمي">{tr("بدون مؤهل رسمي")}</option><option value="ابتدائي أو إعدادي">{tr("ابتدائي أو إعدادي")}</option><option value="ثانوي أو ما يعادله">{tr("ثانوي أو ما يعادله")}</option><option value="دبلوم فني">{tr("دبلوم فني")}</option><option value="جامعي">{tr("جامعي")}</option><option value="دراسات عليا">{tr("دراسات عليا")}</option></select>
         </label>
-        <label style={{ display: "grid", gap: 7, color: "#c5d6dd", fontSize: 13 }}>ما هدفك الأساسي؟
-          <select value={profile.goal} onChange={e => setProfile({ ...profile, goal: e.target.value })} style={field}><option>الحصول على عمل أو دخل</option><option>تعلم مهارة جديدة</option><option>زيادة دخلي الحالي</option><option>بدء مشروع صغير</option><option>العودة إلى سوق العمل</option></select>
+        <label style={{ display: "grid", gap: 7, color: "#c5d6dd", fontSize: 13 }}>{tr("ما هدفك الأساسي؟")}
+          <select value={profile.goal} onChange={e => setProfile({ ...profile, goal: e.target.value })} style={field}><option value="الحصول على عمل أو دخل">{tr("الحصول على عمل أو دخل")}</option><option value="تعلم مهارة جديدة">{tr("تعلم مهارة جديدة")}</option><option value="زيادة دخلي الحالي">{tr("زيادة دخلي الحالي")}</option><option value="بدء مشروع صغير">{tr("بدء مشروع صغير")}</option><option value="العودة إلى سوق العمل">{tr("العودة إلى سوق العمل")}</option></select>
         </label>
-        <label style={{ display: "grid", gap: 7, color: "#c5d6dd", fontSize: 13 }}>المجال الذي تفضله
-          <select value={profile.interest} onChange={e => setProfile({ ...profile, interest: e.target.value })} style={field}><option>أي فرصة مناسبة</option><option>عمل رقمي</option><option>حرفة أو عمل يدوي</option><option>مشروع صغير</option></select>
+        <label style={{ display: "grid", gap: 7, color: "#c5d6dd", fontSize: 13 }}>{tr("المجال الذي تفضله")}
+          <select value={profile.interest} onChange={e => setProfile({ ...profile, interest: e.target.value })} style={field}><option value="أي فرصة مناسبة">{tr("أي فرصة مناسبة")}</option><option value="عمل رقمي">{tr("عمل رقمي")}</option><option value="حرفة أو عمل يدوي">{tr("حرفة أو عمل يدوي")}</option><option value="مشروع صغير">{tr("مشروع صغير")}</option></select>
         </label>
-        <label style={{ display: "grid", gap: 7, color: "#c5d6dd", fontSize: 13 }}>الوقت المتاح أسبوعيًا (بالساعات)
-          <select value={profile.hours} onChange={e => setProfile({ ...profile, hours: e.target.value })} style={field}><option value="2">ساعتان</option><option value="5">5 ساعات</option><option value="10">10 ساعات</option><option value="15">15 ساعة</option><option value="20">20 ساعة أو أكثر</option></select>
+        <label style={{ display: "grid", gap: 7, color: "#c5d6dd", fontSize: 13 }}>{tr("الوقت المتاح أسبوعيًا (بالساعات)")}
+          <select value={profile.hours} onChange={e => setProfile({ ...profile, hours: e.target.value })} style={field}><option value="2">{tr("ساعتان")}</option><option value="5">{tr("5 ساعات")}</option><option value="10">{tr("10 ساعات")}</option><option value="15">{tr("15 ساعة")}</option><option value="20">{tr("20 ساعة أو أكثر")}</option></select>
         </label>
-        <label style={{ display: "grid", gap: 7, color: "#c5d6dd", fontSize: 13 }}>إمكانية الوصول إلى الإنترنت
-          <select value={profile.internet} onChange={e => setProfile({ ...profile, internet: e.target.value })} style={field}><option>متاح</option><option>غير متاح بانتظام</option></select>
+        <label style={{ display: "grid", gap: 7, color: "#c5d6dd", fontSize: 13 }}>{tr("إمكانية الوصول إلى الإنترنت")}
+          <select value={profile.internet} onChange={e => setProfile({ ...profile, internet: e.target.value })} style={field}><option value="متاح">{tr("متاح")}</option><option value="غير متاح بانتظام">{tr("غير متاح بانتظام")}</option></select>
         </label>
-        <label style={{ display: "grid", gap: 7, color: "#c5d6dd", fontSize: 13 }}>المحافظة أو المنطقة (اختياري)
-          <input maxLength={100} value={profile.location} onChange={e => setProfile({ ...profile, location: e.target.value })} placeholder="اختياري لتسهيل البحث المحلي لاحقًا" style={field} />
+        <label style={{ display: "grid", gap: 7, color: "#c5d6dd", fontSize: 13 }}>{tr("المحافظة أو المنطقة (اختياري)")}
+          <input maxLength={100} value={profile.location} onChange={e => setProfile({ ...profile, location: e.target.value })} placeholder={tr("اختياري لتسهيل البحث المحلي لاحقًا")} style={field} />
         </label>
         <div style={{ gridColumn: "1 / -1", display: "flex", flexWrap: "wrap", alignItems: "center", gap: 12 }}>
-          <button type="submit" style={button}><Target size={17} /> أنشئ خطتي العملية</button>
-          <span style={{ color: "#91aab6", fontSize: 12 }}>الخطة الأولية تُنشأ داخل جهازك دون إرسال إجاباتك إلى خادم.</span>
+          <button type="submit" style={button}><Target size={17} /> {tr("أنشئ خطتي العملية")}</button>
+          <span style={{ color: "#91aab6", fontSize: 12 }}>{tr("الخطة الأولية تُنشأ داخل جهازك دون إرسال إجاباتك إلى خادم.")}</span>
         </div>
       </form>}
 
       {plan && <section style={{ display: "grid", gap: 14 }}>
         <div style={{ ...panel, display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: 12 }}>
-          <div><div style={{ color: "#83d9ce", fontSize: 13 }}>خطة 4 أسابيع</div><h2 style={{ margin: "7px 0", fontSize: 21 }}>هدفك: {plan.profile.goal}</h2><p style={{ margin: 0, color: "#a9bdc8", fontSize: 13 }}>المجال: {plan.profile.interest} · التعليم: {plan.profile.education} · الوقت المتاح: {plan.profile.hours} ساعات أسبوعيًا{plan.profile.location ? ` · المنطقة: ${plan.profile.location}` : ""}</p></div>
-          <div style={{ minWidth: 125 }}><strong style={{ fontSize: 25, color: "#83d9ce" }}>{completed}/{plan.steps.length}</strong><div style={{ color: "#a9bdc8", fontSize: 12 }}>خطوات مكتملة</div><div style={{ height: 7, background: "#294454", borderRadius: 9, marginTop: 8, overflow: "hidden" }}><div style={{ width: (completed / plan.steps.length * 100) + "%", height: "100%", background: "#65c9b8" }} /></div></div>
+          <div><div style={{ color: "#83d9ce", fontSize: 13 }}>{tr("خطة 4 أسابيع")}</div><h2 style={{ margin: "7px 0", fontSize: 21 }}>هدفك: {plan.profile.goal}</h2><p style={{ margin: 0, color: "#a9bdc8", fontSize: 13 }}>{tr("المجال:")} {tr(plan.profile.interest)} · {tr("التعليم:")} {tr(plan.profile.education)} · {tr("الوقت المتاح:")} {plan.profile.hours} {tr("ساعات أسبوعيًا")}{plan.profile.location ? ` · المنطقة: ${plan.profile.location}` : ""}</p></div>
+          <div style={{ minWidth: 125 }}><strong style={{ fontSize: 25, color: "#83d9ce" }}>{completed}/{plan.steps.length}</strong><div style={{ color: "#a9bdc8", fontSize: 12 }}>{tr("خطوات مكتملة")}</div><div style={{ height: 7, background: "#294454", borderRadius: 9, marginTop: 8, overflow: "hidden" }}><div style={{ width: (completed / plan.steps.length * 100) + "%", height: "100%", background: "#65c9b8" }} /></div></div>
         </div>
         {[1,2,3,4].map(week => <section key={week} style={panel}>
-          <h3 style={{ margin: "0 0 13px", color: "#dff6f2", fontSize: 17 }}>الأسبوع {week}</h3>
-          <div style={{ display: "grid", gap: 12 }}>{plan.steps.filter(s => s.week === week).map(step => <label key={step.id} style={{ display: "flex", alignItems: "start", gap: 10, cursor: "pointer" }}>
+          <h3 style={{ margin: "0 0 13px", color: "#dff6f2", fontSize: 17 }}>{tr("الأسبوع")} {week}</h3>
+          <div style={{ display: "grid", gap: 12 }}>{displaySteps.filter(s => s.week === week).map(step => <label key={step.id} style={{ display: "flex", alignItems: "start", gap: 10, cursor: "pointer" }}>
             <input type="checkbox" checked={step.done} onChange={e => setPlan(current => current ? { ...current, steps: current.steps.map(s => s.id === step.id ? { ...s, done: e.target.checked } : s) } : current)} style={{ marginTop: 4, accentColor: "#65c9b8", width: 17, height: 17 }} />
             <span style={{ flex: 1 }}><strong style={{ color: step.done ? "#83d9ce" : "#edf6f7", textDecoration: step.done ? "line-through" : "none" }}>{step.title}</strong><span style={{ display: "block", color: "#a9bdc8", fontSize: 13, lineHeight: 1.8, marginTop: 4 }}>{step.detail}</span></span>
             {step.done ? <CheckCircle2 size={18} color="#83d9ce" /> : <Circle size={18} color="#7893a1" />}
           </label>)}</div>
         </section>)}
         <div style={{ display: "flex", flexWrap: "wrap", gap: 9 }}>
-          <button type="button" onClick={exportPlan} style={button}><Download size={16} /> تصدير خطتي</button>
-          <button type="button" onClick={() => { setPlan(null); }} style={{ ...button, background: "transparent", borderColor: "#355365" }}><RefreshCw size={16} /> تعديل الإجابات وإنشاء خطة جديدة</button>
+          <button type="button" onClick={exportPlan} style={button}><Download size={16} /> {tr("تصدير خطتي")}</button>
+          <button type="button" onClick={() => { setPlan(null); }} style={{ ...button, background: "transparent", borderColor: "#355365" }}><RefreshCw size={16} /> {tr("تعديل الإجابات وإنشاء خطة جديدة")}</button>
         </div>
       </section>}
 
       <footer style={{ ...panel, marginTop: 18, color: "#91aab6", fontSize: 12, lineHeight: 1.9 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 7, color: "#bfe9e3", marginBottom: 5 }}><ShieldCheck size={16} /> الخصوصية والواقعية</div>
-        هذه خطة إرشادية أولية وليست وعدًا بوظيفة أو دخل أو تمويل. لا تتطلب دفع رسوم. تحقق من أي جهة قبل مشاركة بياناتك أو قبول عرض. تُحفظ الخطة على هذا الجهاز والمتصفح فقط ويمكنك تصدير نسخة منها.
+        <div style={{ display: "flex", alignItems: "center", gap: 7, color: "#bfe9e3", marginBottom: 5 }}><ShieldCheck size={16} /> {tr("الخصوصية والواقعية")}</div>
+        {tx("هذه خطة إرشادية أولية وليست وعدًا بوظيفة أو دخل أو تمويل. لا تتطلب دفع رسوم. تحقق من أي جهة قبل مشاركة بياناتك أو قبول عرض. تُحفظ الخطة على هذا الجهاز والمتصفح فقط ويمكنك تصدير نسخة منها.")}
       </footer>
     </div>
   </main>;

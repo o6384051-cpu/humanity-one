@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { LanguageProvider, LanguageSwitcher } from "../components/LanguageProvider";
 
 const siteUrl = "https://humanity-one-wc35.vercel.app";
 const socialImage = "/opengraph-image";
@@ -52,8 +53,8 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ar" dir="rtl">
-      <body>{children}</body>
+    <html lang="ar" dir="rtl" suppressHydrationWarning>
+      <body><LanguageProvider><LanguageSwitcher />{children}</LanguageProvider></body>
     </html>
   );
 }

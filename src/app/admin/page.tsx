@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
+import { useLanguage, translateText } from "../../components/LanguageProvider";
 
 type Overview = {
   generatedAt: string;
@@ -23,6 +24,9 @@ const panel: React.CSSProperties = { background: "#101a2b", border: "1px solid #
 const linkStyle: React.CSSProperties = { display: "block", padding: 14, background: "#122438", border: "1px solid #29445b", borderRadius: 10, color: "#e8f2ff", textDecoration: "none" };
 
 export default function AdminDashboardPage() {
+  const { language } = useLanguage();
+  const tx = (value: string) => translateText(value, language);
+  const tr = (value: string) => translateText(value, language);
   const [data, setData] = useState<Overview | null>(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
@@ -41,23 +45,23 @@ export default function AdminDashboardPage() {
 
   useEffect(() => { void load(); }, [load]);
 
-  const number = (value: number) => new Intl.NumberFormat("ar-EG").format(value);
-  const roleName = (role: string) => role === "SUPER_ADMIN" ? "المؤسس" : role === "ADMIN" ? "إداري" : "مشرف";
+  const number = (value: number) => new Intl.NumberFormat(language === "ar" ? "ar-EG" : "en-EG").format(value);
+  const roleName = (role: string) => role === "SUPER_ADMIN" ? tr("المؤسس") : role === "ADMIN" ? tr("إداري") : tr("مشرف");
 
-  return <main dir="rtl" style={{ minHeight: "100vh", padding: 20, background: "#080d18", color: "#e8edf7", fontFamily: "Cairo, sans-serif" }}>
+  return <main dir={language === "ar" ? "rtl" : "ltr"} lang={language} style={{ minHeight: "100vh", padding: 20, background: "#080d18", color: "#e8edf7", fontFamily: "Cairo, sans-serif" }}>
     <div style={{ maxWidth: 1100, margin: "0 auto", display: "grid", gap: 18 }}>
       <header style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 }}>
-        <div><Link href="/" style={{ color: "#63d8d0", textDecoration: "none" }}>← الرئيسية</Link><h1 style={{ fontSize: 28, fontWeight: 800, marginTop: 12 }}>مركز تحكم HUMANITY ONE</h1><p style={{ color: "#9aabc0" }}>متابعة تشغيل المنظومة من بياناتها الفعلية.</p></div>
-        <button onClick={() => void load()} disabled={loading} style={{ padding: "10px 15px", borderRadius: 9, border: "1px solid #36536b", background: "#14283a", color: "#e8edf7" }}>{loading ? "جارٍ التحديث..." : "تحديث البيانات"}</button>
+        <div><Link href="/" style={{ color: "#63d8d0", textDecoration: "none" }}>{tr("← الرئيسية")}</Link><h1 style={{ fontSize: 28, fontWeight: 800, marginTop: 12 }}>{tr("مركز تحكم HUMANITY ONE")}</h1><p style={{ color: "#9aabc0" }}>{tr("متابعة تشغيل المنظومة من بياناتها الفعلية.")}</p></div>
+        <button onClick={() => void load()} disabled={loading} style={{ padding: "10px 15px", borderRadius: 9, border: "1px solid #36536b", background: "#14283a", color: "#e8edf7" }}>{loading ? tr("جارٍ التحديث...") : tr("تحديث البيانات")}</button>
       </header>
 
-      {loading && <p style={{ color: "#b8c8d9" }}>جارٍ قراءة بيانات النظام...</p>}
-      {error && <section role="alert" style={{ ...panel, borderColor: "#75414a" }}><p style={{ color: "#ffb2b2" }}>{error}</p><p style={{ color: "#b8c8d9", marginTop: 8 }}>إذا لم تكن قد سجلت الدخول، افتح صفحة المؤسس أولًا.</p><Link href="/founder" style={{ color: "#63d8d0" }}>فتح تسجيل دخول الإدارة</Link></section>}
+      {loading && <p style={{ color: "#b8c8d9" }}>{tr("جارٍ قراءة بيانات النظام...")}</p>}
+      {error && <section role="alert" style={{ ...panel, borderColor: "#75414a" }}><p style={{ color: "#ffb2b2" }}>{tr(error)}</p><p style={{ color: "#b8c8d9", marginTop: 8 }}>{tr("إذا لم تكن قد سجلت الدخول، افتح صفحة المؤسس أولًا.")}</p><Link href="/founder" style={{ color: "#63d8d0" }}>{tr("فتح تسجيل دخول الإدارة")}</Link></section>}
 
       {data && <>
         <section style={{ ...panel, display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 10 }}>
-          <div><b>{data.actor.name || data.actor.email}</b><p style={{ color: "#63d8d0", marginTop: 4 }}>الصلاحية: {roleName(data.actor.role)}</p></div>
-          <div style={{ color: "#9aabc0", fontSize: 12 }}>آخر قراءة: {new Date(data.generatedAt).toLocaleString("ar-EG")}</div>
+          <div><b>{data.actor.name || data.actor.email}</b><p style={{ color: "#63d8d0", marginTop: 4 }}>{tr("الصلاحية:")} {roleName(data.actor.role)}</p></div>
+          <div style={{ color: "#9aabc0", fontSize: 12 }}>{tr("آخر قراءة:")} {new Date(data.generatedAt).toLocaleString(language === "ar" ? "ar-EG" : "en-EG")}</div>
         </section>
 
         <section style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(145px,1fr))", gap: 10 }}>
@@ -65,46 +69,46 @@ export default function AdminDashboardPage() {
             ["إجمالي الحسابات", data.stats.users], ["فريق الإدارة", data.stats.administrators],
             ["المبادرات", data.stats.projects], ["المهام", data.stats.tasks],
             ["الوكلاء", data.stats.agents], ["طلبات التقديم", data.stats.applications], ["طلبات المساعدة", data.stats.assistance.total],
-          ].map(([label, value]) => <article key={String(label)} style={panel}><p style={{ color: "#9aabc0", fontSize: 13 }}>{label}</p><strong style={{ display: "block", fontSize: 27, marginTop: 7 }}>{number(Number(value))}</strong></article>)}
+          ].map(([label, value]) => <article key={String(label)} style={panel}><p style={{ color: "#9aabc0", fontSize: 13 }}>{tr(String(label))}</p><strong style={{ display: "block", fontSize: 27, marginTop: 7 }}>{number(Number(value))}</strong></article>)}
         </section>
 
         <section style={panel}>
-          <h2 style={{ fontSize: 19, fontWeight: 800, marginBottom: 12 }}>حالة طلبات المساعدة</h2>
+          <h2 style={{ fontSize: 19, fontWeight: 800, marginBottom: 12 }}>{tr("حالة طلبات المساعدة")}</h2>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(120px,1fr))", gap: 10 }}>
-            <div><p style={{ color: "#f2c879" }}>جديدة</p><b style={{ fontSize: 23 }}>{number(data.stats.assistance.pending)}</b></div>
-            <div><p style={{ color: "#f2c879" }}>تحت الدراسة</p><b style={{ fontSize: 23 }}>{number(data.stats.assistance.inReview)}</b></div>
-            <div><p style={{ color: "#8fe3cb" }}>موافق عليها</p><b style={{ fontSize: 23 }}>{number(data.stats.assistance.approved)}</b></div>
-            <div><p style={{ color: "#ffaaaa" }}>غير موافق عليها</p><b style={{ fontSize: 23 }}>{number(data.stats.assistance.rejected)}</b></div>
-            <div><p style={{ color: "#9aabc0" }}>عمليات مراجعة مسجلة</p><b style={{ fontSize: 23 }}>{number(data.stats.assistance.reviewEvents)}</b></div>
+            <div><p style={{ color: "#f2c879" }}>{tr("جديدة")}</p><b style={{ fontSize: 23 }}>{number(data.stats.assistance.pending)}</b></div>
+            <div><p style={{ color: "#f2c879" }}>{tr("تحت الدراسة")}</p><b style={{ fontSize: 23 }}>{number(data.stats.assistance.inReview)}</b></div>
+            <div><p style={{ color: "#8fe3cb" }}>{tr("موافق عليها")}</p><b style={{ fontSize: 23 }}>{number(data.stats.assistance.approved)}</b></div>
+            <div><p style={{ color: "#ffaaaa" }}>{tr("غير موافق عليها")}</p><b style={{ fontSize: 23 }}>{number(data.stats.assistance.rejected)}</b></div>
+            <div><p style={{ color: "#9aabc0" }}>{tr("عمليات مراجعة مسجلة")}</p><b style={{ fontSize: 23 }}>{number(data.stats.assistance.reviewEvents)}</b></div>
           </div>
         </section>
 
         <section style={panel}>
-          <h2 style={{ fontSize: 19, fontWeight: 800, marginBottom: 12 }}>حالة فرص العمل</h2>
+          <h2 style={{ fontSize: 19, fontWeight: 800, marginBottom: 12 }}>{tr("حالة فرص العمل")}</h2>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(130px,1fr))", gap: 10 }}>
-            <div><p style={{ color: "#f2c879" }}>بانتظار المراجعة</p><b style={{ fontSize: 24 }}>{number(data.stats.jobs.pending)}</b></div>
-            <div><p style={{ color: "#8fe3cb" }}>معتمدة</p><b style={{ fontSize: 24 }}>{number(data.stats.jobs.approved)}</b></div>
-            <div><p style={{ color: "#ffaaaa" }}>مرفوضة</p><b style={{ fontSize: 24 }}>{number(data.stats.jobs.rejected)}</b></div>
+            <div><p style={{ color: "#f2c879" }}>{tr("بانتظار المراجعة")}</p><b style={{ fontSize: 24 }}>{number(data.stats.jobs.pending)}</b></div>
+            <div><p style={{ color: "#8fe3cb" }}>{tr("معتمدة")}</p><b style={{ fontSize: 24 }}>{number(data.stats.jobs.approved)}</b></div>
+            <div><p style={{ color: "#ffaaaa" }}>{tr("مرفوضة")}</p><b style={{ fontSize: 24 }}>{number(data.stats.jobs.rejected)}</b></div>
           </div>
         </section>
 
         <section style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))", gap: 10 }}>
-          <Link href="/admin/beneficiaries" style={linkStyle}><b>إدارة حسابات المستفيدين</b><p style={{ color: "#9aabc0", marginTop: 5, fontSize: 13 }}>البحث في الحسابات والملفات الأساسية وعدد طلبات كل مستفيد.</p></Link>
-          <Link href="/founder" style={linkStyle}><b>إدارة حسابات الفريق والصلاحيات</b><p style={{ color: "#9aabc0", marginTop: 5, fontSize: 13 }}>إضافة المشرفين وتعديل أدوارهم وإدارتهم.</p></Link>
-          <Link href="/admin/assistance" style={linkStyle}><b>طلبات المستفيدين والمساعدات</b><p style={{ color: "#9aabc0", marginTop: 5, fontSize: 13 }}>مراجعة الطلبات وتحديث حالتها وإرسال إشعار لصاحب الطلب.</p></Link>\n          <Link href="/admin/assistance" style={linkStyle}><b>طلبات المستفيدين والمساعدات</b><p style={{ color: "#9aabc0", marginTop: 5, fontSize: 13 }}>مراجعة الطلبات وتحديث حالتها وإرسال إشعار لصاحب الطلب.</p></Link>
-          <Link href="/admin/jobs" style={linkStyle}><b>مراجعة الوظائف وطلبات التقديم</b><p style={{ color: "#9aabc0", marginTop: 5, fontSize: 13 }}>اعتماد الإعلانات أو رفضها ومراجعة طلبات التقديم.</p></Link>
-          <Link href="/projects" style={linkStyle}><b>المبادرات والمشروعات</b><p style={{ color: "#9aabc0", marginTop: 5, fontSize: 13 }}>فتح مساحة المبادرات الحالية.</p></Link>
-          <Link href="/tasks" style={linkStyle}><b>المهام</b><p style={{ color: "#9aabc0", marginTop: 5, fontSize: 13 }}>فتح مساحة متابعة المهام.</p></Link>
-          <Link href="/ai-core" style={linkStyle}><b>مساعد الذكاء الاصطناعي</b><p style={{ color: "#9aabc0", marginTop: 5, fontSize: 13 }}>فتح واجهة المساعد واختبارها يدويًا.</p></Link>
+          <Link href="/admin/beneficiaries" style={linkStyle}><b>{tr("إدارة حسابات المستفيدين")}</b><p style={{ color: "#9aabc0", marginTop: 5, fontSize: 13 }}>{tr("البحث في الحسابات والملفات الأساسية وعدد طلبات كل مستفيد.")}</p></Link>
+          <Link href="/founder" style={linkStyle}><b>{tr("إدارة حسابات الفريق والصلاحيات")}</b><p style={{ color: "#9aabc0", marginTop: 5, fontSize: 13 }}>{tr("إضافة المشرفين وتعديل أدوارهم وإدارتهم.")}</p></Link>
+          <Link href="/admin/assistance" style={linkStyle}><b>{tr("طلبات المستفيدين والمساعدات")}</b><p style={{ color: "#9aabc0", marginTop: 5, fontSize: 13 }}>{tr("مراجعة الطلبات وتحديث حالتها وإرسال إشعار لصاحب الطلب.")}</p></Link>
+          <Link href="/admin/jobs" style={linkStyle}><b>{tr("مراجعة الوظائف وطلبات التقديم")}</b><p style={{ color: "#9aabc0", marginTop: 5, fontSize: 13 }}>{tr("اعتماد الإعلانات أو رفضها ومراجعة طلبات التقديم.")}</p></Link>
+          <Link href="/projects" style={linkStyle}><b>{tr("المبادرات والمشروعات")}</b><p style={{ color: "#9aabc0", marginTop: 5, fontSize: 13 }}>{tr("فتح مساحة المبادرات الحالية.")}</p></Link>
+          <Link href="/tasks" style={linkStyle}><b>{tr("المهام")}</b><p style={{ color: "#9aabc0", marginTop: 5, fontSize: 13 }}>{tr("فتح مساحة متابعة المهام.")}</p></Link>
+          <Link href="/ai-core" style={linkStyle}><b>{tr("مساعد الذكاء الاصطناعي")}</b><p style={{ color: "#9aabc0", marginTop: 5, fontSize: 13 }}>{tr("فتح واجهة المساعد واختبارها يدويًا.")}</p></Link>
         </section>
 
         <section style={panel}>
-          <h2 style={{ fontSize: 19, fontWeight: 800, marginBottom: 12 }}>سلامة الخدمات والوظائف غير المكتملة</h2>
-          <p style={{ marginBottom: 8 }}>قاعدة البيانات: <b style={{ color: "#8fe3cb" }}>تم الاتصال وقراءة الإحصاءات</b></p>
-          <p style={{ marginBottom: 8 }}>إعداد الذكاء الاصطناعي: <b style={{ color: data.capabilities.aiConfigured ? "#8fe3cb" : "#f2c879" }}>{data.capabilities.aiConfigured ? "مفتاح مضبوط في بيئة الخادم" : "لم يتم ضبط مفتاح"}</b>{data.capabilities.aiModel ? " — النموذج: " + data.capabilities.aiModel : ""}</p>
-          <p style={{ color: "#8fe3cb", marginTop: 12 }}>طلبات المستفيدين: {data.capabilities.beneficiaryRequests.available ? "متصلة وتُقرأ من قاعدة البيانات." : data.capabilities.beneficiaryRequests.reason}</p>
-          <p style={{ color: "#9aabc0", marginTop: 8 }}>سجل مراجعات طلبات المساعدة: {data.capabilities.assistanceReviewHistory.available ? data.capabilities.assistanceReviewHistory.reason : "غير متاح."}</p>
-          <p style={{ color: "#9aabc0", fontSize: 12, marginTop: 12 }}>وجود مفتاح الذكاء الاصطناعي لا يثبت نجاح الاتصال بالمزود؛ يلزم اختبار محادثة فعلية.</p>
+          <h2 style={{ fontSize: 19, fontWeight: 800, marginBottom: 12 }}>{tr("سلامة الخدمات والوظائف غير المكتملة")}</h2>
+          <p style={{ marginBottom: 8 }}>{tr("قاعدة البيانات:")} <b style={{ color: "#8fe3cb" }}>{tr("تم الاتصال وقراءة الإحصاءات")}</b></p>
+          <p style={{ marginBottom: 8 }}>{tr("إعداد الذكاء الاصطناعي:")} <b style={{ color: data.capabilities.aiConfigured ? "#8fe3cb" : "#f2c879" }}>{data.capabilities.aiConfigured ? tr("مفتاح مضبوط في بيئة الخادم") : tr("لم يتم ضبط مفتاح")}</b>{data.capabilities.aiModel ? " — " + tr("النموذج:") + " " + data.capabilities.aiModel : ""}</p>
+          <p style={{ color: "#8fe3cb", marginTop: 12 }}>{tr("طلبات المستفيدين:")} {data.capabilities.beneficiaryRequests.available ? tr("متصلة وتُقرأ من قاعدة البيانات.") : tr(data.capabilities.beneficiaryRequests.reason)}</p>
+          <p style={{ color: "#9aabc0", marginTop: 8 }}>{tr("سجل مراجعات طلبات المساعدة:")} {data.capabilities.assistanceReviewHistory.available ? tr(data.capabilities.assistanceReviewHistory.reason) : tr("غير متاح.")}</p>
+          <p style={{ color: "#9aabc0", fontSize: 12, marginTop: 12 }}>{tr("وجود مفتاح الذكاء الاصطناعي لا يثبت نجاح الاتصال بالمزود؛ يلزم اختبار محادثة فعلية.")}</p>
         </section>
       </>}
     </div>

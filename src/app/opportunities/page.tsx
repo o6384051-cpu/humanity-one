@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { ArrowRight, BriefcaseBusiness, GraduationCap, Lightbulb, Search, ExternalLink, ShieldCheck, HeartHandshake } from "lucide-react";
+import { useLanguage, translateText } from "../../components/LanguageProvider";
 
 type Category = "all" | "work" | "trades" | "factory" | "learning" | "business" | "support";
 type Resource = {
@@ -49,6 +50,8 @@ const categoryLabel: Record<Resource["category"], string> = {
 type MatchProfile = { skills?: string; goal?: string; interest?: string; education?: string; internet?: string; location?: string };
 
 function OpportunityMatches({ items }: { items: Resource[] }) {
+  const { language: componentLanguage } = useLanguage();
+  const tx = (value: string) => translateText(value, componentLanguage);
   const [profile, setProfile] = useState<MatchProfile | null>(null);
   useEffect(() => {
     try {
@@ -78,29 +81,32 @@ function OpportunityMatches({ items }: { items: Resource[] }) {
       if (profile.goal === "العودة إلى سوق العمل" && ["work", "trades", "factory"].includes(item.category)) score += 2;
       if (profile.education === "دبلوم فني" && item.category === "learning") score += 1;
       const reasons: string[] = [];
-      if (preferred === item.category) reasons.push("يتوافق مع المجال الذي اخترته");
-      if (matched.length) reasons.push("يرتبط بمهاراتك: " + matched.slice(0, 3).join("، "));
-      if (!reasons.length) reasons.push("قد يساعدك في هدفك العام؛ راجع الشروط بنفسك");
+      if (preferred === item.category) reasons.push(componentLanguage === "ar" ? "يتوافق مع المجال الذي اخترته" : "Matches the field you selected");
+      if (matched.length) reasons.push(componentLanguage === "ar" ? "يرتبط بمهاراتك: " + matched.slice(0, 3).join("، ") : "Matches your skills: " + matched.slice(0, 3).join(", "));
+      if (!reasons.length) reasons.push(componentLanguage === "ar" ? "قد يساعدك في هدفك العام؛ راجع الشروط بنفسك" : "May support your broader goal; check the requirements yourself");
       return { item, score, reasons };
     }).sort((a, b) => b.score - a.score).slice(0, 3);
   }, [items, profile]);
 
   return <section style={{ background: "rgba(17,38,52,.88)", border: "1px solid rgba(132,177,190,.22)", borderRadius: 16, padding: 18, marginBottom: 18 }}>
-    <div style={{ color: "#82d9cd", fontSize: 13, marginBottom: 6 }}>مطابقة مبدئية حسب خطتك</div>
-    <h2 style={{ margin: "0 0 8px", color: "#f3fbfc", fontSize: 20 }}>فرص أقرب إلى مهاراتك وهدفك</h2>
-    {!profile ? <><p style={{ color: "#a9bdc8", lineHeight: 1.8, margin: "0 0 12px" }}>أنشئ خطتك الشخصية وأضف مهاراتك أولًا، ثم سنرتب المصادر هنا وفق المجال والمهارات التي أدخلتها.</p><Link href="/personal-plan" style={{ color: "#8bded2" }}>أنشئ خطتك وأدخل مهاراتك ←</Link></> :
-      <><p style={{ color: "#a9bdc8", lineHeight: 1.8, margin: "0 0 12px" }}>هذه توصيات إرشادية محلية مبنية على إجاباتك المحفوظة في هذا المتصفح، وليست إعلانًا عن وظيفة متاحة الآن.</p>
-      <div style={{ display: "grid", gap: 10 }}>{matches.map(({ item, reasons }) => <article key={item.title} style={{ background: "#0a1b27", borderRadius: 11, padding: 13, display: "grid", gap: 6 }}>
-        <div style={{ color: "#82d9cd", fontSize: 12 }}>{categoryLabel[item.category]}</div>
+    <div style={{ color: "#82d9cd", fontSize: 13, marginBottom: 6 }}>{tx("مطابقة مبدئية حسب خطتك")}</div>
+    <h2 style={{ margin: "0 0 8px", color: "#f3fbfc", fontSize: 20 }}>{tx("فرص أقرب إلى مهاراتك وهدفك")}</h2>
+    {!profile ? <><p style={{ color: "#a9bdc8", lineHeight: 1.8, margin: "0 0 12px" }}>{tx("أنشئ خطتك الشخصية وأضف مهاراتك أولًا، ثم سنرتب المصادر هنا وفق المجال والمهارات التي أدخلتها.")}</p><Link href="/personal-plan" style={{ color: "#8bded2" }}>{tx("أنشئ خطتك وأدخل مهاراتك ←")}</Link></> :
+      <><p style={{ color: "#a9bdc8", lineHeight: 1.8, margin: "0 0 12px" }}>{tx("هذه توصيات إرشادية محلية مبنية على إجاباتك المحفوظة في هذا المتصفح، وليست إعلانًا عن وظيفة متاحة الآن.")}</p>
+      <div style={{ display: "grid", gap: 10 }}>{matches.map(({ item, reasons }) => <article key={tx(item.title)} style={{ background: "#0a1b27", borderRadius: 11, padding: 13, display: "grid", gap: 6 }}>
+        <div style={{ color: "#82d9cd", fontSize: 12 }}>{tx(categoryLabel[item.category])}</div>
         <strong style={{ color: "#f3fbfc" }}>{item.title}</strong>
-        <span style={{ color: "#b5c7cf", fontSize: 12, lineHeight: 1.7 }}>{reasons.join(" · ")}</span>
-        <a href={item.url} target="_blank" rel="noopener noreferrer" style={{ color: "#8bded2", fontSize: 13, width: "fit-content" }}>افتح المصدر الرسمي ←</a>
+        <span style={{ color: "#b5c7cf", fontSize: 12, lineHeight: 1.7 }}>{reasons.map(reason => tx(reason)).join(" · ")}</span>
+        <a href={item.url} target="_blank" rel="noopener noreferrer" style={{ color: "#8bded2", fontSize: 13, width: "fit-content" }}>{tx("افتح المصدر الرسمي ←")}</a>
       </article>)}</div>
-      <div style={{ marginTop: 12, display: "flex", gap: 12, flexWrap: "wrap" }}><Link href="/personal-plan" style={{ color: "#8bded2", fontSize: 13 }}>تعديل مهاراتي وهدفي</Link><button type="button" onClick={() => { try { const raw = localStorage.getItem("humanity-one-personal-plan-v1"); const saved = raw ? JSON.parse(raw) : null; setProfile(saved?.profile || null); } catch { setProfile(null); } }} style={{ background: "transparent", border: 0, color: "#a9bdc8", cursor: "pointer", font: "inherit", fontSize: 12 }}>إعادة تحميل بيانات الخطة</button></div></>}
+      <div style={{ marginTop: 12, display: "flex", gap: 12, flexWrap: "wrap" }}><Link href="/personal-plan" style={{ color: "#8bded2", fontSize: 13 }}>{tx("تعديل مهاراتي وهدفي")}</Link><button type="button" onClick={() => { try { const raw = localStorage.getItem("humanity-one-personal-plan-v1"); const saved = raw ? JSON.parse(raw) : null; setProfile(saved?.profile || null); } catch { setProfile(null); } }} style={{ background: "transparent", border: 0, color: "#a9bdc8", cursor: "pointer", font: "inherit", fontSize: 12 }}>{tx("إعادة تحميل بيانات الخطة")}</button></div></>}
   </section>;
 }
 
 export default function OpportunitiesPage() {
+  const { language } = useLanguage();
+  const tx = (value: string) => translateText(value, language);
+  const tr = (value: string) => translateText(value, language);
   const [category, setCategory] = useState<Category>("all");
   const [query, setQuery] = useState("");
 
@@ -114,32 +120,32 @@ export default function OpportunitiesPage() {
     <main dir="rtl" style={{ minHeight: "100vh", padding: "clamp(18px, 4vw, 48px)", color: "#e8f1f5", background: "linear-gradient(145deg,#07131d,#0b1d2b 58%,#102a34)" }}>
       <div style={{ maxWidth: 1120, margin: "0 auto" }}>
         <Link href="/" style={{ display: "inline-flex", alignItems: "center", gap: 8, color: "#8bded2", textDecoration: "none", marginBottom: 24 }}>
-          <ArrowRight size={17} /> العودة إلى HUMANITY ONE
+          <ArrowRight size={17} /> {tx("العودة إلى HUMANITY ONE")}
         </Link>
 
         <header style={{ marginBottom: 24 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10, color: "#80d8ca", fontSize: 13, marginBottom: 9 }}>
-            <HeartHandshake size={18} /> فرص حقيقية من مصادرها
+            <HeartHandshake size={18} /> {tr("فرص حقيقية من مصادرها")}
           </div>
-          <h1 style={{ fontSize: "clamp(27px,4vw,40px)", margin: 0, color: "#f3fbfc" }}>مركز الفرص الإنسانية</h1>
+          <h1 style={{ fontSize: "clamp(27px,4vw,40px)", margin: 0, color: "#f3fbfc" }}>{tr("مركز الفرص الإنسانية")}</h1>
           <p style={{ color: "#a9bdc8", lineHeight: 1.9, maxWidth: 760, margin: "10px 0 0" }}>
-            ابدأ من بوابات رسمية ومصادر معروفة للعمل والتعلم وبناء مشروع صغير. نعرض هنا روابط الجهات نفسها، لا إعلانات وظائف غير متحقق منها.
+            {tr("ابدأ من بوابات رسمية ومصادر معروفة للعمل والتعلم وبناء مشروع صغير. نعرض هنا روابط الجهات نفسها، لا إعلانات وظائف غير متحقق منها.")}
           </p>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 10, marginTop: 16 }}>
-            <Link href="/jobs" style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "11px 15px", borderRadius: 10, background: "#174c49", color: "#eafff9", textDecoration: "none", fontSize: 14 }}>تصفح الوظائف المنشورة ←</Link>
-            <Link href="/jobs/post" style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "11px 15px", borderRadius: 10, border: "1px solid #4a9d91", color: "#bfe9e3", textDecoration: "none", fontSize: 14 }}>صاحب عمل؟ أضف فرصة مجانًا</Link>
+            <Link href="/jobs" style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "11px 15px", borderRadius: 10, background: "#174c49", color: "#eafff9", textDecoration: "none", fontSize: 14 }}>{tr("تصفح الوظائف المنشورة ←")}</Link>
+            <Link href="/jobs/post" style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "11px 15px", borderRadius: 10, border: "1px solid #4a9d91", color: "#bfe9e3", textDecoration: "none", fontSize: 14 }}>{tr("صاحب عمل؟ أضف فرصة مجانًا")}</Link>
           </div>
         </header>
 
         <section style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(190px,1fr))", gap: 12, marginBottom: 22 }}>
           <div style={{ background: "rgba(17,38,52,.88)", border: "1px solid rgba(132,177,190,.18)", borderRadius: 16, padding: 16 }}>
-            <BriefcaseBusiness color="#82d9cd" size={22} /><h2 style={{ fontSize: 16, margin: "10px 0 4px" }}>العمل والدخل</h2><p style={{ color: "#a9bdc8", fontSize: 13, margin: 0 }}>بوابات توظيف رسمية</p>
+            <BriefcaseBusiness color="#82d9cd" size={22} /><h2 style={{ fontSize: 16, margin: "10px 0 4px" }}>{tr("العمل والدخل")}</h2><p style={{ color: "#a9bdc8", fontSize: 13, margin: 0 }}>{tr("بوابات توظيف رسمية")}</p>
           </div>
           <div style={{ background: "rgba(17,38,52,.88)", border: "1px solid rgba(132,177,190,.18)", borderRadius: 16, padding: 16 }}>
-            <GraduationCap color="#82d9cd" size={22} /><h2 style={{ fontSize: 16, margin: "10px 0 4px" }}>التعليم المجاني</h2><p style={{ color: "#a9bdc8", fontSize: 13, margin: 0 }}>تعلم مهارات مطلوبة</p>
+            <GraduationCap color="#82d9cd" size={22} /><h2 style={{ fontSize: 16, margin: "10px 0 4px" }}>{tr("التعليم المجاني")}</h2><p style={{ color: "#a9bdc8", fontSize: 13, margin: 0 }}>{tr("تعلم مهارات مطلوبة")}</p>
           </div>
           <div style={{ background: "rgba(17,38,52,.88)", border: "1px solid rgba(132,177,190,.18)", borderRadius: 16, padding: 16 }}>
-            <Lightbulb color="#82d9cd" size={22} /><h2 style={{ fontSize: 16, margin: "10px 0 4px" }}>مشروعك الصغير</h2><p style={{ color: "#a9bdc8", fontSize: 13, margin: 0 }}>تدريب وإرشاد وخدمات دعم</p>
+            <Lightbulb color="#82d9cd" size={22} /><h2 style={{ fontSize: 16, margin: "10px 0 4px" }}>{tr("مشروعك الصغير")}</h2><p style={{ color: "#a9bdc8", fontSize: 13, margin: 0 }}>{tr("تدريب وإرشاد وخدمات دعم")}</p>
           </div>
         </section>
 
@@ -148,31 +154,31 @@ export default function OpportunitiesPage() {
         <section style={{ background: "rgba(17,38,52,.88)", border: "1px solid rgba(132,177,190,.18)", borderRadius: 16, padding: 16, marginBottom: 18, display: "grid", gap: 12 }}>
           <label style={{ display: "flex", alignItems: "center", gap: 9, color: "#a9bdc8" }}>
             <Search size={17} />
-            <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="ابحث عن جهة أو مجال..." aria-label="ابحث عن فرصة" style={{ width: "100%", background: "#0a1b27", border: "1px solid #294454", borderRadius: 10, padding: 12, color: "#eef7f8", outline: "none" }} />
+            <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder={tr("ابحث عن جهة أو مجال...")} aria-label={tr("ابحث عن فرصة")} style={{ width: "100%", background: "#0a1b27", border: "1px solid #294454", borderRadius: 10, padding: 12, color: "#eef7f8", outline: "none" }} />
           </label>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-            {filters.map((filter) => <button key={filter.value} type="button" onClick={() => setCategory(filter.value)} aria-pressed={category === filter.value} style={{ border: "1px solid " + (category === filter.value ? "#4a9d91" : "#355365"), background: category === filter.value ? "#174c49" : "transparent", color: "#d8e7eb", borderRadius: 9, padding: "8px 12px", cursor: "pointer", font: "inherit", fontSize: 12 }}>{filter.label}</button>)}
+            {filters.map((filter) => <button key={filter.value} type="button" onClick={() => setCategory(filter.value)} aria-pressed={category === filter.value} style={{ border: "1px solid " + (category === filter.value ? "#4a9d91" : "#355365"), background: category === filter.value ? "#174c49" : "transparent", color: "#d8e7eb", borderRadius: 9, padding: "8px 12px", cursor: "pointer", font: "inherit", fontSize: 12 }}>{tr(filter.label)}</button>)}
           </div>
         </section>
 
         <section style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(100%,300px),1fr))", gap: 14 }}>
-          {visible.map((item) => <article key={item.title} style={{ background: "rgba(17,38,52,.88)", border: "1px solid rgba(132,177,190,.18)", borderRadius: 16, padding: 19, display: "flex", flexDirection: "column", gap: 10 }}>
-            <span style={{ color: "#82d9cd", fontSize: 12 }}>{categoryLabel[item.category]}</span>
+          {visible.map((item) => <article key={tr(item.title)} style={{ background: "rgba(17,38,52,.88)", border: "1px solid rgba(132,177,190,.18)", borderRadius: 16, padding: 19, display: "flex", flexDirection: "column", gap: 10 }}>
+            <span style={{ color: "#82d9cd", fontSize: 12 }}>{tr(categoryLabel[item.category])}</span>
             <h2 style={{ margin: 0, fontSize: 19, color: "#f3fbfc" }}>{item.title}</h2>
-            <p style={{ color: "#b5c7cf", lineHeight: 1.8, margin: 0, fontSize: 14 }}>{item.description}</p>
-            <div style={{ color: "#91aab6", fontSize: 12 }}>المصدر: {item.provider}</div>
-            <div style={{ color: "#c5d6dd", fontSize: 12, lineHeight: 1.7, padding: 10, background: "#0a1b27", borderRadius: 9 }}>{item.note}</div>
+            <p style={{ color: "#b5c7cf", lineHeight: 1.8, margin: 0, fontSize: 14 }}>{tr(item.description)}</p>
+            <div style={{ color: "#91aab6", fontSize: 12 }}>{tr("المصدر:")} {tr(item.provider)}</div>
+            <div style={{ color: "#c5d6dd", fontSize: 12, lineHeight: 1.7, padding: 10, background: "#0a1b27", borderRadius: 9 }}>{tr(item.note)}</div>
             <a href={item.url} target="_blank" rel="noopener noreferrer" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8, marginTop: "auto", padding: "10px 13px", borderRadius: 9, background: "#174c49", color: "#eafff9", textDecoration: "none", fontSize: 13 }}>
-              زيارة المصدر الرسمي <ExternalLink size={15} />
+              {tr("زيارة المصدر الرسمي")} <ExternalLink size={15} />
             </a>
           </article>)}
         </section>
 
-        {visible.length === 0 && <p style={{ textAlign: "center", color: "#a9bdc8", padding: 30 }}>لا توجد مصادر تطابق البحث. جرّب كلمة أخرى.</p>}
+        {visible.length === 0 && <p style={{ textAlign: "center", color: "#a9bdc8", padding: 30 }}>{tr("لا توجد مصادر تطابق البحث. جرّب كلمة أخرى.")}</p>}
 
         <footer style={{ marginTop: 24, padding: 15, borderRadius: 12, background: "rgba(10,27,39,.75)", color: "#91aab6", fontSize: 12, lineHeight: 1.9 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 8, color: "#bfe9e3", marginBottom: 6 }}><ShieldCheck size={16} /> الأمان والشفافية</div>
-          هذه روابط لجهات ومصادر خارجية وليست ضمانًا بوجود وظيفة أو تمويل متاح الآن. لا تدفع رسومًا لشخص مقابل وعد بوظيفة، ولا تشارك رقمك القومي أو بياناتك البنكية إلا عبر بوابة رسمية موثوقة وبعد التأكد من سبب طلبها. آخر مراجعة للروابط: 11 نوفمبر 2026.
+          <div style={{ display: "flex", alignItems: "center", gap: 8, color: "#bfe9e3", marginBottom: 6 }}><ShieldCheck size={16} /> {tr("الأمان والشفافية")}</div>
+          {tr("هذه روابط لجهات ومصادر خارجية وليست ضمانًا بوجود وظيفة أو تمويل متاح الآن. لا تدفع رسومًا لشخص مقابل وعد بوظيفة، ولا تشارك رقمك القومي أو بياناتك البنكية إلا عبر بوابة رسمية موثوقة وبعد التأكد من سبب طلبها. آخر مراجعة للروابط: 11 نوفمبر 2026.")}
         </footer>
       </div>
     </main>
