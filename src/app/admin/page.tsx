@@ -48,7 +48,7 @@ export default function AdminDashboardPage() {
   const number = (value: number) => new Intl.NumberFormat(language === "ar" ? "ar-EG" : "en-EG").format(value);
   const roleName = (role: string) => role === "SUPER_ADMIN" ? tr("المؤسس") : role === "ADMIN" ? tr("إداري") : tr("مشرف");
 
-  return <main dir="rtl" style={{ minHeight: "100vh", padding: 20, background: "#080d18", color: "#e8edf7", fontFamily: "Cairo, sans-serif" }}>
+  return <main dir={language === "ar" ? "rtl" : "ltr"} lang={language} style={{ minHeight: "100vh", padding: 20, background: "#080d18", color: "#e8edf7", fontFamily: "Cairo, sans-serif" }}>
     <div style={{ maxWidth: 1100, margin: "0 auto", display: "grid", gap: 18 }}>
       <header style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 }}>
         <div><Link href="/" style={{ color: "#63d8d0", textDecoration: "none" }}>{tr("← الرئيسية")}</Link><h1 style={{ fontSize: 28, fontWeight: 800, marginTop: 12 }}>{tr("مركز تحكم HUMANITY ONE")}</h1><p style={{ color: "#9aabc0" }}>{tr("متابعة تشغيل المنظومة من بياناتها الفعلية.")}</p></div>
