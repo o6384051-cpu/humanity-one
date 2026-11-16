@@ -103,7 +103,7 @@ export async function PATCH(req: NextRequest) {
       });
     });
     const baseUrl = process.env.HUMANITY_ONE_PUBLIC_URL || req.nextUrl.origin;
-    const activationUrl = activationToken ? baseUrl.replace(/\\/$/, "") + "/organization/activate?token=" + activationToken : null;
+    const activationUrl = activationToken ? (baseUrl.endsWith("/") ? baseUrl.slice(0, -1) : baseUrl) + "/organization/activate?token=" + activationToken : null;
     return NextResponse.json({ ok: true, status: updated.status, updatedAt: updated.updatedAt, activationUrl }, {
       headers: { "Cache-Control": "no-store, private" },
     });
