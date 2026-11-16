@@ -3,7 +3,7 @@ import { useCallback,useEffect,useState } from "react";
 import { useRouter } from "next/navigation";
 type Org={id:string;name:string;country:string;focusArea:string|null};
 type Message={id?:string;body:string;createdAt:string;senderOrganizationId:string;senderOrganization?:{id:string;name:string}};
-type Conversation={id:string;subject:string;organizationA:Org;organizationB:Org;messages:{body:string;createdAt:string;senderOrganizationId:string}[]};
+type Conversation={id:string;subject:string;organizationA:Org;organizationB:Org;messages:Message[]};
 export default function OrganizationMessagesPage(){
  const router=useRouter();const [org,setOrg]=useState<Org|null>(null);const [directory,setDirectory]=useState<Org[]>([]);const [conversations,setConversations]=useState<Conversation[]>([]);const [selected,setSelected]=useState<Conversation|null>(null);const [recipient,setRecipient]=useState("");const [subject,setSubject]=useState("");const [draft,setDraft]=useState("");const [newMode,setNewMode]=useState(false);const [error,setError]=useState("");const [busy,setBusy]=useState(false);
  const load=useCallback(async(id?:string)=>{try{const url="/api/organization/messages"+(id?"?conversationId="+encodeURIComponent(id):"");const r=await fetch(url,{cache:"no-store"});const d=await r.json();if(r.status===401){router.replace("/organization/login");return;}if(!r.ok)throw new Error(d.error||"تعذر تحميل المراسلات.");setOrg(d.organization);setDirectory(d.directory||[]);setConversations(d.conversations||[]);if(id&&d.selected)setSelected(d.selected);else if(!id)setSelected(null);}catch(e){setError(e instanceof Error?e.message:"حدث خطأ.");}},[router]);
