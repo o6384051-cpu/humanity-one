@@ -238,3 +238,24 @@ model MailMessage {
   @@index([parentId, createdAt])
   @@index([senderUserId, createdAt])
 }
+
+
+model OrganizationLead {
+  id             String   @id @default(cuid())
+  organizationName String
+  country        String
+  city           String?
+  focusArea      String
+  website        String?
+  contactName    String?
+  contactEmail   String?
+  sourceUrl      String?
+  status         String   @default("DISCOVERED")
+  notes          String?  @db.Text
+  lastContactAt  DateTime?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([status, country, createdAt])
+  @@index([organizationName])
+}
