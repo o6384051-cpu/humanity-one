@@ -14,7 +14,7 @@ export async function GET() {
   try {
     const [
       users, administrators, projects, tasks, agents,
-      pendingJobs, approvedJobs, rejectedJobs, applications,
+      pendingJobs, approvedJobs, rejectedJobs, applications, organizationApplications,
       totalAssistance, pendingAssistance, reviewAssistance, approvedAssistance, rejectedAssistance, assistanceReviewEvents,
     ] = await Promise.all([
       prisma.user.count(),
@@ -25,7 +25,7 @@ export async function GET() {
       prisma.jobListing.count({ where: { status: "PENDING" } }),
       prisma.jobListing.count({ where: { status: "APPROVED" } }),
       prisma.jobListing.count({ where: { status: "REJECTED" } }),
-      prisma.jobApplication.count(),
+      prisma.jobApplication.count(),\n      prisma.mailMessage.count({ where: { department: "partners", parentId: null } }),
       prisma.assistanceRequest.count(),
       prisma.assistanceRequest.count({ where: { status: "PENDING" } }),
       prisma.assistanceRequest.count({ where: { status: "IN_REVIEW" } }),
