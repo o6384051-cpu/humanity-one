@@ -73,7 +73,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Invalid JSON." }, { status: 400 });
   }
 
-  if (!Number.isSafeInteger(update.update_id)) {
+  if (typeof update.update_id !== "number" || !Number.isSafeInteger(update.update_id)) {
     return NextResponse.json({ ok: true });
   }
 
@@ -85,6 +85,7 @@ export async function POST(request: NextRequest) {
   // It does not collect, store, or forward personal or beneficiary information.
   if (
     message?.chat?.type !== "private" ||
+    typeof chatId !== "number" ||
     !Number.isSafeInteger(chatId) ||
     !command
   ) {
