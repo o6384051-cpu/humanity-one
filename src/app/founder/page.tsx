@@ -115,7 +115,33 @@ export default function FounderAdminPage() {
 function Field({ label, value, onChange, type = "text" }: { label: string; value: string; onChange: (value: string) => void; type?: string }) {
   const { language: fieldLanguage } = useLanguage();
   const fieldLabel = translateText(label, fieldLanguage);
-  return <label style={{ display: "grid", gap: 5, color: "#cbd7e7", fontSize: 13 }}>{fieldLabel}<input required value={value} type={type} onChange={e => onChange(e.target.value)} style={fieldStyle} /></label>;
+  const [visible, setVisible] = useState(false);
+  const isPassword = type === "password";
+  return <label style={{ display: "grid", gap: 5, color: "#cbd7e7", fontSize: 13 }}>
+    {fieldLabel}
+    <span style={{ position: "relative", display: "block" }}>
+      <input
+        required
+        value={value}
+        type={isPassword && visible ? "text" : type}
+        onChange={e => onChange(e.target.value)}
+        autoComplete={isPassword ? "current-password" : undefined}
+        style={{ ...fieldStyle, paddingLeft: isPassword ? 48 : 11 }}
+      />
+      {isPassword && <button
+        type="button"
+        onClick={() => setVisible(current => !current)}
+        aria-label={visible ? "إخفاء كلمة المرور" : "إظهار كلمة المرور"}
+        aria-pressed={visible}
+        title={visible ? "إخفاء كلمة المرور" : "إظهار كلمة المرور"}
+        style={{ position: "absolute", left: 8, top: "50%", transform: "translateY(-50%)", border: 0, background: "transparent", color: "#9fb6cc", cursor: "pointer", padding: 6, display: "grid", placeItems: "center" }}
+      >
+        {visible
+          ? <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M3 3l18 18"/><path d="M10.6 10.6a2 2 0 0 0 2.8 2.8"/><path d="M9.9 5.2A10.8 10.8 0 0 1 12 5c5 0 8.5 4.5 9.5 7-.4 1-1.2 2.2-2.3 3.3"/><path d="M6.2 6.2C3.9 7.7 2.8 9.7 2.5 12c.7 2 3.8 7 9.5 7 1.2 0 2.3-.2 3.3-.7"/></svg>
+          : <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M2.5 12S6 5 12 5s9.5 7 9.5 7-3.5 7-9.5 7-9.5-7-9.5-7Z"/><circle cx="12" cy="12" r="3"/></svg>}
+      </button>}
+    </span>
+  </label>;
 }
 const fieldStyle: React.CSSProperties = { width: "100%", padding: 11, color: "#edf5ff", background: "#0b1422", border: "1px solid #304359", borderRadius: 8 };
 const primaryStyle: React.CSSProperties = { padding: 12, border: 0, borderRadius: 9, background: "#55d3ca", color: "#08212a", fontWeight: 800, cursor: "pointer" };
