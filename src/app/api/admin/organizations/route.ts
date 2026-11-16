@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { createHash, randomBytes } from "crypto";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { getAdminSession } from "@/lib/admin-auth";
@@ -53,7 +54,7 @@ export async function PATCH(req: NextRequest) {
   try {
     const application = await prisma.mailMessage.findFirst({
       where: { id: parsed.data.id, department: "partners", parentId: null },
-      select: { id: true, body: true, status: true },
+      select: { id: true, body: true, status: true, senderName: true, senderEmail: true },
     });
     if (!application) return NextResponse.json({ error: "طلب المنظمة غير موجود." }, { status: 404 });
 
@@ -74,15 +75,41 @@ export async function PATCH(req: NextRequest) {
       data.body = application.body + audit;
     }
 
-    const updated = await prisma.mailMessage.update({
-      where: { id: application.id },
-      data,
-      select: { id: true, status: true, updatedAt: true },
+    let activationToken: string | null = null;
+    const updated = await prisma.$transaction(async (tx) => {
+      if (parsed.data.status === "APPROVED") {
+        if (!application.senderEmail) throw new Error("ORGANIZATION_EMAIL_REQUIRED");
+        const existingByApplication = await tx.organization.findUnique({ where: { applicationId: application.id }, select: { id: true } });
+        if (!existingByApplication) {
+          const existingByEmail = await tx.organization.findUnique({ where: { email: application.senderEmail.toLowerCase() }, select: { id: true } });
+          if (existingByEmail) throw new Error("ORGANIZATION_EMAIL_ALREADY_USED");
+          activationToken = randomBytes(32).toString("hex");
+          await tx.organization.create({
+            data: {
+              applicationId: application.id,
+              name: application.senderName,
+              email: application.senderEmail.toLowerCase(),
+              activationTokenHash: createHash("sha256").update(activationToken).digest("hex"),
+              activationExpiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+              status: "ACTIVE",
+            },
+          });
+        }
+      }
+      return tx.mailMessage.update({
+        where: { id: application.id },
+        data,
+        select: { id: true, status: true, updatedAt: true },
+      });
     });
-    return NextResponse.json({ ok: true, status: updated.status, updatedAt: updated.updatedAt }, {
+    const baseUrl = process.env.HUMANITY_ONE_PUBLIC_URL || req.nextUrl.origin;
+    const activationUrl = activationToken ? baseUrl.replace(/\\/$/, "") + "/organization/activate?token=" + activationToken : null;
+    return NextResponse.json({ ok: true, status: updated.status, updatedAt: updated.updatedAt, activationUrl }, {
       headers: { "Cache-Control": "no-store, private" },
     });
   } catch (error) {
+    if (error instanceof Error && error.message === "ORGANIZATION_EMAIL_REQUIRED") return NextResponse.json({ error: "لا يمكن اعتماد المنظمة دون بريد رسمي محفوظ في الطلب." }, { status: 400 });
+    if (error instanceof Error && error.message === "ORGANIZATION_EMAIL_ALREADY_USED") return NextResponse.json({ error: "هذا البريد مرتبط بالفعل بحساب منظمة آخر. راجع السجل قبل الاعتماد." }, { status: 409 });
     const e = error as { name?: string; code?: string };
     console.error("[admin-organizations] status update failed", {
       name: e?.name || "UnknownError",
