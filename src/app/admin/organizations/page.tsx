@@ -31,6 +31,7 @@ export default function AdminOrganizationsPage() {
     } catch(e) { setError(e instanceof Error ? e.message : "حدث خطأ."); }
   }
   useEffect(()=>{ void load(); },[]);
+  useEffect(()=>{ setVerification({ legalIdentityVerified:false, officialChannelsVerified:false, writtenConsentVerified:false }); setVerificationNote(""); setNotice(""); },[selected]);
   const active = items.find(x=>x.id===selected);
   const canApprove = actorRole==="SUPER_ADMIN" && verification.legalIdentityVerified && verification.officialChannelsVerified && verification.writtenConsentVerified && verificationNote.trim().length>=10;
   async function update(status:string) {
