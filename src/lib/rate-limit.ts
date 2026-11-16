@@ -51,7 +51,14 @@ export async function rateLimit(
       allowed: bucket.count <= limit,
       retryAfter: Math.max(1, Math.ceil((bucket.resetAt.getTime() - Date.now()) / 1000)),
     };
-  } catch {
+  } catch (error) {
+    // Log only a stable error identifier; never log request data, IPs, keys, or connection strings.
+    const code =
+      error && typeof error === "object" && "code" in error
+        ? String((error as { code?: unknown }).code ?? "UNKNOWN")
+        : "UNKNOWN";
+    const name = error instanceof Error ? error.name : "UnknownError";
+    console.error("[rate-limit] persistent store unavailable", { code, name });
     // Fail closed: do not bypass protection when the shared store is unavailable.
     return { allowed: false, retryAfter: 60, unavailable: true };
   }
