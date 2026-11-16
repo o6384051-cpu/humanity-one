@@ -79,6 +79,7 @@ export default function Dashboard() {
       <main className="ho-main">
         <header className="ho-topbar">
           <div className="ho-top-left">
+            <button type="button" className="ho-menu" aria-label={tr("فتح القائمة","Open menu")} aria-controls="main-navigation" aria-expanded={mobileMenuOpen} onClick={() => setMobileMenuOpen(true)}><Menu size={20} /></button>
             <div className="ho-breadcrumb">{tr("الرئيسية","Home")} <b>{tr("لوحة التحكم","Dashboard")}</b></div>
           </div>
           <div className="ho-top-actions">
