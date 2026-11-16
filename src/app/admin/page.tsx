@@ -10,7 +10,7 @@ type Overview = {
   stats: {
     users: number; administrators: number; projects: number; tasks: number; agents: number;
     jobs: { pending: number; approved: number; rejected: number };
-    applications: number;
+    applications: number; organizationApplications: number;
     assistance: { total: number; pending: number; inReview: number; approved: number; rejected: number; reviewEvents: number };
   };
   capabilities: {
