@@ -26,6 +26,7 @@ model User {
   beneficiaryFiles    BeneficiaryFile[]
   assistanceReviewEvents AssistanceReviewEvent[] @relation("AssistanceReviewActor")
   beneficiaryNotifications BeneficiaryNotification[]
+  mailMessages          MailMessage[]
 }
 
 model Project {
@@ -213,4 +214,27 @@ model RateLimitBucket {
   updatedAt DateTime @updatedAt
 
   @@index([resetAt])
+}
+
+
+model MailMessage {
+  id           String   @id @default(cuid())
+  senderName   String
+  senderEmail  String?
+  department   String   @default("support")
+  subject      String
+  body         String   @db.Text
+  status       String   @default("NEW")
+  direction    String   @default("INBOUND")
+  senderUserId String?
+  parentId     String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  senderUser   User?    @relation(fields: [senderUserId], references: [id], onDelete: SetNull)
+  parent       MailMessage? @relation("MailThread", fields: [parentId], references: [id], onDelete: Cascade)
+  replies      MailMessage[] @relation("MailThread")
+
+  @@index([department, status, createdAt])
+  @@index([parentId, createdAt])
+  @@index([senderUserId, createdAt])
 }
