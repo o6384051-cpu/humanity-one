@@ -4,9 +4,6 @@ import { NextRequest, NextResponse } from "next/server";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const WEBHOOK_URL =
-  "https://humanity-one-wc35-git-feature-telegram-c8781c-o6384051-cpuosama.vercel.app/api/telegram/webhook";
-
 function matchesSecret(received: string, expected: string | undefined) {
   if (!expected) return false;
   const a = Buffer.from(received);
@@ -25,22 +22,33 @@ export async function POST(request: NextRequest) {
   const setupSecret = process.env.TELEGRAM_SETUP_SECRET;
   const botToken = process.env.TELEGRAM_BOT_TOKEN;
   const webhookSecret = process.env.TELEGRAM_WEBHOOK_SECRET;
+  const publicUrl = process.env.HUMANITY_ONE_PUBLIC_URL;
 
-  if (!setupSecret || !botToken || !webhookSecret) {
+  if (!setupSecret || !botToken || !webhookSecret || !publicUrl) {
     return NextResponse.json({ error: "Setup is not configured." }, { status: 503 });
   }
 
-  const length = Number(request.headers.get("content-length") || 0);
-  if (length > 2048) return NextResponse.json({ error: "Request too large." }, { status: 413 });
+  let webhookUrl: URL;
+  try {
+    const base = new URL(publicUrl);
+    if (base.protocol !== "https:" || base.username || base.password) {
+      return NextResponse.json({ error: "Invalid public platform URL." }, { status: 500 });
+    }
+    base.pathname = base.pathname.replace(/\/$/, "") + "/api/telegram/webhook";
+    base.search = "";
+    base.hash = "";
+    webhookUrl = base;
+  } catch {
+    return NextResponse.json({ error: "Invalid public platform URL." }, { status: 500 });
+  }
 
   let submitted = "";
   try {
-    const form = await request.formData();
-    const value = form.get("setup_secret");
-    if (typeof value !== "string" || value.length > 256) {
-      return NextResponse.json({ error: "Invalid setup secret." }, { status: 400 });
+    const rawBody = await request.text();
+    if (Buffer.byteLength(rawBody, "utf8") > 2048) {
+      return NextResponse.json({ error: "Request too large." }, { status: 413 });
     }
-    submitted = value;
+    submitted = new URLSearchParams(rawBody).get("setup_secret") || "";
   } catch {
     return NextResponse.json({ error: "Invalid form submission." }, { status: 400 });
   }
@@ -54,7 +62,7 @@ export async function POST(request: NextRequest) {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        url: WEBHOOK_URL,
+        url: webhookUrl.toString(),
         secret_token: webhookSecret,
         allowed_updates: ["message"],
         drop_pending_updates: false,
@@ -62,7 +70,7 @@ export async function POST(request: NextRequest) {
       signal: AbortSignal.timeout(10_000),
       cache: "no-store",
     });
-    const result = await response.json() as { ok?: boolean; description?: string };
+    const result = await response.json() as { ok?: boolean };
     if (!response.ok || !result.ok) {
       return NextResponse.json({ error: "Telegram could not register the webhook." }, { status: 502 });
     }
