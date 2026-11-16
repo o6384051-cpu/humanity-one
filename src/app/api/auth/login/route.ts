@@ -24,7 +24,14 @@ export async function POST(req: NextRequest) {
       httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "lax", path: "/", maxAge: 60 * 60 * 8,
     });
     return response;
-  } catch {
+  } catch (error) {
+    // Log only a stable error identifier; never log credentials, request data, or connection strings.
+    const code =
+      error && typeof error === "object" && "code" in error
+        ? String((error as { code?: unknown }).code ?? "UNKNOWN")
+        : "UNKNOWN";
+    const name = error instanceof Error ? error.name : "UnknownError";
+    console.error("[admin-login] request failed", { code, name });
     return NextResponse.json({ error: "تعذر تسجيل الدخول الآن." }, { status: 500 });
   }
 }
