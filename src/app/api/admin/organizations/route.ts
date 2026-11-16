@@ -70,7 +70,7 @@ export async function PATCH(req: NextRequest) {
         "التحقق من القنوات الرسمية: تم التأكيد",
         "الموافقة المكتوبة على التعاون: تم التأكيد",
         "ملاحظة المراجعة: " + verification.verificationNote,
-      ].join("\\n");
+      ].join("\n");
       data.body = application.body + audit;
     }
 
