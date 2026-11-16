@@ -1,4 +1,5 @@
 import Link from "next/link";
+import OrganizationInquiryForm from "./OrganizationInquiryForm";
 import { Building2, ShieldCheck, Handshake, GraduationCap, BriefcaseBusiness, HeartHandshake, Globe2, ArrowLeft, MailCheck } from "lucide-react";
 
 const tracks = [
@@ -25,10 +26,10 @@ export default function OrganizationsPage() {
           <h1 style={{fontSize:"clamp(30px,5vw,48px)",lineHeight:1.25,margin:"18px 0 14px"}}>منظمات مستقلة، وجهد إنساني متصل</h1>
           <p style={{fontSize:18,lineHeight:1.9,color:"#c1d2d9",maxWidth:760,margin:0}}>تسعى HUMANITY ONE إلى بناء شبكة تربط المؤسسات والجمعيات الموثوقة بالفرص والاحتياجات الإنسانية، مع احترام استقلال كل منظمة وخصوصية كل مستفيد.</p>
           <div style={{display:"flex",gap:12,flexWrap:"wrap",marginTop:26}}>
-            <a href="mailto:humanityone.contact@gmail.com?subject=%D8%B7%D9%84%D8%A8%20%D8%A7%D9%86%D8%B6%D9%85%D8%A7%D9%85%20%D9%85%D9%86%D8%B8%D9%85%D8%A9%20%D8%A5%D9%84%D9%89%20HUMANITY%20ONE" style={{background:"#54c8ba",color:"#062027",padding:"13px 20px",borderRadius:11,fontWeight:900,textDecoration:"none",display:"inline-flex",alignItems:"center",gap:9}}><MailCheck size={18}/> طلب انضمام منظمة</a>
+            <a href="#application-form" style={{background:"#54c8ba",color:"#062027",padding:"13px 20px",borderRadius:11,fontWeight:900,textDecoration:"none",display:"inline-flex",alignItems:"center",gap:9}}><MailCheck size={18}/> تقديم طلب تواصل</a>
             <a href="#verification" style={{border:"1px solid #54717b",color:"#e8f2f5",padding:"13px 20px",borderRadius:11,textDecoration:"none"}}>كيف يتم التحقق؟</a>
           </div>
-          <p style={{fontSize:12,color:"#9fb6bf",marginTop:16}}>التواصل الأولي عبر البريد لا يعني قبول المنظمة أو اعتمادها شريكًا.</p>
+          <p style={{fontSize:12,color:"#9fb6bf",marginTop:16}}>إرسال طلب التواصل لا يعني قبول المنظمة أو اعتمادها شريكًا.</p>
         </section>
 
         <section style={{marginTop:42}}>
@@ -57,12 +58,7 @@ export default function OrganizationsPage() {
           </div>
         </section>
 
-        <section style={{marginTop:42,textAlign:"center",padding:28,borderRadius:18,background:"#102b35",border:"1px solid #31545d"}}>
-          <Building2 size={30} color="#83d9ce"/>
-          <h2 style={{fontSize:25,margin:"12px 0 8px"}}>هل تمثل منظمة أو مؤسسة؟</h2>
-          <p style={{color:"#b8cbd2",lineHeight:1.8,maxWidth:650,margin:"0 auto 18px"}}>أرسل رسالة من بريد مؤسستك الرسمي، واذكر الاسم القانوني والبلد ومجالات العمل ورابط الموقع أو صفحة رسمية وبيانات مسؤول التواصل.</p>
-          <a href="mailto:humanityone.contact@gmail.com?subject=%D8%B7%D9%84%D8%A8%20%D8%A7%D9%86%D8%B6%D9%85%D8%A7%D9%85%20%D9%85%D9%86%D8%B8%D9%85%D8%A9%20%D8%A5%D9%84%D9%89%20HUMANITY%20ONE" style={{color:"#8ce0d5",fontWeight:800}}>humanityone.contact@gmail.com</a>
-        </section>
+        <OrganizationInquiryForm />
         <footer style={{marginTop:32,textAlign:"center",fontSize:12,color:"#78929d"}}>HUMANITY ONE · شبكة تعاون إنساني قيد التأسيس</footer>
       </div>
     </main>
