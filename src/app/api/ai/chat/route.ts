@@ -21,12 +21,19 @@ type ProviderErrorCategory =
   | "provider_unavailable"
   | "unknown_rejection";
 
+function safeProviderField(value: unknown): string | undefined {
+  if (typeof value !== "string") return undefined;
+  const normalized = value.trim();
+  // Keep only short machine-readable identifiers; never persist provider prose.
+  return /^[a-zA-Z0-9_.:-]{1,80}$/.test(normalized) ? normalized : undefined;
+}
+
 function classifyProviderError(status: number, data: any): ProviderErrorCategory {
   if (status === 401 || status === 403) return "authentication";
   if (status === 429) return "quota_or_rate_limit";
   if (status >= 500) return "provider_unavailable";
 
-  // Inspect only structured error metadata in memory. Never log or return raw provider text.
+  // Inspect provider text only in memory for classification. Never log or return it.
   const error = data?.error;
   const details = [error?.code, error?.type, error?.param, error?.message]
     .filter((value) => typeof value === "string")
@@ -36,7 +43,10 @@ function classifyProviderError(status: number, data: any): ProviderErrorCategory
   if (/model|model_not_found|not found|does not exist|unsupported model/.test(details)) {
     return "model_configuration";
   }
-  if (/unsupported|unknown parameter|invalid parameter|unrecognized|unexpected field|max_tokens|max_completion_tokens/.test(details)) {
+  if (
+    typeof error?.param === "string" ||
+    /unsupported|unknown parameter|invalid parameter|unrecognized|unexpected field|max_tokens|max_completion_tokens/.test(details)
+  ) {
     return "unsupported_parameter";
   }
   if (/invalid_argument|invalid request|bad request|malformed/.test(details) || status === 400) {
@@ -120,8 +130,16 @@ export async function POST(req: NextRequest) {
 
     if (!upstream.ok) {
       const category = classifyProviderError(upstream.status, data);
-      // Log only status and an allowlisted category. Never log provider body, prompt, or credentials.
-      console.error("[ai-chat] provider_error", { status: upstream.status, category });
+      const providerError = data?.error;
+      // Log only status, category, and short machine-readable metadata. Never log provider prose,
+      // response body, prompt, messages, headers, or credentials.
+      console.error("[ai-chat] provider_error", {
+        status: upstream.status,
+        category,
+        providerCode: safeProviderField(providerError?.code),
+        providerType: safeProviderField(providerError?.type),
+        providerParam: safeProviderField(providerError?.param),
+      });
       return NextResponse.json({ error: safeProviderError(category) }, {
         status: upstream.status === 429 ? 429 : upstream.status === 401 || upstream.status === 403 ? 503 : 502,
         headers: { "Cache-Control": "no-store" },
