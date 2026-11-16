@@ -32,13 +32,25 @@ export async function PATCH(req: NextRequest) {
   }).safeParse(await req.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: "بيانات التحديث غير صالحة." }, { status: 400 });
   try {
-    const result = await prisma.mailMessage.updateMany({
+    const application = await prisma.mailMessage.findFirst({
       where: { id: parsed.data.id, department: "partners", parentId: null },
-      data: { status: parsed.data.status },
+      select: { id: true },
     });
-    if (!result.count) return NextResponse.json({ error: "طلب المنظمة غير موجود." }, { status: 404 });
-    return NextResponse.json({ ok: true });
-  } catch {
-    return NextResponse.json({ error: "تعذر تحديث حالة طلب المنظمة." }, { status: 503 });
+    if (!application) return NextResponse.json({ error: "طلب المنظمة غير موجود." }, { status: 404 });
+    const updated = await prisma.mailMessage.update({
+      where: { id: application.id },
+      data: { status: parsed.data.status },
+      select: { id: true, status: true, updatedAt: true },
+    });
+    return NextResponse.json({ ok: true, status: updated.status, updatedAt: updated.updatedAt }, {
+      headers: { "Cache-Control": "no-store, private" },
+    });
+  } catch (error) {
+    const e = error as { name?: string; code?: string };
+    console.error("[admin-organizations] status update failed", {
+      name: e?.name || "UnknownError",
+      code: e?.code || "UNKNOWN",
+    });
+    return NextResponse.json({ error: "تعذر تحديث حالة طلب المنظمة. أعد المحاولة، وإذا تكرر الخطأ راجع سجل النظام." }, { status: 503 });
   }
 }

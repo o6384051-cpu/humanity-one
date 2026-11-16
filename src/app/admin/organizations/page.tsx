@@ -14,10 +14,11 @@ export default function AdminOrganizationsPage() {
   const [selected,setSelected] = useState("");
   const [error,setError] = useState("");
   const [busy,setBusy] = useState(false);
+  const [notice,setNotice] = useState("");
   async function load() {
     setError("");
     try {
-      const r = await fetch("/api/admin/organizations",{cache:"no-store"});
+      const r = await fetch("/api/admin/organizations",{cache:"no-store",credentials:"same-origin"});
       const d = await r.json();
       if (!r.ok) throw new Error(d.error || "تعذر تحميل الطلبات.");
       setItems(d.applications || []);
@@ -27,13 +28,14 @@ export default function AdminOrganizationsPage() {
   useEffect(()=>{ void load(); },[]);
   const active = items.find(x=>x.id===selected);
   async function update(status:string) {
-    if (!active) return;
-    setBusy(true); setError("");
+    if (!active || busy) return;
+    setBusy(true); setError(""); setNotice("");
     try {
-      const r=await fetch("/api/admin/organizations",{method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify({id:active.id,status})});
-      const d=await r.json();
-      if(!r.ok) throw new Error(d.error || "تعذر تحديث الحالة.");
-      await load();
+      const r=await fetch("/api/admin/organizations",{method:"PATCH",credentials:"same-origin",headers:{"Content-Type":"application/json"},body:JSON.stringify({id:active.id,status})});
+      const d=await r.json().catch(()=>({}));
+      if(!r.ok || !d.ok) throw new Error(d.error || `تعذر تحديث الحالة (HTTP ${r.status}).`);
+      setItems(current=>current.map(item=>item.id===active.id?{...item,status:d.status||status}:item));
+      setNotice(`تم تحديث حالة الطلب إلى: ${statusLabels[d.status||status]||status}`);
     } catch(e) { setError(e instanceof Error ? e.message : "حدث خطأ."); }
     finally { setBusy(false); }
   }
@@ -42,17 +44,18 @@ export default function AdminOrganizationsPage() {
       <Link href="/admin" style={{color:"#83d9ce",textDecoration:"none"}}>← لوحة الإدارة</Link>
       <header style={{display:"flex",justifyContent:"space-between",alignItems:"center",gap:12,flexWrap:"wrap"}}>
         <div><h1 style={{fontSize:28,margin:"8px 0"}}><Building2 style={{verticalAlign:"middle",marginLeft:8}}/>طلبات انضمام المنظمات</h1><p style={{color:"#a9bec7",margin:0}}>طلبات محفوظة داخل قاعدة البيانات، خاصة بفريق الإدارة.</p></div>
-        <button onClick={()=>void load()} style={button}><RefreshCw size={16} style={{verticalAlign:"middle",marginLeft:6}}/> تحديث الطلبات</button>
+        <button type="button" onClick={()=>void load()} style={button}><RefreshCw size={16} style={{verticalAlign:"middle",marginLeft:6}}/> تحديث الطلبات</button>
       </header>
+      {notice&&<p role="status" style={{color:"#a8f0d0",background:"#12372e",padding:12,borderRadius:9}}>{notice}</p>}
       {error&&<p role="alert" style={{color:"#ffaaaa",background:"#351d25",padding:12,borderRadius:9}}>{error}</p>}
       <div style={{display:"grid",gridTemplateColumns:"minmax(240px,.8fr) minmax(300px,1.4fr)",gap:14}}>
         <section style={panel}>
           <h2 style={{marginTop:0,fontSize:18}}>قائمة الطلبات ({items.length})</h2>
-          {items.map(item=><button key={item.id} onClick={()=>setSelected(item.id)} style={{display:"block",width:"100%",textAlign:"right",marginTop:9,padding:13,borderRadius:10,border:item.id===selected?"1px solid #64d2c6":"1px solid #29414d",background:item.id===selected?"#15343c":"#091b25",color:"#e8f2f5",cursor:"pointer"}}><b>{item.senderName}</b><small style={{display:"block",color:"#9fb6bf",marginTop:5}}>{new Date(item.createdAt).toLocaleString("ar-EG")}</small><small style={{display:"block",color:"#83d9ce",marginTop:4}}>{statusLabels[item.status]||item.status}</small></button>)}
+          {items.map(item=><button type="button" key={item.id} onClick={()=>setSelected(item.id)} style={{display:"block",width:"100%",textAlign:"right",marginTop:9,padding:13,borderRadius:10,border:item.id===selected?"1px solid #64d2c6":"1px solid #29414d",background:item.id===selected?"#15343c":"#091b25",color:"#e8f2f5",cursor:"pointer"}}><b>{item.senderName}</b><small style={{display:"block",color:"#9fb6bf",marginTop:5}}>{new Date(item.createdAt).toLocaleString("ar-EG")}</small><small style={{display:"block",color:"#83d9ce",marginTop:4}}>{statusLabels[item.status]||item.status}</small></button>)}
           {!items.length&&<p style={{color:"#a9bec7"}}>لا توجد طلبات منظمات حتى الآن.</p>}
         </section>
         <section style={panel}>
-          {active?<><div style={{display:"flex",justifyContent:"space-between",gap:10,flexWrap:"wrap"}}><h2 style={{marginTop:0}}>{active.senderName}</h2><span style={{color:"#83d9ce"}}>{statusLabels[active.status]||active.status}</span></div><p style={{color:"#9fb6bf"}}>{active.senderEmail||"لا يوجد بريد"}</p><article style={{whiteSpace:"pre-wrap",lineHeight:1.9,background:"#071923",border:"1px solid #29414d",borderRadius:12,padding:16}}>{active.body}</article><div style={{display:"flex",gap:8,flexWrap:"wrap",marginTop:16}}><button disabled={busy} onClick={()=>void update("IN_REVIEW")} style={button}>بدء المراجعة</button><button disabled={busy} onClick={()=>void update("APPROVED")} style={{...button,background:"#174438"}}><ShieldCheck size={15} style={{verticalAlign:"middle",marginLeft:5}}/> اعتماد بعد التحقق</button><button disabled={busy} onClick={()=>void update("REJECTED")} style={{...button,background:"#492832"}}>رفض الطلب</button><button disabled={busy} onClick={()=>void update("CLOSED")} style={button}>إغلاق</button></div><small style={{display:"block",color:"#a9bec7",marginTop:12}}>تغيير الحالة لا يغني عن التحقق من المستندات والصفة القانونية. لا تُمنح صفة شريك معتمد إلا بعد اكتمال المراجعة والموافقة.</small></>:<p style={{color:"#a9bec7"}}>اختر طلبًا من القائمة لعرض بياناته ومراجعته.</p>}
+          {active?<><div style={{display:"flex",justifyContent:"space-between",gap:10,flexWrap:"wrap"}}><h2 style={{marginTop:0}}>{active.senderName}</h2><span style={{color:"#83d9ce"}}>{statusLabels[active.status]||active.status}</span></div><p style={{color:"#9fb6bf"}}>{active.senderEmail||"لا يوجد بريد"}</p><article style={{whiteSpace:"pre-wrap",lineHeight:1.9,background:"#071923",border:"1px solid #29414d",borderRadius:12,padding:16}}>{active.body}</article><div style={{display:"flex",gap:8,flexWrap:"wrap",marginTop:16}}><button type="button" disabled={busy} onClick={()=>void update("IN_REVIEW")} style={button}>بدء المراجعة</button><button type="button" disabled={busy} onClick={()=>void update("APPROVED")} style={{...button,background:"#174438"}}><ShieldCheck size={15} style={{verticalAlign:"middle",marginLeft:5}}/> اعتماد بعد التحقق</button><button type="button" disabled={busy} onClick={()=>void update("REJECTED")} style={{...button,background:"#492832"}}>رفض الطلب</button><button type="button" disabled={busy} onClick={()=>void update("CLOSED")} style={button}>إغلاق</button></div><small style={{display:"block",color:"#a9bec7",marginTop:12}}>تغيير الحالة لا يغني عن التحقق من المستندات والصفة القانونية. لا تُمنح صفة شريك معتمد إلا بعد اكتمال المراجعة والموافقة.</small></>:<p style={{color:"#a9bec7"}}>اختر طلبًا من القائمة لعرض بياناته ومراجعته.</p>}
         </section>
       </div>
     </div>
