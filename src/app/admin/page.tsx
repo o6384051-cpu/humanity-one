@@ -10,7 +10,7 @@ type Overview = {
   stats: {
     users: number; administrators: number; projects: number; tasks: number; agents: number;
     jobs: { pending: number; approved: number; rejected: number };
-    applications: number;
+    applications: number; organizationApplications: number;
     assistance: { total: number; pending: number; inReview: number; approved: number; rejected: number; reviewEvents: number };
   };
   capabilities: {
@@ -68,7 +68,7 @@ export default function AdminDashboardPage() {
           {[
             ["إجمالي الحسابات", data.stats.users], ["فريق الإدارة", data.stats.administrators],
             ["المبادرات", data.stats.projects], ["المهام", data.stats.tasks],
-            ["الوكلاء", data.stats.agents], ["طلبات التقديم", data.stats.applications], ["طلبات المساعدة", data.stats.assistance.total],
+            ["الوكلاء", data.stats.agents], ["طلبات التقديم", data.stats.applications], ["طلبات انضمام المنظمات", data.stats.organizationApplications], ["طلبات المساعدة", data.stats.assistance.total],
           ].map(([label, value]) => <article key={String(label)} style={panel}><p style={{ color: "#9aabc0", fontSize: 13 }}>{tr(String(label))}</p><strong style={{ display: "block", fontSize: 27, marginTop: 7 }}>{number(Number(value))}</strong></article>)}
         </section>
 
@@ -93,7 +93,7 @@ export default function AdminDashboardPage() {
         </section>
 
         <section style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))", gap: 10 }}>
-          <Link href="/admin/mail" style={linkStyle}><b>{tr("صندوق المراسلات الداخلي")}</b><p style={{ color: "#9aabc0", marginTop: 5, fontSize: 13 }}>{tr("استقبال رسائل الدعم والمستفيدين والشركاء والرد عليها داخل المنصة.")}</p></Link>
+          <Link href="/admin/organizations" style={linkStyle}><b>{tr("طلبات انضمام المنظمات")}</b><p style={{ color: "#9aabc0", marginTop: 5, fontSize: 13 }}>{tr("مراجعة بيانات المنظمات والتحقق من هويتها وتحديث حالة الطلب.")}</p></Link>\n          <Link href="/admin/mail" style={linkStyle}><b>{tr("صندوق المراسلات الداخلي")}</b><p style={{ color: "#9aabc0", marginTop: 5, fontSize: 13 }}>{tr("استقبال رسائل الدعم والمستفيدين والشركاء والرد عليها داخل المنصة.")}</p></Link>
           <Link href="/admin/beneficiaries" style={linkStyle}><b>{tr("إدارة حسابات المستفيدين")}</b><p style={{ color: "#9aabc0", marginTop: 5, fontSize: 13 }}>{tr("البحث في الحسابات والملفات الأساسية وعدد طلبات كل مستفيد.")}</p></Link>
           <Link href="/founder" style={linkStyle}><b>{tr("إدارة حسابات الفريق والصلاحيات")}</b><p style={{ color: "#9aabc0", marginTop: 5, fontSize: 13 }}>{tr("إضافة المشرفين وتعديل أدوارهم وإدارتهم.")}</p></Link>
           <Link href="/admin/assistance" style={linkStyle}><b>{tr("طلبات المستفيدين والمساعدات")}</b><p style={{ color: "#9aabc0", marginTop: 5, fontSize: 13 }}>{tr("مراجعة الطلبات وتحديث حالتها وإرسال إشعار لصاحب الطلب.")}</p></Link>
