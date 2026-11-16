@@ -93,6 +93,7 @@ export default function AdminDashboardPage() {
         </section>
 
         <section style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))", gap: 10 }}>
+          <Link href="/admin/telegram" style={linkStyle}><b>{tr("ربط بوت تليجرام")}</b><p style={{ color: "#9aabc0", marginTop: 5, fontSize: 13 }}>{tr("إعداد استقبال رسائل البوت وإشعارات طلبات المنظمات.")}</p></Link>
           <Link href="/admin/organizations" style={linkStyle}><b>{tr("طلبات انضمام المنظمات")}</b><p style={{ color: "#9aabc0", marginTop: 5, fontSize: 13 }}>{tr("مراجعة بيانات المنظمات والتحقق من هويتها وتحديث حالة الطلب.")}</p></Link>\n          <Link href="/admin/mail" style={linkStyle}><b>{tr("صندوق المراسلات الداخلي")}</b><p style={{ color: "#9aabc0", marginTop: 5, fontSize: 13 }}>{tr("استقبال رسائل الدعم والمستفيدين والشركاء والرد عليها داخل المنصة.")}</p></Link>
           <Link href="/admin/beneficiaries" style={linkStyle}><b>{tr("إدارة حسابات المستفيدين")}</b><p style={{ color: "#9aabc0", marginTop: 5, fontSize: 13 }}>{tr("البحث في الحسابات والملفات الأساسية وعدد طلبات كل مستفيد.")}</p></Link>
           <Link href="/founder" style={linkStyle}><b>{tr("إدارة حسابات الفريق والصلاحيات")}</b><p style={{ color: "#9aabc0", marginTop: 5, fontSize: 13 }}>{tr("إضافة المشرفين وتعديل أدوارهم وإدارتهم.")}</p></Link>
