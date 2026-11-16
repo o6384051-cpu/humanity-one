@@ -64,7 +64,7 @@ export default function OrganizationInquiryForm() {
           senderName: contact.trim(),
           senderEmail: email.trim(),
           department: "partners",
-          subject: "طلب انضمام منظمة: " + organization.trim(),
+          subject: "طلب انضمام منظمة",
           body,
         }),
       });
