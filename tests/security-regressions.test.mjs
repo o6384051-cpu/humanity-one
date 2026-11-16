@@ -110,3 +110,23 @@ test("admin file downloads require an admin session and prevent browser caching 
   assert.match(route, /Cache-Control.*private, no-store/);
   assert.match(route, /X-Content-Type-Options.*nosniff/);
 });
+
+
+test("public mail intake validates bounded fields and applies an hourly rate limit", async () => {
+  const route = await source("src/app/api/mail/route.ts");
+  assert.ok(route.includes('rateLimit(req, "mail-contact", 5, 60 * 60 * 1000)'));
+  assert.ok(route.includes("senderName: z.string().trim().min(2).max(100)"));
+  assert.ok(route.includes("body: z.string().trim().min(10).max(5000)"));
+  assert.ok(route.includes("senderUserId: user?.id ?? null"));
+  assert.ok(route.includes('"Cache-Control": "no-store"'));
+});
+
+test("every internal mail administration operation requires an admin session", async () => {
+  const route = await source("src/app/api/admin/mail/route.ts");
+  const checks = route.split("const admin = await getAdminSession();").length - 1;
+  assert.equal(checks, 3);
+  assert.ok(route.includes('if (!admin) return NextResponse.json({ error: "غير مصرح." }, { status: 401 })'));
+  assert.ok(route.includes("if (!parent || parent.parentId)"));
+  assert.ok(route.includes("parentId: null"));
+  assert.ok(route.includes('"Cache-Control": "no-store, private"'));
+});
