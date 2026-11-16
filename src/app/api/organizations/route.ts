@@ -58,6 +58,37 @@ export async function POST(req: NextRequest) {
       },
       select: { id: true, createdAt: true, status: true },
     });
+
+    // Notify Telegram only after the database has safely stored the application.
+    // A Telegram outage must never make a valid application fail.
+    const telegramToken = process.env.TELEGRAM_BOT_TOKEN;
+    const telegramChatId = process.env.TELEGRAM_CHAT_ID;
+    if (telegramToken && telegramChatId) {
+      const notification = [
+        "طلب انضمام منظمة جديد - HUMANITY ONE",
+        "رقم الطلب: " + application.id,
+        "اسم المنظمة: " + data.organizationName,
+        "البلد والمدينة: " + data.country + " - " + data.city,
+        "المجال: " + data.category,
+        "",
+        "يرجى مراجعة الطلب والتحقق منه من لوحة الإدارة:",
+        "https://humanity-one-wc35.vercel.app/admin/organizations",
+        "",
+        "تنبيه: هذا إشعار باستلام الطلب فقط، وليس موافقة أو اعتمادًا.",
+      ].join("\\n");
+
+      try {
+        await fetch(`https://api.telegram.org/bot${telegramToken}/sendMessage`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ chat_id: telegramChatId, text: notification }),
+          signal: AbortSignal.timeout(5000),
+        });
+      } catch {
+        // Keep the stored application successful even if Telegram is unavailable.
+      }
+    }
+
     return NextResponse.json({
       application,
       message: "تم تسجيل طلبك داخل HUMANITY ONE، وسيظهر لفريق الإدارة للمراجعة والتحقق. تسجيل الطلب لا يعني اعتماده.",
