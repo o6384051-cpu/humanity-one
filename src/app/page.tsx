@@ -52,6 +52,7 @@ export default function Dashboard() {
           <Link href="/memory"><BookOpen size={18} />{tr("الذاكرة والخصوصية","Memory & Privacy")}</Link>
           <Link href="/admin"><ShieldCheck size={18} />{tr("إدارة المنظومة","Administration")}</Link>
           <Link href="/opportunities"><HeartHandshake size={18} />{tr("مركز الفرص الإنسانية","Humanitarian Opportunities")}</Link>
+          <Link href="/organizations"><HeartHandshake size={18} />{tr("شبكة المنظمات والشراكات","Organizations & Partnerships")}</Link>
           <Link href="/beneficiary"><HeartHandshake size={18} />{tr("منصة المستفيدين وطلبات المساعدة","Beneficiary Support Requests")}</Link>
           <Link href="/fees"><BadgeInfo size={18} />{tr("الرسوم والخدمات المجانية","Fees & Free Services")}</Link>
           <Link href="/jobs"><Users size={18} />{tr("سوق العمل","Job Marketplace")}</Link>
