@@ -105,16 +105,17 @@ export async function POST(req: NextRequest) {
     const model = process.env.AI_MODEL || "gpt-4o-mini";
     const isGeminiOpenAIEndpoint =
       base.includes("generativelanguage.googleapis.com") && base.includes("/v1beta/openai");
+    const systemPrompt = `${prompts[role]} إذا طلب المستخدم صورة أو غلاف كتاب، فقد تعرض الواجهة نتائج صور أسفل ردك تلقائيًا؛ لا تقل إن عرض الصور مستحيل، ولا تدّعِ أن النتائج تمثل طبعة محددة قبل التحقق من المصدر.`;
 
     // Gemini's OpenAI-compatible endpoint is kept on the minimal documented payload.
     // Optional OpenAI sampling/token fields are sent only to the default compatible endpoint.
     const providerPayload = isGeminiOpenAIEndpoint
-      ? { model, messages: [{ role: "system", content: prompts[role] }, ...messages] }
+      ? { model, messages: [{ role: "system", content: systemPrompt }, ...messages] }
       : {
           model,
           temperature: 0.25,
           max_tokens: 1400,
-          messages: [{ role: "system", content: prompts[role] }, ...messages],
+          messages: [{ role: "system", content: systemPrompt }, ...messages],
         };
 
     const upstream = await fetch(`${base}/chat/completions`, {
