@@ -61,7 +61,48 @@ export async function GET(req: NextRequest) {
       }];
     });
 
-    return NextResponse.json({ images }, {
+    // Book-cover requests also use Open Library's public covers catalog.
+    if (/غلاف|book\\s*cover|cover of/i.test(query)) {
+      const bookTitle = query
+        .replace(/^(?:please\\s+)?(?:show|find|display)\\s+(?:me\\s+)?(?:a\\s+)?(?:picture|photo|image|cover)\\s+(?:of\\s+)?/i, "")
+        .replace(/^(?:اعرض(?:\\s+لي)?|أرني|ورني|صورة|صور|غلاف)(?:\\s+كتاب)?\\s*/i, "")
+        .replace(/\\s+(?:book\\s+)?cover$/i, "")
+        .replace(/\\s+غلاف(?:\\s+الكتاب)?$/i, "")
+        .trim()
+        .slice(0, 100);
+      if (bookTitle.length >= 2) {
+        try {
+          const bookParams = new URLSearchParams({
+            title: bookTitle,
+            fields: "key,title,cover_i,author_name",
+            limit: "6",
+          });
+          const bookResponse = await fetch(`https://openlibrary.org/search.json?${bookParams.toString()}`, {
+            headers: { "User-Agent": "HUMANITY-ONE/1.0 (humanityone.contact@gmail.com)" },
+            signal: AbortSignal.timeout(8_000),
+            next: { revalidate: 3600 },
+          });
+          if (bookResponse.ok) {
+            const bookData = await bookResponse.json();
+            const covers = (bookData?.docs || []).flatMap((book: any) => {
+              if (!Number.isInteger(book.cover_i) || typeof book.key !== "string" || !/^\\/works\\/[A-Za-z0-9]+$/.test(book.key)) return [];
+              return [{
+                title: plainText(book.title, 120),
+                imageUrl: `https://covers.openlibrary.org/b/id/${book.cover_i}-L.jpg?default=false`,
+                sourceUrl: `https://openlibrary.org${book.key}`,
+                license: "Open Library",
+                artist: Array.isArray(book.author_name) ? plainText(book.author_name[0], 80) : "",
+              }];
+            });
+            images.unshift(...covers);
+          }
+        } catch {
+          // Open Library is an optional book-cover source.
+        }
+      }
+    }
+
+    return NextResponse.json({ images: images.slice(0, 8) }, {
       headers: { "Cache-Control": "public, s-maxage=300, stale-while-revalidate=600" },
     });
   } catch {
