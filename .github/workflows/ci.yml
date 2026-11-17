@@ -24,6 +24,8 @@ jobs:
         run: npm install --no-audit --no-fund
       - name: Run security regression guards
         run: node --test tests/security-regressions.test.mjs
+      - name: Run AI capability regression guards
+        run: node --test tests/ai-capabilities.test.mjs
       - name: Generate Prisma client
         run: npx prisma generate
       - name: Build application
