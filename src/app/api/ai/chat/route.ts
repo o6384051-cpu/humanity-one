@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { rateLimit, rateLimitResponse } from "@/lib/rate-limit";
 import { HUMANITY_ONE_IDENTITY } from "@/lib/ai/identity";
 import { buildOrchestrationContext } from "@/lib/ai/orchestration";
+import { retrieveInstitutionalMemory, formatInstitutionalMemory } from "@/lib/ai/institutional-memory";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -210,6 +211,8 @@ export async function POST(req: NextRequest) {
     }
 
     const orchestration = buildOrchestrationContext(messages[messages.length - 1].content, role);
+    const institutionalMemory = await retrieveInstitutionalMemory(messages[messages.length - 1].content);
+    const enrichedOrchestrationPrompt = `${orchestration.prompt}\\n\\n${formatInstitutionalMemory(institutionalMemory)}`;
     const activeRole = orchestration.decision.specialist;
 
     // Route routine work to the economical model. A higher-capability model is
@@ -224,7 +227,7 @@ export async function POST(req: NextRequest) {
     let activeProvider = { ...providers[0], model: selectedModel };
 
     try {
-      result = await callProvider(activeProvider, activeRole, messages, orchestration.prompt);
+      result = await callProvider(activeProvider, activeRole, messages, enrichedOrchestrationPrompt);
     } catch (error) {
       const name = error instanceof Error ? error.name : "UnknownError";
       console.error("[ai-chat] primary_provider_request_failed", {
@@ -246,7 +249,7 @@ export async function POST(req: NextRequest) {
       });
       activeProvider = providers[1];
       try {
-        result = await callProvider(activeProvider, activeRole, messages, orchestration.prompt);
+        result = await callProvider(activeProvider, activeRole, messages, enrichedOrchestrationPrompt);
       } catch (error) {
         const name = error instanceof Error ? error.name : "UnknownError";
         console.error("[ai-chat] fallback_provider_request_failed", {
@@ -259,7 +262,7 @@ export async function POST(req: NextRequest) {
     } else if (!result && providers.length > 1) {
       activeProvider = providers[1];
       try {
-        result = await callProvider(activeProvider, activeRole, messages, orchestration.prompt);
+        result = await callProvider(activeProvider, activeRole, messages, enrichedOrchestrationPrompt);
       } catch (error) {
         const name = error instanceof Error ? error.name : "UnknownError";
         console.error("[ai-chat] fallback_provider_request_failed", {
