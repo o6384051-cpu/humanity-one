@@ -212,7 +212,7 @@ export async function POST(req: NextRequest) {
 
     const orchestration = buildOrchestrationContext(messages[messages.length - 1].content, role);
     const institutionalMemory = await retrieveInstitutionalMemory(messages[messages.length - 1].content);
-    const enrichedOrchestrationPrompt = `${orchestration.prompt}\\n\\n${formatInstitutionalMemory(institutionalMemory)}`;
+    const enrichedOrchestrationPrompt = `${orchestration.prompt}\n\n${formatInstitutionalMemory(institutionalMemory)}`;
     const activeRole = orchestration.decision.specialist;
 
     // Route routine work to the economical model. A higher-capability model is
