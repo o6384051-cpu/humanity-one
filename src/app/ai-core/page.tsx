@@ -130,7 +130,7 @@ export default function AICorePage() {
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || "تعذر الاتصال بالمساعد");
       let foundImages: ImageResult[] = [];
-      const imageIntent = /صورة|صور|غلاف|اعرض|أرني|ورّني|شكل الكتاب|cover|images?|photos?|pictures?/i.test(content);
+      const imageIntent = /صورة|صور|صوره|غلاف|شكل الكتاب|image|photo|picture|cover/i.test(content);
       if (imageIntent) {
         try {
           const imageResponse = await fetch(`/api/images/search?q=${encodeURIComponent(content)}`);
