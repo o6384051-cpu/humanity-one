@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { rateLimit, rateLimitResponse } from "@/lib/rate-limit";
+import { HUMANITY_ONE_IDENTITY } from "@/lib/ai/identity";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -132,7 +133,7 @@ async function callProvider(
 ): Promise<ProviderResult> {
   const isGeminiOpenAIEndpoint =
     provider.base.includes("generativelanguage.googleapis.com") && provider.base.includes("/v1beta/openai");
-  const chatMessages = [{ role: "system", content: prompts[role] }, ...messages];
+  const chatMessages = [{ role: "system", content: `${HUMANITY_ONE_IDENTITY}\n\nالدور التخصصي الحالي:\n${prompts[role]}` }, ...messages];
   const payload = isGeminiOpenAIEndpoint
     ? { model: provider.model, messages: chatMessages }
     : { model: provider.model, temperature: 0.25, max_tokens: 1400, messages: chatMessages };
