@@ -91,7 +91,7 @@ export async function GET(req: NextRequest) {
                 title: plainText(book.title, 120),
                 imageUrl: `https://covers.openlibrary.org/b/id/${book.cover_i}-L.jpg?default=false`,
                 sourceUrl: `https://openlibrary.org${book.key}`,
-                license: "Open Library",
+                license: "بيانات الغلاف: Open Library",
                 artist: Array.isArray(book.author_name) ? plainText(book.author_name[0], 80) : "",
               }];
             });
