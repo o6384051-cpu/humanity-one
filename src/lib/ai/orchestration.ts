@@ -6,7 +6,7 @@
  * and must enforce authentication, authorization, and explicit approval.
  */
 
-import { buildDeepReasoningInstructions } from "@/lib/ai/cognitive-core";
+import { buildDeepReasoningInstructions, buildAutonomousTaskPlan } from "@/lib/ai/cognitive-core";
 
 export type AssistantRole =
   | "coordinator"
@@ -104,6 +104,7 @@ export function buildOrchestrationContext(
   requestedRole: string,
 ): { decision: OrchestrationDecision; prompt: string } {
   const decision = classifyAssistantRequest(message, requestedRole);
+  const taskPlan = buildAutonomousTaskPlan(message);
   const approvalRule = decision.requiresHumanApproval
     ? "تنبيه أمان: الطلب قد يتضمن إجراءً حساسًا. لا تنفذ أي إجراء خارجي أو دائم. اشرح المطلوب ومخاطره واطلب موافقة صريحة ومحددة أولًا."
     : "حدود التنفيذ: لا تدّع استخدام أداة أو تنفيذ إجراء خارجي. إذا لم تتوفر أداة فعلية، قدّم خطة أو إرشادات فقط.";
@@ -111,6 +112,10 @@ export function buildOrchestrationContext(
   const prompt = [
     "طبقة تنسيق المهام في HUMANITY ONE:",
     buildDeepReasoningInstructions(),
+    "خطة الوكيل المستقل:",
+    `الهدف: ${taskPlan.goal}`,
+    ...taskPlan.steps.map((step, index) => `${index + 1}. ${step}`),
+    taskPlan.executionBoundary,
     `نوع المهمة: ${decision.mode}`,
     `الدور المتخصص: ${decision.specialist}`,
     `مستوى المخاطر: ${decision.risk}`,
