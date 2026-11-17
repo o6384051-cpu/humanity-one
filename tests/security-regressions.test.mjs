@@ -130,3 +130,19 @@ test("every internal mail administration operation requires an admin session", a
   assert.ok(route.includes("parentId: null"));
   assert.ok(route.includes('"Cache-Control": "no-store, private"'));
 });
+
+test("task and initiative drafts are preserved when local storage is unreadable", async () => {
+  const tasks = await source("src/app/tasks/page.tsx");
+  const initiatives = await source("src/app/projects/page.tsx");
+
+  for (const [name, code, filename] of [
+    ["tasks", tasks, "humanity-one-tasks-recovery.json"],
+    ["initiatives", initiatives, "humanity-one-initiatives-recovery.json"],
+  ]) {
+    assert.match(code, /const saved = localStorage\\.getItem\\(STORAGE_KEY\\)/, name);
+    assert.match(code, /setRecoveryData\\(saved\\)/, name);
+    assert.match(code, /if \\(!ready \\|\\| storageIssue\\) return/, name);
+    assert.ok(code.includes(filename), name);
+    assert.match(code, /window\\.setTimeout\\(\\(\\) => URL\\.revokeObjectURL\\(url\\), 1000\\)/, name);
+  }
+});
