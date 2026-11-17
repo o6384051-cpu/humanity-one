@@ -7,7 +7,7 @@ function plainText(value: unknown, max = 180): string {
   if (typeof value !== "string") return "";
   return value.replace(/<[^>]*>/g, " ").replace(/&amp;/g, "&").replace(/&quot;/g, '"')
     .replace(/&#39;/g, "'").replace(/&lt;/g, "<").replace(/&gt;/g, ">")
-    .replace(/\\s+/g, " ").trim().slice(0, max);
+    .replace(/\s+/g, " ").trim().slice(0, max);
 }
 
 export async function GET(req: NextRequest) {
