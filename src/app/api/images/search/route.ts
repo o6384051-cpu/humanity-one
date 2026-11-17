@@ -62,12 +62,12 @@ export async function GET(req: NextRequest) {
     });
 
     // Book-cover requests also use Open Library's public covers catalog.
-    if (/غلاف|book\\s*cover|cover of/i.test(query)) {
+    if (/غلاف|book\s*cover|cover of/i.test(query)) {
       const bookTitle = query
-        .replace(/^(?:please\\s+)?(?:show|find|display)\\s+(?:me\\s+)?(?:a\\s+)?(?:picture|photo|image|cover)\\s+(?:of\\s+)?/i, "")
-        .replace(/^(?:اعرض(?:\\s+لي)?|أرني|ورني|صورة|صور|غلاف)(?:\\s+كتاب)?\\s*/i, "")
-        .replace(/\\s+(?:book\\s+)?cover$/i, "")
-        .replace(/\\s+غلاف(?:\\s+الكتاب)?$/i, "")
+        .replace(/^(?:please\s+)?(?:show|find|display)\s+(?:me\s+)?(?:a\s+)?(?:picture|photo|image|cover)\s+(?:of\s+)?/i, "")
+        .replace(/^(?:اعرض(?:\s+لي)?|أرني|ورني|صورة|صور|غلاف)(?:\s+كتاب)?\s*/i, "")
+        .replace(/\s+(?:book\s+)?cover$/i, "")
+        .replace(/\s+غلاف(?:\s+الكتاب)?$/i, "")
         .trim()
         .slice(0, 100);
       if (bookTitle.length >= 2) {
@@ -85,7 +85,7 @@ export async function GET(req: NextRequest) {
           if (bookResponse.ok) {
             const bookData = await bookResponse.json();
             const covers = (bookData?.docs || []).flatMap((book: any) => {
-              if (!Number.isInteger(book.cover_i) || typeof book.key !== "string" || !/^\\/works\\/[A-Za-z0-9]+$/.test(book.key)) return [];
+              if (!Number.isInteger(book.cover_i) || typeof book.key !== "string" || !/^\/works\/[A-Za-z0-9]+$/.test(book.key)) return [];
               return [{
                 title: plainText(book.title, 120),
                 imageUrl: `https://covers.openlibrary.org/b/id/${book.cover_i}-L.jpg?default=false`,
