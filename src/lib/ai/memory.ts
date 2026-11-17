@@ -38,9 +38,9 @@ export async function retrieveInstitutionalMemory(query: string): Promise<Instit
 export function formatInstitutionalMemory(items: InstitutionalMemory[]): string {
   if (!items.length) return "لا توجد سجلات معرفية مؤسسية مطابقة في قاعدة المعرفة حاليًا. لا تدّع تذكّر قرار غير موجود.";
   return items.map((item) => [
-    \`[\${item.category}] \${item.title}\`,
-    \`المصدر: \${item.source || "غير محدد"}\`,
-    \`التاريخ: \${item.createdAt.toISOString().slice(0, 10)}\`,
+    `[${item.category}] ${item.title}`,
+    `المصدر: ${item.source || "غير محدد"}`,
+    `التاريخ: ${item.createdAt.toISOString().slice(0, 10)}`,
     item.content.slice(0, 1800),
   ].join("\n")).join("\n\n---\n\n");
 }
