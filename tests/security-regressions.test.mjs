@@ -31,7 +31,8 @@ test("beneficiary request reads and file access are owner-scoped", async () => {
   const download = await source("src/app/api/beneficiary/files/[id]/route.ts");
   assert.match(requests, /where:\s*\{\s*userId:\s*user\.id\s*\}/);
   assert.match(upload, /where:\s*\{\s*id:\s*requestId,\s*userId:\s*user\.id\s*\}/);
-  assert.match(download, /where:\s*\{\s*id:\s*context\.params\.id,\s*userId:\s*user\.id\s*\}/);
+  assert.match(download, /const \{ id \} = await context\.params/);
+  assert.match(download, /where:\s*\{\s*id,\s*userId:\s*user\.id\s*\}/);
   assert.match(download, /Cache-Control["']:\s*["']private, no-store/);
 });
 
