@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { ArrowRight, CheckSquare, Plus, Trash2, CalendarDays, Circle, CheckCircle2, ListTodo } from "lucide-react";
+import { ArrowRight, CheckSquare, Plus, Trash2, CalendarDays, Circle, CheckCircle2, ListTodo, Download } from "lucide-react";
 import { useLanguage, translateText } from "../../components/LanguageProvider";
 
 type Task = { id: string; title: string; initiative: string; dueDate: string; priority: "low" | "medium" | "high"; completed: boolean; createdAt: string };
