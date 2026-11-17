@@ -43,23 +43,54 @@ export default function ProjectsPage() {
   const [query, setQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [form, setForm] = useState(blankForm);
+  const [storageIssue, setStorageIssue] = useState(false);
+  const [recoveryData, setRecoveryData] = useState("");
 
   useEffect(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed)) setItems(parsed.filter((item) => item && typeof item.id === "string" && typeof item.title === "string"));
+        const parsed: unknown = JSON.parse(saved);
+        const valid = Array.isArray(parsed) && parsed.every((item) =>
+          item && typeof item === "object" &&
+          typeof item.id === "string" && typeof item.title === "string" &&
+          typeof item.category === "string" && typeof item.goal === "string" &&
+          typeof item.beneficiaries === "string" && typeof item.location === "string" &&
+          typeof item.needs === "string" &&
+          ["idea", "planning", "active", "complete"].includes(item.status) &&
+          typeof item.createdAt === "string"
+        );
+        if (valid) setItems(parsed as Initiative[]);
+        else {
+          // Preserve the original bytes and block autosave until the user exports them.
+          setRecoveryData(saved);
+          setStorageIssue(true);
+        }
       }
     } catch {
-      localStorage.removeItem(STORAGE_KEY);
+      try { setRecoveryData(localStorage.getItem(STORAGE_KEY) ?? ""); } catch { setRecoveryData(""); }
+      setStorageIssue(true);
     }
     setReady(true);
   }, []);
 
   useEffect(() => {
-    if (ready) localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
-  }, [items, ready]);
+    if (!ready || storageIssue) return;
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(items)); }
+    catch { setStorageIssue(true); setRecoveryData(JSON.stringify(items, null, 2)); }
+  }, [items, ready, storageIssue]);
+
+  function exportRecoveryData() {
+    const blob = new Blob([recoveryData], { type: "application/json;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "humanity-one-initiatives-recovery.json";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
 
   const visibleItems = useMemo(() => items.filter((item) => {
     const haystack = [item.title, item.goal, item.location, item.beneficiaries, item.category].join(" ").toLowerCase();
@@ -129,6 +160,12 @@ export default function ProjectsPage() {
             <button type="button" onClick={() => setShowForm((open) => !open)} style={buttonStyle}><Plus size={17} /> {tr("مبادرة جديدة")}</button>
           </div>
         </header>
+
+        {storageIssue && <section role="alert" style={{ ...panelStyle, borderColor: "#b77935", marginBottom: 18 }}>
+          <strong style={{ color: "#ffd39a" }}>{tr("تعذر قراءة بيانات المبادرات أو حفظها بأمان.")}</strong>
+          <p style={{ color: "#c8d5da", lineHeight: 1.8, margin: "8px 0 12px" }}>{tr("لم نحذف البيانات الأصلية ولم نستبدلها. أوقفنا الحفظ التلقائي لحماية المسودات. صدّر نسخة الاسترداد واحتفظ بها قبل أي محاولة إصلاح.")}</p>
+          <button type="button" onClick={exportRecoveryData} disabled={!recoveryData} style={buttonStyle}><Download size={16} /> {tr("تصدير بيانات الاسترداد")}</button>
+        </section>}
 
         <section style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(150px,1fr))", gap: 12, marginBottom: 22 }}>
           {[
