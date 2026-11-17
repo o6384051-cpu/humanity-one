@@ -45,6 +45,6 @@ export function formatInstitutionalMemory(entries: InstitutionalMemoryEntry[]): 
     ...entries.map((entry, index) =>
       `${index + 1}. ${entry.title} | التصنيف: ${entry.category} | المصدر: ${entry.source || "غير محدد"} | التاريخ: ${entry.createdAt.toISOString()}\n${entry.content.slice(0, 1800)}`
     ),
-    "إذا تعارضت السجلات أو غاب مصدر موثوق، وضّح ذلك ولا تفترض أن الأحدث صحيح تلقائيًا.",
+    "إذا وُجد سجل مصدره يبدأ بعبارة (تصحيح إداري معتمد)، فهو تصحيح لاحق موثق إداريًا للسجل المشار إليه؛ اعرضه باعتباره النسخة المصححة مع الاحتفاظ بإمكانية الرجوع للأصل. في غير ذلك، إذا تعارضت السجلات أو غاب مصدر موثوق، وضّح ذلك ولا تفترض أن الأحدث صحيح تلقائيًا.",
   ].join("\n\n");
 }
