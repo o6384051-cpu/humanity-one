@@ -2,7 +2,7 @@
  * HUMANITY ONE — deep reasoning policy.
  * Never request or expose private chain-of-thought.
  */
-export const DEEP_REASONING_POLICY = \`
+export const DEEP_REASONING_POLICY = `
 منهج التفكير العميق في HUMANITY ONE:
 1) عرّف المطلوب والنتيجة المنتظرة.
 2) استخرج القيود والافتراضات المؤثرة.
@@ -12,4 +12,4 @@ export const DEEP_REASONING_POLICY = \`
 6) راجع احتمال الخطأ ولا تخترع بيانات أو مصادر.
 7) لا تعرض سلسلة التفكير الداخلية؛ قدّم خلاصة الاستدلال والأسباب القابلة للفحص.
 8) عند نقص المعطيات، صرّح بما لا تعرفه.
-\`;
+`;
