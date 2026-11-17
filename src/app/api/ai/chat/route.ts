@@ -135,6 +135,7 @@ async function callProvider(
   role: string,
   messages: Array<{ role: "user" | "assistant"; content: string }>,
   orchestrationPrompt: string,
+  timeoutMs = 24_000,
 ): Promise<ProviderResult> {
   const isGeminiOpenAIEndpoint =
     provider.base.includes("generativelanguage.googleapis.com") && provider.base.includes("/v1beta/openai");
@@ -147,7 +148,7 @@ async function callProvider(
     method: "POST",
     headers: { Authorization: `Bearer ${provider.key}`, "Content-Type": "application/json" },
     body: JSON.stringify(payload),
-    signal: AbortSignal.timeout(24_000),
+    signal: AbortSignal.timeout(timeoutMs),
   });
 
   const raw = await upstream.text();
@@ -295,6 +296,7 @@ export async function POST(req: NextRequest) {
           "review",
           [{ role: "user", content: buildCouncilPanelPrompt(goal, agentRun.context) }],
           "اعمل كمجلس خبراء افتراضي متعدد التخصصات، ولا تعرض سلسلة التفكير الداخلية.",
+          10_000,
         );
         const panelText = panel.ok ? panel.data?.choices?.[0]?.message?.content : undefined;
         if (typeof panelText === "string" && panelText.trim()) {
@@ -303,6 +305,7 @@ export async function POST(req: NextRequest) {
             "review",
             [{ role: "user", content: buildCouncilReviewPrompt(goal, panelText) }],
             "راجع مخرجات المجلس وأنتج خلاصة دقيقة وآمنة.",
+            10_000,
           );
           const reviewedText = reviewed.ok ? reviewed.data?.choices?.[0]?.message?.content : undefined;
           if (typeof reviewedText === "string" && reviewedText.trim()) {
