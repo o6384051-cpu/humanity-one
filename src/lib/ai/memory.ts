@@ -11,8 +11,13 @@ export type InstitutionalMemory = {
 
 /** Read-only retrieval of dated institutional records from the existing database table. */
 export async function retrieveInstitutionalMemory(query: string): Promise<InstitutionalMemory[]> {
+  // Avoid Unicode property escapes so this also compiles under older TS targets.
   const terms = Array.from(new Set(
-    query.toLowerCase().split(/[^\p{L}\p{N}]+/u).filter((term) => term.length >= 3).slice(0, 8),
+    query.toLowerCase()
+      .split(/\s+/)
+      .map((term) => term.replace(/^[.,!?;:()[\]{}"'،؛؟]+|[.,!?;:()[\]{}"'،؛؟]+$/g, ""))
+      .filter((term) => term.length >= 3)
+      .slice(0, 8),
   ));
   try {
     return await prisma.knowledgeDocument.findMany({
