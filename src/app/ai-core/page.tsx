@@ -275,7 +275,7 @@ export default function AICorePage() {
                   <p>{message.content}</p>
                   {message.role === "assistant" && message.images && message.images.length > 0 && (
                     <div className="hc-image-results" aria-label={tr("نتائج البحث عن الصور")}>
-                      <div className="hc-image-results-title">{tr("صور مرتبطة بطلبك")} · Wikimedia Commons</div>
+                      <div className="hc-image-results-title">{tr("نتائج من مكتبات الصور والكتب")}</div>
                       <div className="hc-image-grid">
                         {message.images.map((image) => (
                           <a className="hc-image-card" key={image.sourceUrl} href={image.sourceUrl} target="_blank" rel="noopener noreferrer">
@@ -285,7 +285,7 @@ export default function AICorePage() {
                           </a>
                         ))}
                       </div>
-                      <small className="hc-image-attribution">{tr("افتح المصدر لمراجعة الترخيص وشروط إعادة الاستخدام قبل نشر الصورة.")}</small>
+                      <small className="hc-image-attribution">{tr("افتح صفحة المصدر لمعرفة معلومات الصورة وحقوق استخدامها قبل إعادة نشرها.")}</small>
                     </div>
                   )}
                   {message.role === "assistant" && <button className="hc-copy" onClick={() => copyMessage(message)} aria-label={tr("نسخ الرد")}>{copiedId === message.id ? <Check size={14} /> : <Copy size={14} />}{copiedId === message.id ? tr("تم النسخ") : tr("نسخ")}</button>}
