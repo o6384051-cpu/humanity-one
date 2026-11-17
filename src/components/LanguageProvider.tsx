@@ -1466,6 +1466,7 @@ export function translateText(value: string, language: AppLanguage): string {
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const [language, setLanguage] = useState<AppLanguage>("ar");
   const [isHydrated, setIsHydrated] = useState(false);
+  const [accountPreferencesReady, setAccountPreferencesReady] = useState(false);
 
   // Restore the saved preference before writing anything back to storage.
   // This prevents the initial Arabic default from overwriting a saved English choice.
@@ -1479,6 +1480,34 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
       setIsHydrated(true);
     }
   }, []);
+
+  useEffect(() => {
+    if (!isHydrated) return;
+    let cancelled = false;
+    fetch("/api/beneficiary/workspace", { cache: "no-store" })
+      .then(async (response) => {
+        if (response.status === 401 || !response.ok) return;
+        const body = await response.json();
+        const saved = body.workspace?.language;
+        if (!cancelled && (saved === "ar" || saved === "en")) setLanguage(saved);
+        if (!cancelled) setAccountPreferencesReady(true);
+      })
+      .catch(() => {
+        // Local language remains available if the account service is offline.
+      });
+    return () => { cancelled = true; };
+  }, [isHydrated]);
+
+  useEffect(() => {
+    if (!isHydrated || !accountPreferencesReady) return;
+    fetch("/api/beneficiary/workspace", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ language }),
+    }).catch(() => {
+      // Keep the local preference if cloud sync is unavailable.
+    });
+  }, [language, isHydrated, accountPreferencesReady]);
 
   useEffect(() => {
     if (!isHydrated) return;
