@@ -157,7 +157,9 @@ async function callProvider(
 }
 
 function shouldUseFallback(result: ProviderResult) {
-  return result.status !== 400;
+  // A validated user request should not be retried on another provider when the
+  // request itself is malformed. Compatibility/configuration failures may be.
+  return result.category !== "invalid_request";
 }
 
 export async function POST(req: NextRequest) {
