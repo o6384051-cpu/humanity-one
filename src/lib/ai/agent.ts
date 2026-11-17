@@ -31,14 +31,14 @@ export async function prepareAgentRun(goal: string, decision: OrchestrationDecis
   steps[2] = {
     ...steps[2],
     status: "completed",
-    detail: records.length ? \`تم العثور على \${records.length} سجل معرفي موثق.\` : "لم يُعثر على سجلات مؤسسية مطابقة؛ لم يتم اختلاق ذاكرة.",
+    detail: records.length ? `تم العثور على ${records.length} سجل معرفي موثق.` : "لم يُعثر على سجلات مؤسسية مطابقة؛ لم يتم اختلاق ذاكرة.",
   };
   return {
     goal,
     decision,
     steps,
     context: records.map((item) =>
-      \`[\${item.category}] \${item.title} | \${item.source || "مصدر غير محدد"} | \${item.createdAt.toISOString().slice(0, 10)}\n\${item.content.slice(0, 1200)}\`
+      `[${item.category}] ${item.title} | ${item.source || "مصدر غير محدد"} | ${item.createdAt.toISOString().slice(0, 10)}\n${item.content.slice(0, 1200)}`
     ).join("\n\n") || "لا توجد سجلات معرفية مؤسسية مطابقة.",
   };
 }
