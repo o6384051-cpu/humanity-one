@@ -7,7 +7,8 @@ export const ORGANIZATION_COOKIE = "humanity_organization_session";
 export async function getOrganizationSession() {
   const secret = process.env.JWT_SECRET;
   if (!secret) return null;
-  const token = cookies().get(ORGANIZATION_COOKIE)?.value;
+  const cookieStore = await cookies();
+  const token = cookieStore.get(ORGANIZATION_COOKIE)?.value;
   if (!token) return null;
   try {
     const payload = jwt.verify(token, secret) as { sub?: string };
