@@ -10,7 +10,8 @@ const COOKIE_NAME = "humanity_admin_session";
 export async function getAdminSession() {
   const secret = process.env.JWT_SECRET;
   if (!secret) return null;
-  const token = cookies().get(COOKIE_NAME)?.value;
+  const cookieStore = await cookies();
+  const token = cookieStore.get(COOKIE_NAME)?.value;
   if (!token) return null;
   try {
     const payload = jwt.verify(token, secret) as TokenPayload;
