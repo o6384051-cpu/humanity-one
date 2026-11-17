@@ -102,11 +102,14 @@ function getProviders(): ProviderConfig[] {
   const primaryKey = process.env.AI_API_KEY || process.env.OPENAI_API_KEY;
   if (!primaryKey) return [];
 
+  // Free/low-cost-first: the configured primary provider is the only default.
+  // A second provider is contacted only when the user explicitly configures
+  // all fallback settings; requests are always sequential, never parallel.
   const primary: ProviderConfig = {
     name: "primary",
     key: primaryKey,
     base: (process.env.AI_BASE_URL || process.env.OPENAI_BASE_URL || "https://api.openai.com/v1").replace(/\/+$/, ""),
-    model: process.env.AI_MODEL || process.env.OPENAI_MODEL || "gpt-4o-mini",
+    model: process.env.AI_ECONOMY_MODEL || process.env.AI_MODEL || process.env.OPENAI_MODEL || "gpt-4o-mini",
   };
 
   // Failover is deliberately opt-in: no second provider is called, and no extra
@@ -169,6 +172,19 @@ export async function POST(req: NextRequest) {
   const limit = await rateLimit(req, "ai-chat", 20, 60_000);
   if (!limit.allowed) return rateLimitResponse(limit.retryAfter, limit.unavailable);
 
+  // Daily per-IP ceiling limits unexpected provider usage and protects the free tier.
+  const configuredDailyLimit = Number.parseInt(process.env.AI_DAILY_REQUEST_LIMIT || "100", 10);
+  const dailyLimit = Number.isFinite(configuredDailyLimit)
+    ? Math.min(1000, Math.max(1, configuredDailyLimit))
+    : 100;
+  const daily = await rateLimit(req, "ai-chat-daily", dailyLimit, 24 * 60 * 60 * 1000);
+  if (!daily.allowed) {
+    return NextResponse.json(
+      { error: "وصلت إلى الحد اليومي المجاني للمساعد. حاول مرة أخرى غدًا." },
+      { status: daily.unavailable ? 503 : 429, headers: { "Retry-After": String(daily.retryAfter), "Cache-Control": "no-store" } },
+    );
+  }
+
   const contentLength = Number(req.headers.get("content-length") || 0);
   if (contentLength > 24_000) {
     return NextResponse.json({ error: "حجم المحادثة أكبر من المسموح." }, { status: 413 });
@@ -196,8 +212,16 @@ export async function POST(req: NextRequest) {
     const orchestration = buildOrchestrationContext(messages[messages.length - 1].content, role);
     const activeRole = orchestration.decision.specialist;
 
+    // Route routine work to the economical model. A higher-capability model is
+    // used only for tasks that benefit from deeper reasoning and only if the
+    // operator explicitly configured AI_ADVANCED_MODEL. No model is auto-added.
+    const advancedModes = new Set(["plan", "research", "sensitive_action"]);
+    const selectedModel = advancedModes.has(orchestration.decision.mode)
+      ? process.env.AI_ADVANCED_MODEL || providers[0].model
+      : providers[0].model;
+
     let result: ProviderResult | undefined;
-    let activeProvider = providers[0];
+    let activeProvider = { ...providers[0], model: selectedModel };
 
     try {
       result = await callProvider(activeProvider, activeRole, messages, orchestration.prompt);
