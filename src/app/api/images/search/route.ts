@@ -64,8 +64,9 @@ export async function GET(req: NextRequest) {
     // Book-cover requests also use Open Library's public covers catalog.
     if (/غلاف|book\s*cover|cover of/i.test(query)) {
       const bookTitle = query
-        .replace(/^(?:please\s+)?(?:show|find|display)\s+(?:me\s+)?(?:a\s+)?(?:picture|photo|image|cover)\s+(?:of\s+)?/i, "")
-        .replace(/^(?:اعرض(?:\s+لي)?|أرني|ورني|صورة|صور|غلاف)(?:\s+كتاب)?\s*/i, "")
+        .replace(/^(?:please\s+)?(?:show|find|display)\s+(?:me\s+)?/i, "")
+        .replace(/^(?:اعرض(?:\s+لي)?|أرني|ورني)\s*/i, "")
+        .replace(/^(?:a\s+)?(?:صورة|صور|صوره|غلاف|image|photo|picture|cover)\s*(?:(?:غلاف|book\s+cover)\s*)?(?:كتاب\s*)?/i, "")
         .replace(/\s+(?:book\s+)?cover$/i, "")
         .replace(/\s+غلاف(?:\s+الكتاب)?$/i, "")
         .trim()
