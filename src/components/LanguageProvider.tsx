@@ -1484,18 +1484,24 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!isHydrated) return;
     let cancelled = false;
-    fetch("/api/beneficiary/workspace", { cache: "no-store" })
-      .then(async (response) => {
+    const loadAccountPreference = async () => {
+      try {
+        const response = await fetch("/api/beneficiary/workspace", { cache: "no-store" });
         if (response.status === 401 || !response.ok) return;
         const body = await response.json();
         const saved = body.workspace?.language;
         if (!cancelled && (saved === "ar" || saved === "en")) setLanguage(saved);
         if (!cancelled) setAccountPreferencesReady(true);
-      })
-      .catch(() => {
+      } catch {
         // Local language remains available if the account service is offline.
-      });
-    return () => { cancelled = true; };
+      }
+    };
+    void loadAccountPreference();
+    window.addEventListener("humanity-account-authenticated", loadAccountPreference);
+    return () => {
+      cancelled = true;
+      window.removeEventListener("humanity-account-authenticated", loadAccountPreference);
+    };
   }, [isHydrated]);
 
   useEffect(() => {
