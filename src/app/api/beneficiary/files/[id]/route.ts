@@ -13,7 +13,7 @@ export async function GET(_req: Request, context: { params: Promise<{ id: string
   if (!user) return NextResponse.json({ error: "سجّل الدخول أولًا." }, { status: 401 });
   try {
     const file = await prisma.beneficiaryFile.findFirst({
-      where: { id: id, userId: user.id },
+      where: { id, userId: user.id },
       select: { objectKey: true, originalName: true, mimeType: true, size: true },
     });
     if (!file) return NextResponse.json({ error: "الملف غير موجود أو لا تملك صلاحية الوصول إليه." }, { status: 404 });
