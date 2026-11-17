@@ -15,32 +15,50 @@ const prompts: Record<string, string> = {
 type ProviderErrorCategory =
   | "authentication"
   | "quota_or_rate_limit"
+  | "billing_required"
   | "model_configuration"
+  | "endpoint_configuration"
   | "unsupported_parameter"
   | "invalid_request"
   | "provider_unavailable"
   | "unknown_rejection";
 
+type ProviderConfig = {
+  name: "primary" | "fallback";
+  key: string;
+  base: string;
+  model: string;
+};
+
+type ProviderResult = {
+  ok: boolean;
+  status: number;
+  data: any;
+  category?: ProviderErrorCategory;
+};
+
 function safeProviderField(value: unknown): string | undefined {
   if (typeof value !== "string") return undefined;
   const normalized = value.trim();
-  // Keep only short machine-readable identifiers; never persist provider prose.
   return /^[a-zA-Z0-9_.:-]{1,80}$/.test(normalized) ? normalized : undefined;
 }
 
 function classifyProviderError(status: number, data: any): ProviderErrorCategory {
   if (status === 401 || status === 403) return "authentication";
+  if (status === 402) return "billing_required";
   if (status === 429) return "quota_or_rate_limit";
   if (status >= 500) return "provider_unavailable";
 
-  // Inspect provider text only in memory for classification. Never log or return it.
   const error = data?.error;
-  const details = [error?.code, error?.type, error?.param, error?.message]
+  const details = [error?.code, error?.type, error?.param, error?.message, error?.status]
     .filter((value) => typeof value === "string")
     .join(" ")
     .toLowerCase();
 
-  if (/model|model_not_found|not found|does not exist|unsupported model/.test(details)) {
+  if (status === 404) {
+    return /model|model_not_found/.test(details) ? "model_configuration" : "endpoint_configuration";
+  }
+  if (/model_not_found|unsupported model|model does not exist/.test(details)) {
     return "model_configuration";
   }
   if (
@@ -60,11 +78,15 @@ function safeProviderError(category: ProviderErrorCategory) {
     case "authentication":
       return "تعذر التحقق من إعداد مصادقة خدمة الذكاء الاصطناعي.";
     case "quota_or_rate_limit":
-      return "وصلت خدمة الذكاء الاصطناعي إلى حد الاستخدام أو الحصة المجانية. حاول لاحقًا.";
+      return "وصلت خدمة الذكاء الاصطناعي إلى حد الاستخدام أو الحصة المتاحة. حاول لاحقًا.";
+    case "billing_required":
+      return "تتطلب خدمة الذكاء الاصطناعي مراجعة إعدادات الفوترة لدى المزود.";
     case "provider_unavailable":
       return "خدمة الذكاء الاصطناعي تواجه عطلًا مؤقتًا. حاول لاحقًا.";
     case "model_configuration":
-      return "مزود الذكاء الاصطناعي لم يتعرف على النموذج المحدد. يلزم فحص توافق اسم النموذج.";
+      return "مزود الذكاء الاصطناعي لم يتعرف على النموذج المحدد. يلزم فحص اسم النموذج.";
+    case "endpoint_configuration":
+      return "تعذر العثور على مسار خدمة الذكاء الاصطناعي. يلزم فحص عنوان واجهة المزود.";
     case "unsupported_parameter":
       return "مزود الذكاء الاصطناعي رفض أحد إعدادات الطلب. يلزم تعديل توافق صيغة الطلب.";
     case "invalid_request":
@@ -74,16 +96,81 @@ function safeProviderError(category: ProviderErrorCategory) {
   }
 }
 
+function getProviders(): ProviderConfig[] {
+  const primaryKey = process.env.AI_API_KEY || process.env.OPENAI_API_KEY;
+  if (!primaryKey) return [];
+
+  const primary: ProviderConfig = {
+    name: "primary",
+    key: primaryKey,
+    base: (process.env.AI_BASE_URL || process.env.OPENAI_BASE_URL || "https://api.openai.com/v1").replace(/\/+$/, ""),
+    model: process.env.AI_MODEL || process.env.OPENAI_MODEL || "gpt-4o-mini",
+  };
+
+  // Failover is deliberately opt-in: no second provider is called, and no extra
+  // cost can be incurred, unless all three fallback settings are configured.
+  const fallbackKey = process.env.AI_FALLBACK_API_KEY;
+  const fallbackBase = process.env.AI_FALLBACK_BASE_URL;
+  const fallbackModel = process.env.AI_FALLBACK_MODEL;
+  if (!fallbackKey || !fallbackBase || !fallbackModel) return [primary];
+
+  return [
+    primary,
+    {
+      name: "fallback",
+      key: fallbackKey,
+      base: fallbackBase.replace(/\/+$/, ""),
+      model: fallbackModel,
+    },
+  ];
+}
+
+async function callProvider(
+  provider: ProviderConfig,
+  role: string,
+  messages: Array<{ role: "user" | "assistant"; content: string }>,
+): Promise<ProviderResult> {
+  const isGeminiOpenAIEndpoint =
+    provider.base.includes("generativelanguage.googleapis.com") && provider.base.includes("/v1beta/openai");
+  const chatMessages = [{ role: "system", content: prompts[role] }, ...messages];
+  const payload = isGeminiOpenAIEndpoint
+    ? { model: provider.model, messages: chatMessages }
+    : { model: provider.model, temperature: 0.25, max_tokens: 1400, messages: chatMessages };
+
+  const upstream = await fetch(`${provider.base}/chat/completions`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${provider.key}`, "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+    signal: AbortSignal.timeout(24_000),
+  });
+
+  const raw = await upstream.text();
+  let data: any = {};
+  try { data = raw ? JSON.parse(raw) : {}; } catch { /* handled as invalid provider response */ }
+
+  return {
+    ok: upstream.ok,
+    status: upstream.status,
+    data,
+    category: upstream.ok ? undefined : classifyProviderError(upstream.status, data),
+  };
+}
+
+function shouldUseFallback(result: ProviderResult) {
+  return result.status !== 400;
+}
+
 export async function POST(req: NextRequest) {
   const limit = await rateLimit(req, "ai-chat", 20, 60_000);
   if (!limit.allowed) return rateLimitResponse(limit.retryAfter, limit.unavailable);
 
   const contentLength = Number(req.headers.get("content-length") || 0);
-  if (contentLength > 24_000) return NextResponse.json({ error: "حجم المحادثة أكبر من المسموح." }, { status: 413 });
+  if (contentLength > 24_000) {
+    return NextResponse.json({ error: "حجم المحادثة أكبر من المسموح." }, { status: 413 });
+  }
 
-  // Never log or return provider credentials.
-  const key = process.env.AI_API_KEY || process.env.OPENAI_API_KEY;
-  if (!key) {
+  const providers = getProviders();
+  if (!providers.length) {
     console.error("[ai-chat] configuration_error: missing_provider_key");
     return NextResponse.json({ error: "خدمة الذكاء الاصطناعي غير مهيأة حاليًا." }, { status: 503 });
   }
@@ -101,61 +188,89 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "الرسالة غير صالحة." }, { status: 400 });
     }
 
-    const base = (process.env.AI_BASE_URL || "https://api.openai.com/v1").replace(/\/+$/, "");
-    const model = process.env.AI_MODEL || "gpt-4o-mini";
-    const isGeminiOpenAIEndpoint =
-      base.includes("generativelanguage.googleapis.com") && base.includes("/v1beta/openai");
+    let result: ProviderResult | undefined;
+    let activeProvider = providers[0];
 
-    // Gemini's OpenAI-compatible endpoint is kept on the minimal documented payload.
-    // Optional OpenAI sampling/token fields are sent only to the default compatible endpoint.
-    const providerPayload = isGeminiOpenAIEndpoint
-      ? { model, messages: [{ role: "system", content: prompts[role] }, ...messages] }
-      : {
-          model,
-          temperature: 0.25,
-          max_tokens: 1400,
-          messages: [{ role: "system", content: prompts[role] }, ...messages],
-        };
+    try {
+      result = await callProvider(activeProvider, role, messages);
+    } catch (error) {
+      const name = error instanceof Error ? error.name : "UnknownError";
+      console.error("[ai-chat] primary_provider_request_failed", {
+        category: name === "TimeoutError" ? "provider_timeout" : "network_error",
+      });
+      if (providers.length === 1) {
+        return NextResponse.json({
+          error: name === "TimeoutError"
+            ? "استغرق رد المساعد وقتًا أطول من المعتاد. حاول مرة أخرى."
+            : "تعذر الاتصال بخدمة الذكاء الاصطناعي. حاول مرة أخرى.",
+        }, { status: 502, headers: { "Cache-Control": "no-store" } });
+      }
+    }
 
-    const upstream = await fetch(`${base}/chat/completions`, {
-      method: "POST",
-      headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
-      body: JSON.stringify(providerPayload),
-      signal: AbortSignal.timeout(55_000),
-    });
+    if (result && !result.ok && providers.length > 1 && shouldUseFallback(result)) {
+      console.error("[ai-chat] primary_provider_fallback", {
+        status: result.status,
+        category: result.category,
+      });
+      activeProvider = providers[1];
+      try {
+        result = await callProvider(activeProvider, role, messages);
+      } catch (error) {
+        const name = error instanceof Error ? error.name : "UnknownError";
+        console.error("[ai-chat] fallback_provider_request_failed", {
+          category: name === "TimeoutError" ? "provider_timeout" : "network_error",
+        });
+        return NextResponse.json({
+          error: "تعذر الاتصال بمزودي الذكاء الاصطناعي حاليًا. حاول مرة أخرى لاحقًا.",
+        }, { status: 502, headers: { "Cache-Control": "no-store" } });
+      }
+    } else if (!result && providers.length > 1) {
+      activeProvider = providers[1];
+      try {
+        result = await callProvider(activeProvider, role, messages);
+      } catch (error) {
+        const name = error instanceof Error ? error.name : "UnknownError";
+        console.error("[ai-chat] fallback_provider_request_failed", {
+          category: name === "TimeoutError" ? "provider_timeout" : "network_error",
+        });
+        return NextResponse.json({
+          error: "تعذر الاتصال بمزودي الذكاء الاصطناعي حاليًا. حاول مرة أخرى لاحقًا.",
+        }, { status: 502, headers: { "Cache-Control": "no-store" } });
+      }
+    }
 
-    const raw = await upstream.text();
-    let data: any = {};
-    try { data = raw ? JSON.parse(raw) : {}; } catch { /* handled as invalid provider response */ }
+    if (!result) {
+      return NextResponse.json({ error: "تعذر الاتصال بخدمة الذكاء الاصطناعي." }, { status: 502 });
+    }
 
-    if (!upstream.ok) {
-      const category = classifyProviderError(upstream.status, data);
-      const providerError = data?.error;
-      // Log only status, category, and short machine-readable metadata. Never log provider prose,
-      // response body, prompt, messages, headers, or credentials.
+    if (!result.ok) {
+      const providerError = result.data?.error;
       console.error("[ai-chat] provider_error", {
-        status: upstream.status,
-        category,
+        provider: activeProvider.name,
+        status: result.status,
+        category: result.category,
         providerCode: safeProviderField(providerError?.code),
         providerType: safeProviderField(providerError?.type),
         providerParam: safeProviderField(providerError?.param),
       });
-      return NextResponse.json({ error: safeProviderError(category) }, {
-        status: upstream.status === 429 ? 429 : upstream.status === 401 || upstream.status === 403 ? 503 : 502,
+      return NextResponse.json({ error: safeProviderError(result.category || "unknown_rejection") }, {
+        status: result.status === 429 ? 429 : result.status === 401 || result.status === 403 ? 503 : 502,
         headers: { "Cache-Control": "no-store" },
       });
     }
 
-    const reply = data?.choices?.[0]?.message?.content;
+    const reply = result.data?.choices?.[0]?.message?.content;
     if (typeof reply !== "string" || !reply.trim()) {
-      console.error("[ai-chat] invalid_provider_response", { model });
+      console.error("[ai-chat] invalid_provider_response", { provider: activeProvider.name, model: activeProvider.model });
       return NextResponse.json({ error: "وصل رد غير مفهوم من خدمة الذكاء الاصطناعي. حاول مرة أخرى." }, { status: 502 });
     }
 
-    return NextResponse.json({ reply, model }, { headers: { "Cache-Control": "no-store" } });
+    return NextResponse.json({ reply, model: activeProvider.model }, { headers: { "Cache-Control": "no-store" } });
   } catch (error) {
     const name = error instanceof Error ? error.name : "UnknownError";
-    console.error("[ai-chat] request_failed", { category: name === "TimeoutError" ? "provider_timeout" : "network_or_processing_error" });
+    console.error("[ai-chat] request_failed", {
+      category: name === "TimeoutError" ? "provider_timeout" : "network_or_processing_error",
+    });
     return NextResponse.json({
       error: name === "TimeoutError"
         ? "استغرق رد المساعد وقتًا أطول من المعتاد. حاول مرة أخرى."
