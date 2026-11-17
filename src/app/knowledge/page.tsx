@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { ArrowRight, BookOpen, ExternalLink, GraduationCap, Headphones, Lightbulb, NotebookPen, Search, Sparkles, Target } from "lucide-react";
-import { useLanguage, translateText } from "../../components/LanguageProvider";
+import { useLanguage } from "../../components/LanguageProvider";
 
 const sources: { name: string; en: string; area: string; areaEn: string; url: string }[] = [
   { name: "منظمة العمل الدولية", en: "International Labour Organization", area: "العمل اللائق وحقوق العمال والتدريب", areaEn: "Decent work, workers’ rights, and training", url: "https://www.ilo.org/" },
@@ -68,7 +68,6 @@ const learningTools = [
 
 export default function KnowledgePage() {
   const { language } = useLanguage();
-  const tx = (value: string) => translateText(value, language);
   const tr = (ar: string, en: string) => language === "ar" ? ar : en;
 
   return (
