@@ -19,7 +19,7 @@ test("agent-team endpoint is bounded, rate-limited, and transparent about unavai
   assert.match(route, /rateLimit\(req, ["']agent-team["'], 6, 60_000\)/);
   assert.match(route, /maxDuration = 60/);
   assert.match(route, /لم تُنفذ إجراءات خارجية أو بحث مباشر على الإنترنت/);
-  assert.match(route, /ولا تُحفظ في خادم HUMANITY ONE/);
+  assert.match(route, /ولا تُحفظ على الخادم/);
   assert.match(route, /signal: AbortSignal\.timeout\(16_000\)/);
 });
 
