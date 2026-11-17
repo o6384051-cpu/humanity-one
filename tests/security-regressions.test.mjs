@@ -139,10 +139,10 @@ test("task and initiative drafts are preserved when local storage is unreadable"
     ["tasks", tasks, "humanity-one-tasks-recovery.json"],
     ["initiatives", initiatives, "humanity-one-initiatives-recovery.json"],
   ]) {
-    assert.match(code, /const saved = localStorage\\.getItem\\(STORAGE_KEY\\)/, name);
-    assert.match(code, /setRecoveryData\\(saved\\)/, name);
-    assert.match(code, /if \\(!ready \\|\\| storageIssue\\) return/, name);
+    assert.ok(code.includes("const saved = localStorage.getItem(STORAGE_KEY)"), name);
+    assert.ok(code.includes("setRecoveryData(saved)"), name);
+    assert.ok(code.includes("if (!ready || storageIssue) return"), name);
     assert.ok(code.includes(filename), name);
-    assert.match(code, /window\\.setTimeout\\(\\(\\) => URL\\.revokeObjectURL\\(url\\), 1000\\)/, name);
+    assert.ok(code.includes("window.setTimeout(() => URL.revokeObjectURL(url), 1000)"), name);
   }
 });
