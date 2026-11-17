@@ -20,19 +20,52 @@ export default function TasksPage() {
   const [dueDate, setDueDate] = useState("");
   const [priority, setPriority] = useState<Task["priority"]>("medium");
   const [filter, setFilter] = useState<"all" | "open" | "done">("all");
+  const [storageIssue, setStorageIssue] = useState(false);
+  const [recoveryData, setRecoveryData] = useState("");
 
   useEffect(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed)) setTasks(parsed.filter((task) => task && typeof task.id === "string" && typeof task.title === "string"));
+        const parsed: unknown = JSON.parse(saved);
+        const valid = Array.isArray(parsed) && parsed.every((task) =>
+          task && typeof task === "object" &&
+          typeof task.id === "string" && typeof task.title === "string" &&
+          typeof task.initiative === "string" && typeof task.dueDate === "string" &&
+          ["low", "medium", "high"].includes(task.priority) &&
+          typeof task.completed === "boolean" && typeof task.createdAt === "string"
+        );
+        if (valid) setTasks(parsed as Task[]);
+        else {
+          // Preserve the original bytes and block autosave until the user exports them.
+          setRecoveryData(saved);
+          setStorageIssue(true);
+        }
       }
-    } catch { localStorage.removeItem(STORAGE_KEY); }
+    } catch {
+      try { setRecoveryData(localStorage.getItem(STORAGE_KEY) ?? ""); } catch { setRecoveryData(""); }
+      setStorageIssue(true);
+    }
     setReady(true);
   }, []);
 
-  useEffect(() => { if (ready) localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks)); }, [tasks, ready]);
+  useEffect(() => {
+    if (!ready || storageIssue) return;
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks)); }
+    catch { setStorageIssue(true); setRecoveryData(JSON.stringify(tasks, null, 2)); }
+  }, [tasks, ready, storageIssue]);
+
+  function exportRecoveryData() {
+    const blob = new Blob([recoveryData], { type: "application/json;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "humanity-one-tasks-recovery.json";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+  }
 
   const visible = useMemo(() => tasks.filter((task) => filter === "all" || (filter === "done" ? task.completed : !task.completed)), [tasks, filter]);
   const completed = tasks.filter((task) => task.completed).length;
@@ -62,6 +95,12 @@ export default function TasksPage() {
         <h1 style={{ fontSize: "clamp(27px,4vw,38px)", margin: "9px 0" }}>{tr("متابعة المهام الإنسانية")}</h1>
         <p style={{ color: "#a9bdc8", lineHeight: 1.9, margin: 0 }}>{tr("قسّم المبادرات إلى خطوات صغيرة، وحدد الأولويات والمواعيد، وتابع ما تم إنجازه.")}</p>
       </header>
+
+      {storageIssue && <section role="alert" style={{ ...panel, borderColor: "#b77935", marginBottom: 18 }}>
+        <strong style={{ color: "#ffd39a" }}>{tr("تعذر قراءة بيانات المهام أو حفظها بأمان.")}</strong>
+        <p style={{ color: "#c8d5da", lineHeight: 1.8, margin: "8px 0 12px" }}>{tr("لم نحذف البيانات الأصلية ولم نستبدلها. أوقفنا الحفظ التلقائي لحماية المسودات. صدّر نسخة الاسترداد واحتفظ بها قبل أي محاولة إصلاح.")}</p>
+        <button type="button" onClick={exportRecoveryData} disabled={!recoveryData} style={button}><Download size={16} /> {tr("تصدير بيانات الاسترداد")}</button>
+      </section>}
 
       <section style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(145px,1fr))", gap: 12, marginBottom: 18 }}>
         <div style={panel}><div style={{ color: "#a9bdc8", fontSize: 12 }}>{tr("كل المهام")}</div><strong style={{ fontSize: 26 }}>{tasks.length}</strong></div>
