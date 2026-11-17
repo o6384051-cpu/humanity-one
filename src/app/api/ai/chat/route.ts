@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { rateLimit, rateLimitResponse } from "@/lib/rate-limit";
 import { HUMANITY_ONE_IDENTITY } from "@/lib/ai/identity";
+import { buildOrchestrationContext } from "@/lib/ai/orchestration";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -130,10 +131,11 @@ async function callProvider(
   provider: ProviderConfig,
   role: string,
   messages: Array<{ role: "user" | "assistant"; content: string }>,
+  orchestrationPrompt: string,
 ): Promise<ProviderResult> {
   const isGeminiOpenAIEndpoint =
     provider.base.includes("generativelanguage.googleapis.com") && provider.base.includes("/v1beta/openai");
-  const chatMessages = [{ role: "system", content: `${HUMANITY_ONE_IDENTITY}\n\nالدور التخصصي الحالي:\n${prompts[role]}` }, ...messages];
+  const chatMessages = [{ role: "system", content: `${HUMANITY_ONE_IDENTITY}\n\nالدور التخصصي الحالي:\n${prompts[role]}\n\n${orchestrationPrompt}` }, ...messages];
   const payload = isGeminiOpenAIEndpoint
     ? { model: provider.model, messages: chatMessages }
     : { model: provider.model, temperature: 0.25, max_tokens: 1400, messages: chatMessages };
@@ -191,11 +193,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "الرسالة غير صالحة." }, { status: 400 });
     }
 
+    const orchestration = buildOrchestrationContext(messages[messages.length - 1].content, role);
+    const activeRole = orchestration.decision.specialist;
+
     let result: ProviderResult | undefined;
     let activeProvider = providers[0];
 
     try {
-      result = await callProvider(activeProvider, role, messages);
+      result = await callProvider(activeProvider, activeRole, messages, orchestration.prompt);
     } catch (error) {
       const name = error instanceof Error ? error.name : "UnknownError";
       console.error("[ai-chat] primary_provider_request_failed", {
@@ -217,7 +222,7 @@ export async function POST(req: NextRequest) {
       });
       activeProvider = providers[1];
       try {
-        result = await callProvider(activeProvider, role, messages);
+        result = await callProvider(activeProvider, activeRole, messages, orchestration.prompt);
       } catch (error) {
         const name = error instanceof Error ? error.name : "UnknownError";
         console.error("[ai-chat] fallback_provider_request_failed", {
@@ -230,7 +235,7 @@ export async function POST(req: NextRequest) {
     } else if (!result && providers.length > 1) {
       activeProvider = providers[1];
       try {
-        result = await callProvider(activeProvider, role, messages);
+        result = await callProvider(activeProvider, activeRole, messages, orchestration.prompt);
       } catch (error) {
         const name = error instanceof Error ? error.name : "UnknownError";
         console.error("[ai-chat] fallback_provider_request_failed", {
