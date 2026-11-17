@@ -6,6 +6,8 @@
  * and must enforce authentication, authorization, and explicit approval.
  */
 
+import { buildDeepReasoningInstructions } from "@/lib/ai/cognitive-core";
+
 export type AssistantRole =
   | "coordinator"
   | "education"
@@ -108,6 +110,7 @@ export function buildOrchestrationContext(
 
   const prompt = [
     "طبقة تنسيق المهام في HUMANITY ONE:",
+    buildDeepReasoningInstructions(),
     `نوع المهمة: ${decision.mode}`,
     `الدور المتخصص: ${decision.specialist}`,
     `مستوى المخاطر: ${decision.risk}`,
