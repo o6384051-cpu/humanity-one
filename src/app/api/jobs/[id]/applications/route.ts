@@ -17,13 +17,14 @@ function validToken(provided: string | null, storedHash: string | null) {
 // It is never included in public job responses.
 export async function GET(
   req: NextRequest,
-  context: { params: { id: string } },
+  context: { params: Promise<{ id: string }> },
 ) {
+  const { id } = await context.params;
   const limit = await rateLimit(req, "employer-applications-read", 20, 60_000);
   if (!limit.allowed) return rateLimitResponse(limit.retryAfter, limit.unavailable);
   try {
     const job = await prisma.jobListing.findUnique({
-      where: { id: context.params.id },
+      where: { id: id },
       select: {
         id: true,
         jobTitle: true,
