@@ -6,6 +6,49 @@ import { getBeneficiarySession } from "@/lib/beneficiary-auth";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
+const MAX_REQUEST_BYTES = 1_100_000;
+
+async function readBoundedJson(req: NextRequest): Promise<{ tooLarge: boolean; value: unknown }> {
+  const declaredLength = Number(req.headers.get("content-length"));
+  if (Number.isFinite(declaredLength) && declaredLength > MAX_REQUEST_BYTES) {
+    return { tooLarge: true, value: null };
+  }
+
+  if (!req.body) return { tooLarge: false, value: null };
+
+  const reader = req.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let totalBytes = 0;
+
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      totalBytes += value.byteLength;
+      if (totalBytes > MAX_REQUEST_BYTES) {
+        await reader.cancel();
+        return { tooLarge: true, value: null };
+      }
+      chunks.push(value);
+    }
+  } finally {
+    reader.releaseLock();
+  }
+
+  const body = new Uint8Array(totalBytes);
+  let offset = 0;
+  for (const chunk of chunks) {
+    body.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+
+  try {
+    return { tooLarge: false, value: JSON.parse(new TextDecoder().decode(body)) };
+  } catch {
+    return { tooLarge: false, value: null };
+  }
+}
+
 const dataSchema = z.object({
   "humanity-one-initiatives-v1": z.string().max(500_000).nullable(),
   "humanity-one-tasks-v1": z.string().max(500_000).nullable(),
@@ -40,7 +83,12 @@ export async function PUT(req: NextRequest) {
   const user = await getBeneficiarySession();
   if (!user) return NextResponse.json({ error: "سجّل الدخول بحساب المستفيد أولًا." }, { status: 401 });
 
-  const parsed = updateSchema.safeParse(await req.json().catch(() => null));
+  const requestBody = await readBoundedJson(req);
+  if (requestBody.tooLarge) {
+    return NextResponse.json({ error: "حجم الطلب أكبر من الحد المسموح (1.1 ميجابايت)." }, { status: 413 });
+  }
+
+  const parsed = updateSchema.safeParse(requestBody.value);
   if (!parsed.success) return NextResponse.json({ error: "بيانات المزامنة غير صالحة." }, { status: 400 });
 
   if (parsed.data.data) {
