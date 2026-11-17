@@ -68,14 +68,17 @@ export async function PATCH(req: NextRequest) {
   const parsed = updateSchema.safeParse(await req.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: "بيانات التصحيح غير مكتملة أو غير صالحة." }, { status: 400 });
   try {
-    const existing = await prisma.knowledgeDocument.findUnique({ where: { id: parsed.data.id }, select: { id: true } });
-    if (!existing) return NextResponse.json({ error: "سجل الذاكرة غير موجود." }, { status: 404 });
-    const document = await prisma.knowledgeDocument.update({
+    const existing = await prisma.knowledgeDocument.findUnique({
       where: { id: parsed.data.id },
+      select: { id: true, title: true, source: true },
+    });
+    if (!existing) return NextResponse.json({ error: "سجل الذاكرة غير موجود." }, { status: 404 });
+    // Corrections are append-only: preserve the original record for auditability.
+    const document = await prisma.knowledgeDocument.create({
       data: {
-        title: parsed.data.title,
-        content: parsed.data.content,
-        source: parsed.data.source || null,
+        title: parsed.data.title.startsWith("تصحيح:") ? parsed.data.title : `تصحيح: ${parsed.data.title}`,
+        content: `هذا سجل تصحيح لاحق للسجل الأصلي ذي المعرّف ${existing.id}. السجل الأصلي محفوظ دون تعديل.\\n\\n${parsed.data.content}`,
+        source: `تصحيح للسجل ${existing.id}${existing.source ? ` | المصدر الأصلي: ${existing.source}` : ""}${parsed.data.source ? ` | مصدر التصحيح: ${parsed.data.source}` : ""}`.slice(0, 1000),
         category: parsed.data.category,
       },
       select: { id: true, title: true, source: true, category: true, createdAt: true },
