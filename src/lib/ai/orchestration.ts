@@ -38,7 +38,7 @@ const RESEARCH_PATTERN =
   /ابحث|بحث|مصادر|مراجع|تحقق|قارن|دراسة|إحصائيات|آخر الأخبار|research|sources|verify|compare|statistics/i;
 
 const LEARNING_PATTERN =
-  /علمني|علّمني|تعلم|تعلّم|درس|اشرح لي|تدريب|تمرين|اقرأ|اكتب|teach me|learn|lesson|practice/i;
+  /علمني|علّمني|تعلم|تعلّم|درس|اشرح لي|تدريب|تمرين|اقرأ|تدريب على الكتابة|teach me|learn|lesson|practice/i;
 
 const HUMANITARIAN_PATTERN =
   /مساعدة إنسانية|مساعدات|فقر|محتاج|مستفيد|فرصة عمل|وظيفة|مشروع صغير|دعم مجتمعي|humanitarian|beneficiary|poverty|job opportunity/i;
@@ -69,13 +69,9 @@ export function classifyAssistantRequest(
       : mode === "research" ? "research"
       : mode === "humanitarian_support" ? "humanitarian"
       : mode === "sensitive_action" ? "review"
-      : requestedRole in {
-          coordinator: true,
-          education: true,
-          humanitarian: true,
-          research: true,
-          review: true,
-        }
+      : (["coordinator", "education", "humanitarian", "research", "review"] as const).includes(
+          requestedRole as AssistantRole,
+        )
         ? requestedRole as AssistantRole
         : "coordinator";
 
