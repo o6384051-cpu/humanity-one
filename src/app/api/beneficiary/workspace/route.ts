@@ -49,7 +49,6 @@ export async function PUT(req: NextRequest) {
   }
 
   try {
-    const current = await prisma.userWorkspace.findUnique({ where: { userId: user.id } });
     const saved = await prisma.userWorkspace.upsert({
       where: { userId: user.id },
       create: {
