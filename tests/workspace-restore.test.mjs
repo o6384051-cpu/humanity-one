@@ -22,7 +22,7 @@ function memoryStorage(initial = {}) {
 
 test("validates the entire cloud payload before writing and restores all allowed keys", () => {
   const storage = memoryStorage(Object.fromEntries(keys.map((key) => [key, `old:${key}`])));
-  const incoming = Object.fromEntries(keys.map((key) => [key, `new:${key}`]));
+  const incoming = Object.fromEntries(keys.map((key) => [key, "restored"]));
   restoreWorkspaceData(storage, keys, incoming);
   assert.deepEqual(storage.snapshot(), incoming);
 });
