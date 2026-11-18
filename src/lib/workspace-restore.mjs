@@ -59,7 +59,13 @@ export function validateWorkspaceData(keys, incoming) {
  */
 export function restoreWorkspaceData(storage, keys, incoming) {
   const next = validateWorkspaceData(keys, incoming);
-  const previous = Object.fromEntries(keys.map((key) => [key, storage.getItem(key)]));
+  let previous;
+  try {
+    previous = Object.fromEntries(keys.map((key) => [key, storage.getItem(key)]));
+  } catch {
+    // No writes have happened, so the original local workspace remains intact.
+    throw new WorkspaceRestoreError("Could not read the current local workspace snapshot.");
+  }
 
   try {
     for (const key of keys) {
