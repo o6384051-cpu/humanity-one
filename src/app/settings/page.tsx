@@ -78,10 +78,14 @@ export default function SettingsPage() {
   }
 
   function exportData() {
-    const started = downloadBackup(currentData(), "humanity-one-local-backup.json");
-    setMessage(started
-      ? tr("بدأ تنزيل النسخة الاحتياطية. تحقق من مجلد التنزيلات للتأكد من حفظ الملف.", "Backup download started. Check your Downloads folder to confirm the file was saved.")
-      : tr("تعذر بدء تنزيل النسخة الاحتياطية.", "Could not start the backup download."));
+    try {
+      const started = downloadBackup(currentData(), "humanity-one-local-backup.json");
+      setMessage(started
+        ? tr("بدأ تنزيل النسخة الاحتياطية. تحقق من مجلد التنزيلات للتأكد من حفظ الملف.", "Backup download started. Check your Downloads folder to confirm the file was saved.")
+        : tr("تعذر بدء تنزيل النسخة الاحتياطية.", "Could not start the backup download."));
+    } catch {
+      setMessage(tr("تعذر قراءة البيانات المحلية لإنشاء النسخة الاحتياطية.", "Could not read local data to create the backup."));
+    }
   }
 
   async function uploadToCloud() {
@@ -119,7 +123,14 @@ export default function SettingsPage() {
     }
     if (!window.confirm(tr("ستبدأ الآن عملية تنزيل نسخة احتياطية من بيانات هذا الجهاز. لن يتم استبدال أي بيانات قبل تأكيدك أن الملف ظهر في مجلد التنزيلات. هل تريد المتابعة؟", "A backup of this device will be downloaded now. No local data will be replaced until you confirm that the file appears in Downloads. Continue?"))) return;
 
-    const backupStarted = downloadBackup(currentData(), "humanity-one-before-cloud-restore.json");
+    let localBackupData: Record<string, string | null>;
+    try {
+      localBackupData = currentData();
+    } catch {
+      setMessage(tr("تعذر قراءة البيانات المحلية؛ لم تتغير أي بيانات.", "Could not read local data. Nothing was changed."));
+      return;
+    }
+    const backupStarted = downloadBackup(localBackupData, "humanity-one-before-cloud-restore.json");
     if (!backupStarted) {
       setMessage(tr("تعذر بدء تنزيل النسخة المحلية؛ لم تتغير بيانات هذا الجهاز.", "Could not start the local backup download. This device was not changed."));
       return;
@@ -134,7 +145,7 @@ export default function SettingsPage() {
     try {
       restoreWorkspaceData(localStorage, KEYS, workspace.data);
       setLanguage(workspace.language);
-      refresh();
+      try { refresh(); } catch { /* The restore itself already completed; keep the success state accurate. */ }
       setMessage(tr("اكتملت الاستعادة. تم التحقق من البيانات قبل التغيير، مع آلية تراجع عند فشل الحفظ.", "Restore completed. Data was validated before changes, with rollback if a write failed."));
     } catch (error) {
       const rollbackComplete = error instanceof Error && "rollbackComplete" in error
