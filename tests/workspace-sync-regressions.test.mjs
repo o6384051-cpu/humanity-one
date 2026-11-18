@@ -20,6 +20,12 @@ test("workspace sync validates bounded, allow-listed local data", () => {
   assert.match(route, /theme: z\.enum/);
 });
 
+test("workspace reads and writes are rate-limited per authenticated account", () => {
+  assert.match(route, /rateLimit\(req,\s*"beneficiary-workspace-read",\s*60,\s*5 \* 60 \* 1000,\s*user\.id\)/);
+  assert.match(route, /rateLimit\(req,\s*"beneficiary-workspace-write",\s*20,\s*10 \* 60 \* 1000,\s*user\.id\)/);
+  assert.match(route, /rateLimitResponse\(limit\.retryAfter,\s*limit\.unavailable\)/);
+});
+
 test("workspace data is private and attached to one account", () => {
   assert.match(schema, /model UserWorkspace/);
   assert.match(schema, /userId\s+String\s+@unique/);
