@@ -52,6 +52,7 @@ export default function Dashboard() {
           <Link href="/admin"><ShieldCheck size={18} />{tr("إدارة المنظومة","Administration")}</Link>
           <Link href="/mail"><Mail size={18} />{tr("مركز المراسلات","Internal Mail")}</Link>
           <Link href="/opportunities"><HeartHandshake size={18} />{tr("مركز الفرص الإنسانية","Humanitarian Opportunities")}</Link>
+          <Link href="/verified-sources"><BookOpen size={18} />{tr("دليل المصادر الموثوقة","Verified Resources")}</Link>
           <Link href="/organizations"><HeartHandshake size={18} />{tr("شبكة المنظمات والشراكات","Organizations & Partnerships")}</Link>
           <Link href="/beneficiary"><HeartHandshake size={18} />{tr("منصة المستفيدين وطلبات المساعدة","Beneficiary Support Requests")}</Link>
           <Link href="/fees"><BadgeInfo size={18} />{tr("الرسوم والخدمات المجانية","Fees & Free Services")}</Link>
