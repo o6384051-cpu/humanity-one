@@ -1,0 +1,35 @@
+name: Backup script validation
+
+on:
+  pull_request:
+    paths:
+      - "scripts/backup/**"
+      - ".github/workflows/backup-script-check.yml"
+  push:
+    branches: [main]
+    paths:
+      - "scripts/backup/**"
+      - ".github/workflows/backup-script-check.yml"
+
+jobs:
+  shell-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate Bash syntax
+        shell: bash
+        run: |
+          shopt -s globstar nullglob
+          files=(scripts/backup/**/*.sh)
+          if (( \${#files[@]} == 0 )); then
+            echo "No backup shell scripts found."
+            exit 0
+          fi
+          for file in "\${files[@]}"; do
+            bash -n "$file"
+          done
+      - name: Run ShellCheck
+        uses: ludeeus/action-shellcheck@master
+        with:
+          scandir: scripts/backup
+          severity: warning
