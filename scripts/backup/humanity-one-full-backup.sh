@@ -153,6 +153,13 @@ vercel whoami > "$STAGE/metadata/vercel-account.txt" 2>&1
 )
 
 echo "[4/7] Optional S3 export"
+cat > "$STAGE/storage/EXPORT-LIMITATIONS.txt" <<'LIMITS'
+The S3 sync exports current object contents only. It does not export bucket policies,
+IAM permissions, lifecycle rules, CORS settings, encryption configuration, object
+versions, delete markers, or provider-side retention settings. Reconcile these
+settings separately and enable provider versioning/retention where appropriate.
+LIMITS
+echo "WARNING: S3 sync copies current objects only, not bucket configuration or object-version history."
 read -r -p "S3 bucket (blank = skip): " S3_BUCKET
 if [[ -n "$S3_BUCKET" ]]; then
   need aws
