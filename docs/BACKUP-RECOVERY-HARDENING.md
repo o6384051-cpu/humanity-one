@@ -24,3 +24,7 @@ A successful `pg_restore --list` is only a structural check. Before calling the 
 ## Operational policy
 
 Keep at least two encrypted copies in separate locations. Store the passphrase separately from the archives. Repeat the backup for every production database, object-storage bucket, and Vercel project. Review repository history and environment-variable names without printing secret values.
+
+## Vercel secret limitation
+
+Vercel's `vercel env pull` does not return values for Secret-type environment variables. The pulled `.env` files are therefore not a complete backup of Vercel credentials. Keep a separate approved secret escrow/inventory, or plan to rotate and re-enter secrets during recovery. Never claim that the Vercel environment export is complete solely because `env pull` succeeded. See the official [Vercel environment-variable CLI documentation](https://vercel.com/docs/cli/env).
