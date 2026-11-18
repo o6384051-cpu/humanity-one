@@ -163,8 +163,8 @@ if [[ -n "$S3_BUCKET" ]]; then
   AWS_ARGS=(--endpoint-url "$S3_ENDPOINT")
   [[ -n "$S3_REGION" ]] && AWS_ARGS+=(--region "$S3_REGION")
   [[ -n "$S3_PROFILE" ]] && AWS_ARGS+=(--profile "$S3_PROFILE")
-  mkdir -p "$STAGE/storage/$S3_BUCKET"
-  aws "${AWS_ARGS[@]}" s3 sync "s3://$S3_BUCKET" "$STAGE/storage/$S3_BUCKET" --only-show-errors
+  mkdir -p "$STAGE/storage/objects"
+  aws "${AWS_ARGS[@]}" s3 sync "s3://$S3_BUCKET" "$STAGE/storage/objects" --only-show-errors
   aws "${AWS_ARGS[@]}" s3 ls "s3://$S3_BUCKET" --recursive > "$STAGE/metadata/storage-remote-inventory.txt"
 fi
 
