@@ -2,7 +2,13 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { restoreWorkspaceData, WorkspaceRestoreError } from "../src/lib/workspace-restore.mjs";
 
-const keys = ["humanity-one-initiatives-v1", "humanity-one-tasks-v1"];
+const keys = [
+  "humanity-one-initiatives-v1",
+  "humanity-one-tasks-v1",
+  "humanity-one-approved-memory-v1",
+  "humanity-one-approved-memory-v1:enabled",
+  "humanity-one-chat-v2",
+];
 
 function memoryStorage(initial = {}) {
   const values = new Map(Object.entries(initial));
@@ -15,9 +21,10 @@ function memoryStorage(initial = {}) {
 }
 
 test("validates the entire cloud payload before writing and restores all allowed keys", () => {
-  const storage = memoryStorage({ [keys[0]]: "old initiative", [keys[1]]: "old tasks" });
-  restoreWorkspaceData(storage, keys, { [keys[0]]: "new initiative", [keys[1]]: null });
-  assert.deepEqual(storage.snapshot(), { [keys[0]]: "new initiative", [keys[1]]: null });
+  const storage = memoryStorage(Object.fromEntries(keys.map((key) => [key, `old:${key}`])));
+  const incoming = Object.fromEntries(keys.map((key) => [key, `new:${key}`]));
+  restoreWorkspaceData(storage, keys, incoming);
+  assert.deepEqual(storage.snapshot(), incoming);
 });
 
 test("rejects unknown keys and invalid values without changing local data", () => {
@@ -51,7 +58,7 @@ test("rolls back the complete previous snapshot after a mid-restore quota failur
     () => restoreWorkspaceData(storage, keys, { [keys[0]]: "new initiative", [keys[1]]: "new tasks" }),
     (error) => error instanceof WorkspaceRestoreError && error.rollbackComplete === true,
   );
-  assert.deepEqual(storage.snapshot(), { [keys[0]]: "old initiative", [keys[1]]: "old tasks" });
+  assert.deepEqual(storage.snapshot(), { [keys[0]]: "old initiative", [keys[1]]: "old tasks", [keys[2]]: null, [keys[3]]: null, [keys[4]]: null });
 });
 
 test("reports when rollback itself cannot be fully confirmed", () => {
@@ -89,12 +96,26 @@ test("aborts safely if the original local snapshot cannot be read", () => {
   assert.equal(writes, 0);
 });
 
-test("rejects oversized cloud values before changing local data", () => {
+test("rejects each field above its documented size limit before changing local data", () => {
+  const limits = [500_000, 500_000, 200_000, 20, 500_000];
   const storage = memoryStorage({ [keys[0]]: "keep initiative", [keys[1]]: "keep tasks" });
   const before = storage.snapshot();
-  assert.throws(
-    () => restoreWorkspaceData(storage, keys, { [keys[0]]: "x".repeat(500_001) }),
-    WorkspaceRestoreError,
-  );
+
+  for (let index = 0; index < keys.length; index += 1) {
+    const incoming = { [keys[index]]: "x".repeat(limits[index] + 1) };
+    assert.throws(() => restoreWorkspaceData(storage, keys, incoming), WorkspaceRestoreError, keys[index]);
+    assert.deepEqual(storage.snapshot(), before);
+  }
+});
+
+test("rejects a payload above the one-megabyte total limit even when individual fields are valid", () => {
+  const storage = memoryStorage({ [keys[0]]: "keep initiative", [keys[1]]: "keep tasks" });
+  const before = storage.snapshot();
+  const incoming = {
+    [keys[0]]: "a".repeat(500_000),
+    [keys[1]]: "b".repeat(500_000),
+    [keys[2]]: "c".repeat(50_000),
+  };
+  assert.throws(() => restoreWorkspaceData(storage, keys, incoming), WorkspaceRestoreError);
   assert.deepEqual(storage.snapshot(), before);
 });
