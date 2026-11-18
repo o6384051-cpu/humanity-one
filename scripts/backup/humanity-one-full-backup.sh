@@ -51,7 +51,7 @@ check_space() {
   fi
 }
 
-for tool in git tar gzip openssl pg_dump pg_restore vercel sha256sum df awk find sort xargs tee wc tr; do need "$tool"; done
+for tool in git tar gzip openssl pg_dump pg_restore vercel sha256sum df awk find sort xargs tee wc tr python3; do need "$tool"; done
 check_space "$OUT_DIR"
 check_space "$WORK_ROOT"
 STAGE="$(mktemp -d "$WORK_ROOT/humanity-one-backup.XXXXXX")"
@@ -74,13 +74,60 @@ if git -C "$STAGE/source/humanity-one" lfs version >/dev/null 2>&1; then git -C 
 echo "[2/7] PostgreSQL export"
 ask_secret "Production DATABASE_URL (hidden): " DB_URL
 if [[ -z "$DB_URL" ]]; then echo "ERROR: DATABASE_URL is required." >&2; unset DB_URL; exit 1; fi
-if ! PGCONNECT_TIMEOUT=20 pg_dump --dbname="$DB_URL" --format=custom --no-owner --no-acl --verbose --file="$STAGE/database/humanity-one-production.dump" > "$STAGE/logs/pg_dump.log" 2>&1; then
+
+# Parse the URL locally and put the password in a private .pgpass file.
+# pg_dump receives only a service name, so the full credential URL is not in its argv.
+HUMANITY_ONE_DB_URL="$DB_URL" python3 - "$STAGE/database/pg_service.conf" "$STAGE/database/pgpass" <<'PY'
+import os, sys
+from urllib.parse import parse_qs, unquote, urlsplit
+
+raw = os.environ.pop("HUMANITY_ONE_DB_URL")
+url = urlsplit(raw)
+if url.scheme not in ("postgres", "postgresql"):
+    raise SystemExit("DATABASE_URL must use postgres:// or postgresql://")
+host = url.hostname or ""
+if not host or "," in host:
+    raise SystemExit("A single database hostname is required for this backup helper.")
+port = str(url.port or 5432)
+dbname = unquote(url.path.lstrip("/"))
+user = unquote(url.username or "")
+password = unquote(url.password or "")
+if not dbname or not user or not password:
+    raise SystemExit("DATABASE_URL must include database name, username, and password.")
+if any("\n" in value or "\r" in value for value in (host, dbname, user, password)):
+    raise SystemExit("DATABASE_URL contains unsupported newline characters.")
+
+query = parse_qs(url.query)
+service_values = {
+    "host": host,
+    "port": port,
+    "dbname": dbname,
+    "user": user,
+}
+for key in ("sslmode", "sslrootcert", "sslcert", "sslkey", "application_name", "channel_binding", "target_session_attrs"):
+    if query.get(key):
+        service_values[key] = query[key][0]
+
+def pgpass_escape(value):
+    return value.replace("\\", "\\\\").replace(":", "\\:")
+
+with open(sys.argv[1], "w", encoding="utf-8") as service:
+    service.write("[humanity_one_backup]\n")
+    for key, value in service_values.items():
+        service.write(f"{key}={value}\n")
+os.chmod(sys.argv[1], 0o600)
+
+with open(sys.argv[2], "w", encoding="utf-8") as pgpass:
+    pgpass.write(":".join(pgpass_escape(value) for value in ("*", port, dbname, user, password)) + "\n")
+os.chmod(sys.argv[2], 0o600)
+PY
+unset DB_URL
+if ! PGSERVICEFILE="$STAGE/database/pg_service.conf" PGPASSFILE="$STAGE/database/pgpass" PGCONNECT_TIMEOUT=20 pg_dump --dbname="service=humanity_one_backup" --format=custom --no-owner --no-acl --verbose --file="$STAGE/database/humanity-one-production.dump" > "$STAGE/logs/pg_dump.log" 2>&1; then
   echo "ERROR: pg_dump failed; details follow:" >&2
   cat "$STAGE/logs/pg_dump.log" >&2
-  unset DB_URL
   exit 1
 fi
-unset DB_URL
+rm -f "$STAGE/database/pg_service.conf" "$STAGE/database/pgpass"
 pg_restore --list "$STAGE/database/humanity-one-production.dump" > "$STAGE/metadata/database-contents.txt"
 
 echo "[3/7] Vercel export"
