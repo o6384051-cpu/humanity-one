@@ -109,7 +109,7 @@ if [[ -n "$S3_BUCKET" ]]; then
   [[ -n "$S3_PROFILE" ]] && AWS_ARGS+=(--profile "$S3_PROFILE")
   mkdir -p "$STAGE/storage/$S3_BUCKET"
   aws "${AWS_ARGS[@]}" s3 sync "s3://$S3_BUCKET" "$STAGE/storage/$S3_BUCKET" --only-show-errors
-  aws "\${AWS_ARGS[@]}" s3 ls "s3://$S3_BUCKET" --recursive > "$STAGE/metadata/storage-remote-inventory.txt"
+  aws "${AWS_ARGS[@]}" s3 ls "s3://$S3_BUCKET" --recursive > "$STAGE/metadata/storage-remote-inventory.txt"
 fi
 
 echo "[5/7] Restore guide and checksums"
