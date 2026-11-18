@@ -4,7 +4,7 @@ on:
   pull_request:
     branches: [main]
   push:
-    branches: [main, feat/opportunity-center-hardening, fix/local-data-recovery]
+    branches: [main, feat/opportunity-center-hardening, fix/local-data-recovery, hardening/backup-restore-2026-11-18]
 
 permissions:
   contents: read
@@ -16,6 +16,18 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Validate backup Bash syntax
+        shell: bash
+        run: |
+          for file in scripts/backup/*.sh; do
+            if [[ -f "$file" ]]; then bash -n "$file"; fi
+          done
+      - name: Install ShellCheck
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y shellcheck
+      - name: Lint backup scripts
+        run: shellcheck --severity=warning scripts/backup/*.sh
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
