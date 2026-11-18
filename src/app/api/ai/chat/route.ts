@@ -81,13 +81,6 @@ export async function POST(req: NextRequest) {
   const contentLength = Number(req.headers.get("content-length") || 0);
   if (contentLength > 24_000) return NextResponse.json({ error: "حجم المحادثة أكبر من المسموح." }, { status: 413 });
 
-  // Never log or return provider credentials.
-  const key = process.env.AI_API_KEY || process.env.OPENAI_API_KEY;
-  if (!key) {
-    console.error("[ai-chat] configuration_error: missing_provider_key");
-    return NextResponse.json({ error: "خدمة الذكاء الاصطناعي غير مهيأة حاليًا." }, { status: 503 });
-  }
-
   try {
     const body = await req.json();
     const role = typeof body.role === "string" && body.role in prompts ? body.role : "coordinator";
@@ -105,6 +98,22 @@ export async function POST(req: NextRequest) {
     const model = process.env.AI_MODEL || "gpt-4o-mini";
     const isGeminiOpenAIEndpoint =
       base.includes("generativelanguage.googleapis.com") && base.includes("/v1beta/openai");
+
+    // Gemini requires its own API key; never send an OpenAI key to the Gemini endpoint.
+    // Never log or return provider credentials.
+    const key = isGeminiOpenAIEndpoint
+      ? process.env.AI_API_KEY
+      : process.env.AI_API_KEY || process.env.OPENAI_API_KEY;
+    if (!key) {
+      console.error("[ai-chat] configuration_error: missing_provider_key", {
+        provider: isGeminiOpenAIEndpoint ? "gemini" : "openai_compatible",
+      });
+      return NextResponse.json({
+        error: isGeminiOpenAIEndpoint
+          ? "خدمة Gemini غير مهيأة. يلزم ضبط AI_API_KEY صالح في إعدادات الإنتاج."
+          : "خدمة الذكاء الاصطناعي غير مهيأة حاليًا.",
+      }, { status: 503, headers: { "Cache-Control": "no-store" } });
+    }
 
     // Gemini's OpenAI-compatible endpoint is kept on the minimal documented payload.
     // Optional OpenAI sampling/token fields are sent only to the default compatible endpoint.
