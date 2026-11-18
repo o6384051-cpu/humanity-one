@@ -59,7 +59,7 @@ test("beneficiary sessions are revalidated against the database and restricted t
   assert.match(auth, /jwt\.verify\(token,\s*secret\)/);
   assert.match(auth, /prisma\.user\.findUnique/);
   assert.match(auth, /user\.role\s*!==\s*["']USER["']/);
-  assert.match(auth, /expiresIn:\"14d\"/);
+  assert.match(auth, /expiresIn:\s*["']14d["']/);
 });
 
 test("rate limiting fails closed and stores keyed digests rather than raw identifiers", async () => {
