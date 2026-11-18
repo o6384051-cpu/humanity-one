@@ -56,7 +56,7 @@ test("admin sessions re-check the current database role and privileged user chan
 
 test("beneficiary sessions are revalidated against the database and restricted to USER", async () => {
   const auth = await source("src/lib/beneficiary-auth.ts");
-  assert.match(auth, /jwt\.verify\(token,secret\)/);
+  assert.match(auth, /jwt\.verify\(token,\s*secret\)/);
   assert.match(auth, /prisma\.user\.findUnique/);
   assert.match(auth, /user\.role!==\"USER\"/);
   assert.match(auth, /expiresIn:\"14d\"/);
