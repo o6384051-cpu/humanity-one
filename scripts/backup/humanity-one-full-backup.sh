@@ -131,6 +131,15 @@ rm -f "$STAGE/database/pg_service.conf" "$STAGE/database/pgpass"
 pg_restore --list "$STAGE/database/humanity-one-production.dump" > "$STAGE/metadata/database-contents.txt"
 
 echo "[3/7] Vercel export"
+cat > "$STAGE/vercel/ENV-EXPORT-LIMITATIONS.txt" <<'LIMITS'
+IMPORTANT: Vercel does not return the values of Secret-type environment variables.
+The .env files produced by "vercel env pull" are therefore NOT a complete backup
+of all Vercel secrets. The env list files record names/types where available.
+Maintain a separate secure secret inventory and rotate/re-enter unrecoverable
+secrets during disaster recovery. Never put secret values in this archive manually
+unless you have an approved encrypted secret escrow process.
+LIMITS
+echo "WARNING: Vercel Secret-type values are not exportable through env pull; see the archive limitation notice."
 vercel whoami > "$STAGE/metadata/vercel-account.txt" 2>&1
 (
   cd "$STAGE/source/humanity-one"
