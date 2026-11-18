@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { getBeneficiarySession } from "@/lib/beneficiary-auth";
+import { rateLimit, rateLimitResponse } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -63,9 +64,13 @@ const updateSchema = z.object({
   theme: z.enum(["dark", "light", "system"]).optional(),
 }).strict().refine((value) => value.data !== undefined || value.language !== undefined || value.theme !== undefined);
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   const user = await getBeneficiarySession();
   if (!user) return NextResponse.json({ error: "سجّل الدخول بحساب المستفيد للوصول إلى المزامنة." }, { status: 401 });
+
+  const limit = await rateLimit(req, "beneficiary-workspace-read", 60, 5 * 60 * 1000, user.id);
+  if (!limit.allowed) return rateLimitResponse(limit.retryAfter, limit.unavailable);
+
   try {
     const workspace = await prisma.userWorkspace.findUnique({
       where: { userId: user.id },
@@ -82,6 +87,9 @@ export async function GET() {
 export async function PUT(req: NextRequest) {
   const user = await getBeneficiarySession();
   if (!user) return NextResponse.json({ error: "سجّل الدخول بحساب المستفيد أولًا." }, { status: 401 });
+
+  const limit = await rateLimit(req, "beneficiary-workspace-write", 20, 10 * 60 * 1000, user.id);
+  if (!limit.allowed) return rateLimitResponse(limit.retryAfter, limit.unavailable);
 
   const requestBody = await readBoundedJson(req);
   if (requestBody.tooLarge) {
