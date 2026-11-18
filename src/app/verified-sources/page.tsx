@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, ExternalLink, ShieldCheck, BriefcaseBusiness, GraduationCap, ChartNoAxesCombined, Lightbulb, Mail } from "lucide-react";
+import { ArrowRight, ExternalLink, ShieldCheck, BriefcaseBusiness, GraduationCap, BarChart3, Lightbulb, Mail } from "lucide-react";
 import { useLanguage } from "../../components/LanguageProvider";
 
 type Source = {
@@ -58,7 +58,7 @@ const sources: Source[] = [
     limitationEn: "This is an occupational information and analysis resource, not a vacancy listing or a promise of a salary or employment.",
     url: "https://occupational-outlook.mped.gov.eg/",
     category: "career",
-    icon: ChartNoAxesCombined,
+    icon: BarChart3,
   },
   {
     name: "مهارة-تك",
