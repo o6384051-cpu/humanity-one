@@ -13,7 +13,7 @@ ask_secret() {
 }
 for tool in pg_restore psql python3 mktemp rm chmod; do need "$tool"; done
 
-DUMP="\${1:-}"
+DUMP="${1:-}"
 if [[ -z "$DUMP" || ! -f "$DUMP" ]]; then
   echo "Usage: $0 /path/to/humanity-one-production.dump" >&2
   exit 2
@@ -28,7 +28,7 @@ DB_URL=""
 ask_secret "Disposable test DATABASE_URL (hidden): " DB_URL
 [[ -n "$DB_URL" ]] || { echo "DATABASE_URL is required." >&2; unset DB_URL; exit 1; }
 
-WORK="$(mktemp -d "\${TMPDIR:-/tmp}/humanity-one-restore-test.XXXXXX")"
+WORK="$(mktemp -d "${TMPDIR:-/tmp}/humanity-one-restore-test.XXXXXX")"
 chmod 700 "$WORK"
 cleanup() {
   local status=$?
@@ -70,9 +70,9 @@ PY
 unset DB_URL
 
 export PGSERVICEFILE="$WORK/pg_service.conf" PGPASSFILE="$WORK/pgpass" PGCONNECT_TIMEOUT=20
-EXISTING="$(psql "service=humanity_one_restore_test" -X -v ON_ERROR_STOP=1 -Atc "SELECT count(*) FROM pg_catalog.pg_tables WHERE schemaname NOT IN ('pg_catalog','information_schema')")"
+EXISTING="$(psql "service=humanity_one_restore_test" -X -v ON_ERROR_STOP=1 -Atc "SELECT (SELECT count(*) FROM pg_catalog.pg_namespace WHERE nspname NOT IN ('pg_catalog','information_schema','public') AND nspname NOT LIKE 'pg_%') + (SELECT count(*) FROM pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname NOT IN ('pg_catalog','information_schema') AND n.nspname NOT LIKE 'pg_toast%' AND n.nspname NOT LIKE 'pg_temp_%')")"
 if [[ "$EXISTING" != "0" ]]; then
-  echo "Refusing restore: target database is not empty (user tables: $EXISTING)." >&2
+  echo "Refusing restore: target database is not empty (user objects: $EXISTING)." >&2
   exit 1
 fi
 
