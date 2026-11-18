@@ -7,7 +7,8 @@ import { beneficiaryBucket, beneficiaryS3 } from "@/lib/beneficiary-file-storage
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-export async function GET(_req: Request, context: { params: { id: string } }) {
+export async function GET(_req: Request, context: { params: Promise<{ id: string }> }) {
+  const { id } = await context.params;
   const admin = await getAdminSession();
   if (!admin || !["SUPER_ADMIN", "ADMIN", "MODERATOR"].includes(admin.role)) {
     return NextResponse.json({ error: "غير مصرح." }, { status: 403 });
@@ -15,7 +16,7 @@ export async function GET(_req: Request, context: { params: { id: string } }) {
 
   try {
     const file = await prisma.beneficiaryFile.findUnique({
-      where: { id: context.params.id },
+      where: { id: id },
       select: { objectKey: true, originalName: true, mimeType: true, size: true },
     });
     if (!file) return NextResponse.json({ error: "المرفق غير موجود." }, { status: 404 });

@@ -31,7 +31,8 @@ test("beneficiary request reads and file access are owner-scoped", async () => {
   const download = await source("src/app/api/beneficiary/files/[id]/route.ts");
   assert.match(requests, /where:\s*\{\s*userId:\s*user\.id\s*\}/);
   assert.match(upload, /where:\s*\{\s*id:\s*requestId,\s*userId:\s*user\.id\s*\}/);
-  assert.match(download, /where:\s*\{\s*id:\s*context\.params\.id,\s*userId:\s*user\.id\s*\}/);
+  assert.match(download, /const \{ id \} = await context\.params/);
+  assert.match(download, /where:\s*\{\s*id,\s*userId:\s*user\.id\s*\}/);
   assert.match(download, /Cache-Control["']:\s*["']private, no-store/);
 });
 
@@ -55,10 +56,10 @@ test("admin sessions re-check the current database role and privileged user chan
 
 test("beneficiary sessions are revalidated against the database and restricted to USER", async () => {
   const auth = await source("src/lib/beneficiary-auth.ts");
-  assert.match(auth, /jwt\.verify\(token,secret\)/);
+  assert.match(auth, /jwt\.verify\(token,\s*secret\)/);
   assert.match(auth, /prisma\.user\.findUnique/);
-  assert.match(auth, /user\.role!==\"USER\"/);
-  assert.match(auth, /expiresIn:\"14d\"/);
+  assert.match(auth, /user\.role\s*!==\s*["']USER["']/);
+  assert.match(auth, /expiresIn:\s*["']14d["']/);
 });
 
 test("rate limiting fails closed and stores keyed digests rather than raw identifiers", async () => {

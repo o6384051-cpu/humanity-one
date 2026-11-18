@@ -4,7 +4,7 @@ on:
   pull_request:
     branches: [main]
   push:
-    branches: [main, feat/opportunity-center-hardening, fix/local-data-recovery]
+    branches: [main, feat/opportunity-center-hardening, fix/local-data-recovery, feat/account-cloud-sync-preferences]
 
 permissions:
   contents: read
@@ -23,7 +23,7 @@ jobs:
       - name: Install dependencies
         run: npm install --no-audit --no-fund
       - name: Run security regression guards
-        run: node --test tests/security-regressions.test.mjs
+        run: node --test tests/security-regressions.test.mjs tests/workspace-sync-regressions.test.mjs
       - name: Generate Prisma client
         run: npx prisma generate
       - name: Build application
