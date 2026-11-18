@@ -28,3 +28,13 @@ Keep at least two encrypted copies in separate locations. Store the passphrase s
 ## Vercel secret limitation
 
 Vercel's `vercel env pull` does not return values for Secret-type environment variables. The pulled `.env` files are therefore not a complete backup of Vercel credentials. Keep a separate approved secret escrow/inventory, or plan to rotate and re-enter secrets during recovery. Never claim that the Vercel environment export is complete solely because `env pull` succeeded. See the official [Vercel environment-variable CLI documentation](https://vercel.com/docs/cli/env).
+
+## Disposable restore test
+
+After creating and decrypting a backup on the operator's machine, run:
+
+```bash
+bash scripts/backup/verify-restore-to-disposable-db.sh /path/to/humanity-one-production.dump
+```
+
+Create a separate empty PostgreSQL database whose database name contains `test`, `restore`, `sandbox`, `recovery`, or `staging`. The script requires an explicit confirmation, refuses a non-empty target, restores without dropping existing objects, and leaves the disposable database available for application smoke tests. It does not prove the application is fully recovered until those smoke tests and storage reconciliation also pass.
