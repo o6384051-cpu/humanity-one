@@ -58,7 +58,7 @@ test("beneficiary sessions are revalidated against the database and restricted t
   const auth = await source("src/lib/beneficiary-auth.ts");
   assert.match(auth, /jwt\.verify\(token,\s*secret\)/);
   assert.match(auth, /prisma\.user\.findUnique/);
-  assert.match(auth, /user\.role!==\"USER\"/);
+  assert.match(auth, /user\.role\s*!==\s*["']USER["']/);
   assert.match(auth, /expiresIn:\"14d\"/);
 });
 
