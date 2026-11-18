@@ -11,7 +11,7 @@ The backup helper must state clearly that one run covers one Git repository, one
 - Keep database connection strings and encryption passphrases out of terminal output, logs, Git, and chat.
 - Save `pg_dump` output to a private log; print that log only when the command fails.
 - Require both `pg_dump` and `pg_restore`; run `pg_restore --list` against the resulting dump.
-- Require an authenticated Vercel CLI and verify that the checkout is linked to the intended project. Production environment export is mandatory; optional environment failures must be recorded rather than silently ignored.
+- Require an authenticated Vercel CLI. The helper explicitly links the fresh checkout to `humanity-one-wc35` in scope `o6384051-cpuosama`, verifies the expected project ID, and only then exports environment variables. Production environment export is mandatory; optional environment failures must be recorded rather than silently ignored.
 - Check for AWS CLI only after the operator chooses S3 export. Record the bucket and endpoint, and retain a remote object inventory for reconciliation.
 - Remove plaintext archives, temporary decrypted archives, and incomplete encrypted outputs on every failure path.
 - Verify decryption, test the tar archive, extract to a private temporary directory, and run `sha256sum -c checksums.txt` before reporting success.
