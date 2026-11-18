@@ -19,17 +19,12 @@ jobs:
       - name: Validate Bash syntax
         shell: bash
         run: |
-          shopt -s globstar nullglob
-          files=(scripts/backup/**/*.sh)
-          if (( \${#files[@]} == 0 )); then
-            echo "No backup shell scripts found."
-            exit 0
-          fi
-          for file in "\${files[@]}"; do
-            bash -n "$file"
+          for file in scripts/backup/*.sh; do
+            if [[ -f "$file" ]]; then bash -n "$file"; fi
           done
+      - name: Install ShellCheck
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y shellcheck
       - name: Run ShellCheck
-        uses: ludeeus/action-shellcheck@master
-        with:
-          scandir: scripts/backup
-          severity: warning
+        run: shellcheck --severity=warning scripts/backup/*.sh
