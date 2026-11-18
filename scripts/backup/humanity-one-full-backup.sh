@@ -143,7 +143,10 @@ echo "WARNING: Vercel Secret-type values are not exportable through env pull; se
 vercel whoami > "$STAGE/metadata/vercel-account.txt" 2>&1
 (
   cd "$STAGE/source/humanity-one"
-  vercel project inspect > "$STAGE/metadata/vercel-project-inspect.txt" 2>&1 || { echo "ERROR: run vercel link and select the intended HUMANITY ONE project." >&2; exit 1; }
+  # The fresh clone has no local .vercel link; explicitly link the known production project.
+  vercel link --yes --project humanity-one-wc35 --scope o6384051-cpuosama > "$STAGE/metadata/vercel-link.txt" 2>&1 || { echo "ERROR: could not link the intended HUMANITY ONE Vercel project." >&2; exit 1; }
+  vercel project inspect > "$STAGE/metadata/vercel-project-inspect.txt" 2>&1 || { echo "ERROR: could not inspect the linked Vercel project." >&2; exit 1; }
+  grep -Fq 'prj_dtSn09jDtrhDN9CQcSqtIXg1LA8q' "$STAGE/metadata/vercel-project-inspect.txt" || { echo "ERROR: linked Vercel project ID does not match HUMANITY ONE; refusing environment export." >&2; exit 1; }
   vercel env ls production > "$STAGE/metadata/vercel-env-list-production.txt" 2>&1 || echo "Could not list production variables." > "$STAGE/metadata/vercel-env-list-production.warning"
   vercel env ls preview > "$STAGE/metadata/vercel-env-list-preview.txt" 2>&1 || echo "Could not list preview variables." > "$STAGE/metadata/vercel-env-list-preview.warning"
   vercel env ls development > "$STAGE/metadata/vercel-env-list-development.txt" 2>&1 || echo "Could not list development variables." > "$STAGE/metadata/vercel-env-list-development.warning"
