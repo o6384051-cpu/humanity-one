@@ -74,3 +74,27 @@ test("reports when rollback itself cannot be fully confirmed", () => {
     (error) => error instanceof WorkspaceRestoreError && error.rollbackComplete === false,
   );
 });
+
+test("aborts safely if the original local snapshot cannot be read", () => {
+  let writes = 0;
+  const storage = {
+    getItem() { throw new Error("storage unavailable"); },
+    setItem() { writes += 1; },
+    removeItem() { writes += 1; },
+  };
+  assert.throws(
+    () => restoreWorkspaceData(storage, keys, { [keys[0]]: "cloud value" }),
+    (error) => error instanceof WorkspaceRestoreError && error.rollbackComplete === true,
+  );
+  assert.equal(writes, 0);
+});
+
+test("rejects oversized cloud values before changing local data", () => {
+  const storage = memoryStorage({ [keys[0]]: "keep initiative", [keys[1]]: "keep tasks" });
+  const before = storage.snapshot();
+  assert.throws(
+    () => restoreWorkspaceData(storage, keys, { [keys[0]]: "x".repeat(500_001) }),
+    WorkspaceRestoreError,
+  );
+  assert.deepEqual(storage.snapshot(), before);
+});
