@@ -38,3 +38,7 @@ bash scripts/backup/verify-restore-to-disposable-db.sh /path/to/humanity-one-pro
 ```
 
 Create a separate empty PostgreSQL database whose database name contains `test`, `restore`, `sandbox`, `recovery`, or `staging`. The script requires an explicit confirmation, refuses a non-empty target, restores without dropping existing objects, and leaves the disposable database available for application smoke tests. It does not prove the application is fully recovered until those smoke tests and storage reconciliation also pass.
+
+## S3 export limitation
+
+The optional `aws s3 sync` copies current object contents only. It does not preserve bucket policies, IAM permissions, lifecycle/CORS/encryption configuration, object versions, or delete markers. Record and restore those provider settings separately, and reconcile the remote object inventory after export.
