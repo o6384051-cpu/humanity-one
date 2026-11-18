@@ -146,3 +146,10 @@ test("task and initiative drafts are preserved when local storage is unreadable"
     assert.ok(code.includes("window.setTimeout(() => URL.revokeObjectURL(url), 1000)"), name);
   }
 });
+
+test("Gemini endpoint never falls back to an OpenAI key", async () => {
+  const route = await source("src/app/api/ai/chat/route.ts");
+  assert.match(route, /const key = isGeminiOpenAIEndpoint\\s*\\?\\s*process\\.env\\.AI_API_KEY/);
+  assert.match(route, /process\\.env\\.AI_API_KEY\\s*\\|\\|\\s*process\\.env\\.OPENAI_API_KEY/);
+  assert.match(route, /خدمة Gemini غير مهيأة/);
+});
