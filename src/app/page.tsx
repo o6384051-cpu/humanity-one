@@ -12,7 +12,6 @@ export default function Dashboard() {
   const tr = (ar: string, en: string) => language === 'ar' ? ar : en;
   const [searchQuery, setSearchQuery] = useState('');
   const [assistantQuery, setAssistantQuery] = useState('');
-  const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [lightMode, setLightMode] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -95,10 +94,7 @@ export default function Dashboard() {
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </form>
-            <div className="ho-top-control">
-              <button type="button" className="ho-icon-btn" aria-label={tr("الإشعارات","Notifications")} aria-expanded={notificationsOpen} onClick={() => setNotificationsOpen((open) => !open)}><Bell size={18} />{!notificationsOpen && <i />}</button>
-              {notificationsOpen && <div className="ho-top-popover"><b>{tr("الإشعارات","Notifications")}</b><p>{tr("لا توجد إشعارات جديدة حاليًا.","There are no new notifications.")}</p><small>{tr("ستظهر هنا التنبيهات الفعلية عند تفعيل نظام الإشعارات.","Actual alerts will appear here when notifications are enabled.")}</small></div>}
-            </div>
+            <Link href="/beneficiary" className="ho-icon-btn" aria-label={tr("فتح الإشعارات وطلبات المساعدة","Open notifications and assistance requests")} title={tr("الإشعارات وطلبات المساعدة","Notifications and assistance requests")} style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", textDecoration: "none" }}><Bell size={18} /></Link>
             <Link href="/mail" className="ho-icon-btn" aria-label={tr("مركز الرسائل","Message center")} title={tr("مركز الرسائل","Message center")} style={{display:"inline-flex",alignItems:"center",justifyContent:"center",textDecoration:"none"}}><Mail size={18} /></Link>
             <button type="button" className="ho-icon-btn" aria-label={lightMode ? tr("تفعيل الوضع الداكن","Enable dark mode") : tr("تفعيل الوضع الفاتح","Enable light mode")} title={lightMode ? tr("الوضع الداكن","Dark mode") : tr("الوضع الفاتح","Light mode")} onClick={() => setLightMode((mode) => !mode)}>{lightMode ? <Sun size={18} /> : <Sun size={18} />}</button>
             <div className="ho-user">{tx("أ")}</div>
