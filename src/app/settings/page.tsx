@@ -1,7 +1,8 @@
 "use client";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { useLanguage, translateText } from "../../components/LanguageProvider";
+import { useLanguage } from "../../components/LanguageProvider";
+import { restoreWorkspaceData } from "@/lib/workspace-restore.mjs";
 
 const KEYS = [
   "humanity-one-initiatives-v1",
@@ -58,19 +59,29 @@ export default function SettingsPage() {
     return Object.fromEntries(KEYS.map((key) => [key, localStorage.getItem(key)])) as Record<(typeof KEYS)[number], string | null>;
   }
 
-  function downloadBackup(data: Record<string, string | null>, filename: string) {
-    const blob = new Blob([JSON.stringify({ exportedAt: new Date().toISOString(), data }, null, 2)], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = filename;
-    a.click();
-    window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+  function downloadBackup(data: Record<string, string | null>, filename: string): boolean {
+    try {
+      const blob = new Blob([JSON.stringify({ exportedAt: new Date().toISOString(), data }, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      a.style.display = "none";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.setTimeout(() => URL.revokeObjectURL(url), 30_000);
+      return true;
+    } catch {
+      return false;
+    }
   }
 
   function exportData() {
-    downloadBackup(currentData(), "humanity-one-local-backup.json");
-    setMessage(tr("تم تجهيز نسخة احتياطية من بيانات هذا الجهاز.", "A backup of this device is ready."));
+    const started = downloadBackup(currentData(), "humanity-one-local-backup.json");
+    setMessage(started
+      ? tr("بدأ تنزيل النسخة الاحتياطية. تحقق من مجلد التنزيلات للتأكد من حفظ الملف.", "Backup download started. Check your Downloads folder to confirm the file was saved.")
+      : tr("تعذر بدء تنزيل النسخة الاحتياطية.", "Could not start the backup download."));
   }
 
   async function uploadToCloud() {
@@ -102,20 +113,36 @@ export default function SettingsPage() {
       setMessage(tr("لا توجد نسخة سحابية محفوظة لهذا الحساب بعد.", "There is no cloud backup for this account yet."));
       return;
     }
-    if (!window.confirm(tr("سيتم تنزيل نسخة احتياطية من بيانات هذا الجهاز أولًا، ثم استبدال البيانات المحلية بالنسخة السحابية. هل تريد المتابعة؟", "A backup of this device will be downloaded first, then local data will be replaced by the cloud copy. Continue?"))) return;
+    if (workspace.language !== "ar" && workspace.language !== "en") {
+      setMessage(tr("لغة النسخة السحابية غير صالحة؛ لم تتغير بيانات هذا الجهاز.", "The cloud backup language is invalid. This device was not changed."));
+      return;
+    }
+    if (!window.confirm(tr("ستبدأ الآن عملية تنزيل نسخة احتياطية من بيانات هذا الجهاز. لن يتم استبدال أي بيانات قبل تأكيدك أن الملف ظهر في مجلد التنزيلات. هل تريد المتابعة؟", "A backup of this device will be downloaded now. No local data will be replaced until you confirm that the file appears in Downloads. Continue?"))) return;
+
+    const backupStarted = downloadBackup(currentData(), "humanity-one-before-cloud-restore.json");
+    if (!backupStarted) {
+      setMessage(tr("تعذر بدء تنزيل النسخة المحلية؛ لم تتغير بيانات هذا الجهاز.", "Could not start the local backup download. This device was not changed."));
+      return;
+    }
+    if (!window.confirm(tr("تحقق من مجلد التنزيلات: هل ظهر ملف humanity-one-before-cloud-restore.json ويمكنك فتحه؟ إذا لم تجده، اختر إلغاء. لن نتابع دون تأكيدك.", "Check Downloads: does humanity-one-before-cloud-restore.json appear and can you open it? Choose Cancel if you cannot find it. We will not continue without your confirmation."))) {
+      setMessage(tr("أُلغيت الاستعادة، ولم تتغير بيانات هذا الجهاز.", "Restore cancelled. This device was not changed."));
+      return;
+    }
+
     setBusy(true);
+    setMessage("");
     try {
-      downloadBackup(currentData(), "humanity-one-before-cloud-restore.json");
-      for (const key of KEYS) {
-        const value = workspace.data[key];
-        if (typeof value === "string") localStorage.setItem(key, value);
-        else localStorage.removeItem(key);
-      }
-      if (workspace.language === "ar" || workspace.language === "en") setLanguage(workspace.language);
+      restoreWorkspaceData(localStorage, KEYS, workspace.data);
+      setLanguage(workspace.language);
       refresh();
-      setMessage(tr("تمت استعادة النسخة السحابية بعد تجهيز نسخة احتياطية محلية.", "Cloud data restored after creating a local backup."));
-    } catch {
-      setMessage(tr("تعذرت الاستعادة. احتفظ بملف النسخة الاحتياطية.", "Restore failed. Keep the downloaded backup."));
+      setMessage(tr("اكتملت الاستعادة. تم التحقق من البيانات قبل التغيير، مع آلية تراجع عند فشل الحفظ.", "Restore completed. Data was validated before changes, with rollback if a write failed."));
+    } catch (error) {
+      const rollbackComplete = error instanceof Error && "rollbackComplete" in error
+        ? Boolean((error as Error & { rollbackComplete?: boolean }).rollbackComplete)
+        : false;
+      setMessage(rollbackComplete
+        ? tr("فشلت الاستعادة، لكن تمت إعادة البيانات المحلية السابقة. لم تُستبدل النسخة المحلية.", "Restore failed, but the previous local data was restored. The local copy was not replaced.")
+        : tr("فشلت الاستعادة، ولم نتمكن من تأكيد إعادة كل البيانات السابقة. لا تحذف ملف النسخة الاحتياطية؛ احتفظ به واطلب المساعدة قبل أي محاولة أخرى.", "Restore failed, and we could not confirm that all previous data was rolled back. Keep the backup file and seek help before trying again."));
     } finally {
       setBusy(false);
     }
