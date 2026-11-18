@@ -3,12 +3,9 @@
 set -Eeuo pipefail
 umask 077
 
-REPO_URL="$HUMANITY_ONE_REPO_URL"
-if [[ -z "$REPO_URL" ]]; then REPO_URL="https://github.com/o6384051-cpu/humanity-one.git"; fi
-OUT_DIR="$BACKUP_OUTPUT_DIR"
-if [[ -z "$OUT_DIR" ]]; then OUT_DIR="$PWD"; fi
-WORK_ROOT="$TMPDIR"
-if [[ -z "$WORK_ROOT" ]]; then WORK_ROOT="/tmp"; fi
+REPO_URL="$(printenv HUMANITY_ONE_REPO_URL || printf %s https://github.com/o6384051-cpu/humanity-one.git)"
+OUT_DIR="$(printenv BACKUP_OUTPUT_DIR || printf %s "$PWD")"
+WORK_ROOT="$(printenv TMPDIR || printf %s /tmp)"
 STAMP="$(date -u +%Y%m%dT%H%M%SZ)"
 STAGE="" ARCHIVE="" ENCRYPTED="" VERIFY="" VERIFY_DIR="" CHECKSUM=""
 PASS1="" PASS2="" DB_URL="" SUCCESS=0
@@ -72,7 +69,7 @@ git clone "$REPO_URL" "$STAGE/source/humanity-one"
   git tag -l > "$STAGE/metadata/git-tags.txt"
   git log --all --oneline --decorate -n 1000 > "$STAGE/metadata/git-history.txt"
 )
-if git -C "$STAGE/source/humanity-one" lfs version >/dev/null 2>&1; then git -C "$STAGE/source/humanity-one" lfs fetch --all && git -C "$STAGE/source/humanity-one" lfs pull; fi
+if git -C "$STAGE/source/humanity-one" lfs version >/dev/null 2>&1; then git -C "$STAGE/source/humanity-one" lfs fetch --all && git -C "$STAGE/source/humanity-one" lfs pull; else echo "Git LFS is unavailable; verify whether the repository uses LFS." > "$STAGE/metadata/git-lfs-warning.txt"; fi
 
 echo "[2/7] PostgreSQL export"
 ask_secret "Production DATABASE_URL (hidden): " DB_URL
@@ -91,9 +88,9 @@ vercel whoami > "$STAGE/metadata/vercel-account.txt" 2>&1
 (
   cd "$STAGE/source/humanity-one"
   vercel project inspect > "$STAGE/metadata/vercel-project-inspect.txt" 2>&1 || { echo "ERROR: run vercel link and select the intended HUMANITY ONE project." >&2; exit 1; }
-  vercel env ls production > "$STAGE/metadata/vercel-env-list-production.txt" 2>&1 || true
-  vercel env ls preview > "$STAGE/metadata/vercel-env-list-preview.txt" 2>&1 || true
-  vercel env ls development > "$STAGE/metadata/vercel-env-list-development.txt" 2>&1 || true
+  vercel env ls production > "$STAGE/metadata/vercel-env-list-production.txt" 2>&1 || echo "Could not list production variables." > "$STAGE/metadata/vercel-env-list-production.warning"
+  vercel env ls preview > "$STAGE/metadata/vercel-env-list-preview.txt" 2>&1 || echo "Could not list preview variables." > "$STAGE/metadata/vercel-env-list-preview.warning"
+  vercel env ls development > "$STAGE/metadata/vercel-env-list-development.txt" 2>&1 || echo "Could not list development variables." > "$STAGE/metadata/vercel-env-list-development.warning"
   vercel env pull "$STAGE/vercel/production.env" --environment=production --yes
   if ! vercel env pull "$STAGE/vercel/preview.env" --environment=preview --yes; then echo "Preview export skipped." > "$STAGE/metadata/vercel-preview-warning.txt"; rm -f "$STAGE/vercel/preview.env"; fi
   if ! vercel env pull "$STAGE/vercel/development.env" --environment=development --yes; then echo "Development export skipped." > "$STAGE/metadata/vercel-development-warning.txt"; rm -f "$STAGE/vercel/development.env"; fi
@@ -111,7 +108,7 @@ if [[ -n "$S3_BUCKET" ]]; then
   [[ -n "$S3_REGION" ]] && AWS_ARGS+=(--region "$S3_REGION")
   [[ -n "$S3_PROFILE" ]] && AWS_ARGS+=(--profile "$S3_PROFILE")
   mkdir -p "$STAGE/storage/$S3_BUCKET"
-  aws "\${AWS_ARGS[@]}" s3 sync "s3://$S3_BUCKET" "$STAGE/storage/$S3_BUCKET" --only-show-errors
+  aws "${AWS_ARGS[@]}" s3 sync "s3://$S3_BUCKET" "$STAGE/storage/$S3_BUCKET" --only-show-errors
   aws "\${AWS_ARGS[@]}" s3 ls "s3://$S3_BUCKET" --recursive > "$STAGE/metadata/storage-remote-inventory.txt"
 fi
 
