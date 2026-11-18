@@ -11,14 +11,20 @@ HUMANITY ONE exists to help people improve their lives through trustworthy acces
 
 The mission must be delivered without discrimination based on race, colour, religion, nationality, language, sex, disability, or social status. Essential services should remain free wherever reasonably possible. The project must never publish fabricated opportunities, beneficiaries, partners, outcomes, or financial figures.
 
-The founder's role is stewardship, not permanent personal control. No person—including the founder—may privately appropriate charitable assets, beneficiary data, or the project's identity.
+The founder's role is to establish and safeguard the mission, subject to applicable law and the organization's adopted governing documents. No person—including the founder—may privately appropriate charitable assets, beneficiary data, or the project's identity.
+
+### Founder authority during life
+
+This draft does **not** remove, reduce, transfer, or suspend the founder's current authority. While the founder is alive and legally capable, the founder's powers and responsibilities remain those established by the project's valid legal documents and applicable law. Any voluntary delegation or limitation must be explicit, documented, and legally valid; it must not be inferred from this draft.
+
+A future succession procedure is activated only after the legally required verification of the relevant event—such as death or legally established incapacity—and only to the extent permitted by the adopted governing documents and applicable law. Temporary absence alone must not be treated as death or as an automatic transfer of permanent authority.
 
 ## 2. Continuity if the founder is unavailable
 
 The project must not depend on one person's continued availability, memory, devices, or accounts.
 
 Before the project is treated as institutionally resilient, its governing body should establish:
-- A documented succession procedure for temporary absence, incapacity, resignation, or death.
+- A documented succession procedure for temporary absence, incapacity, resignation, or death, with distinct rules for each event.
 - At least three independent, vetted stewards where lawful and practical; no single steward should be able to unilaterally control funds, production credentials, and beneficiary data.
 - A written method to appoint, replace, suspend, and remove stewards, with recorded reasons and conflict-of-interest checks.
 - A continuity contact channel and a secure, regularly tested handover package.
@@ -123,6 +129,8 @@ Changes to the mission, asset-lock principles, privacy commitments, or non-discr
 ## Arabic summary
 
 هذه الوثيقة مسودة مبادئ وليست عقدًا قانونيًا نافذًا. هدفها أن تستمر HUMANITY ONE بعد غياب المؤسس، وأن تظل أموالها وأصولها وبيانات المستفيدين مخصصة للرسالة الإنسانية، لا لسيطرة شخص واحد أو لمصلحته الخاصة.
+
+**لا تنتقص هذه المسودة من صلاحيات المؤسس الحالية ولا تنقلها إلى أي شخص.** تظل صلاحياته أثناء حياته وأهليته القانونية كما تحددها المستندات القانونية السارية والقانون. ولا تبدأ إجراءات الخلافة إلا بعد التحقق القانوني من سبب تفعيلها، ووفق وثائق المؤسسة والقانون.
 
 لا تعيّن المسودة وريثًا أو قائدًا بعينه. بل تقترح إدارة مستقلة، وتوزيعًا للصلاحيات، وموافقتين على القرارات المالية الحساسة، وشفافية موثقة، وحماية لخصوصية الناس، ونسخًا احتياطية مجرّبة، ومراجعة قانونية قبل اعتماد أي ترتيب رسمي.
 
