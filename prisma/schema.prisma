@@ -14,6 +14,8 @@ model User {
   passwordHash        String
   passwordResetTokenHash String?
   passwordResetExpiresAt DateTime?
+  emailVerifiedAt       DateTime?
+  emailVerificationCode EmailVerificationCode?
   avatar              String?
   role                String               @default("USER")
   createdAt           DateTime             @default(now())
@@ -309,4 +311,17 @@ model OrganizationMessage {
 
   @@index([conversationId, createdAt])
   @@index([senderOrganizationId, createdAt])
+}
+
+
+model EmailVerificationCode {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  codeHash  String
+  expiresAt DateTime
+  attempts  Int      @default(0)
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([expiresAt])
 }
