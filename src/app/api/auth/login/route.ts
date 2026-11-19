@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
-import { ADMIN_COOKIE, createAdminToken } from "@/lib/admin-auth";
 import { rateLimit, rateLimitResponse } from "@/lib/rate-limit";
 import { issueEmailVerificationCode } from "@/lib/email-verification";
 
