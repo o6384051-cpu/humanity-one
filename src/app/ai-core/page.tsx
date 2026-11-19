@@ -9,7 +9,8 @@ import {
 import "./ai-core.css";
 import { useLanguage, translateText } from "../../components/LanguageProvider";
 
-type Msg = { id: string; role: "user" | "assistant"; content: string };
+type ImageResult = { title: string; imageUrl: string; sourceUrl: string; license: string; artist: string };
+type Msg = { id: string; role: "user" | "assistant"; content: string; images?: ImageResult[] };
 type ChatSession = { id: string; title: string; messages: Msg[]; updatedAt: number };
 
 const STORAGE_KEY = "humanity-one-chat-v2";
@@ -128,7 +129,20 @@ export default function AICorePage() {
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || "تعذر الاتصال بالمساعد");
-      const assistantMessage: Msg = { id: `m-${Date.now()}-reply`, role: "assistant", content: data.reply };
+      let foundImages: ImageResult[] = [];
+      const imageIntent = /صورة|صور|صوره|غلاف|شكل الكتاب|image|photo|picture|cover/i.test(content);
+      if (imageIntent) {
+        try {
+          const imageResponse = await fetch(`/api/images/search?q=${encodeURIComponent(content)}`);
+          if (imageResponse.ok) {
+            const imageData = await imageResponse.json();
+            if (Array.isArray(imageData.images)) foundImages = imageData.images.slice(0, 8);
+          }
+        } catch {
+          // Image search is optional; it must not interrupt the text assistant.
+        }
+      }
+      const assistantMessage: Msg = { id: `m-${Date.now()}-reply`, role: "assistant", content: data.reply, ...(foundImages.length ? { images: foundImages } : {}) };
       setSessions((current) => current.map((session) => session.id === chatId
         ? { ...session, messages: [...session.messages, assistantMessage], updatedAt: Date.now() }
         : session));
@@ -259,6 +273,21 @@ export default function AICorePage() {
                 <div className="hc-message-body">
                   <div className="hc-message-name">{message.role === "user" ? tr("أنت") : "HUMANITY ONE"}</div>
                   <p>{message.content}</p>
+                  {message.role === "assistant" && message.images && message.images.length > 0 && (
+                    <div className="hc-image-results" aria-label={tr("نتائج البحث عن الصور")}>
+                      <div className="hc-image-results-title">{tr("نتائج من مكتبات الصور والكتب")}</div>
+                      <div className="hc-image-grid">
+                        {message.images.map((image) => (
+                          <a className="hc-image-card" key={image.sourceUrl} href={image.sourceUrl} target="_blank" rel="noopener noreferrer">
+                            <img src={image.imageUrl} alt={image.title} loading="lazy" referrerPolicy="no-referrer" />
+                            <span className="hc-image-caption">{image.title}</span>
+                            {(image.license || image.artist) && <small>{[image.license, image.artist].filter(Boolean).join(" · ")}</small>}
+                          </a>
+                        ))}
+                      </div>
+                      <small className="hc-image-attribution">{tr("افتح صفحة المصدر لمعرفة معلومات الصورة وحقوق استخدامها قبل إعادة نشرها.")}</small>
+                    </div>
+                  )}
                   {message.role === "assistant" && <button className="hc-copy" onClick={() => copyMessage(message)} aria-label={tr("نسخ الرد")}>{copiedId === message.id ? <Check size={14} /> : <Copy size={14} />}{copiedId === message.id ? tr("تم النسخ") : tr("نسخ")}</button>}
                 </div>
               </article>)}
