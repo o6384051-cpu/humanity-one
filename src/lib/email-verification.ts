@@ -36,7 +36,7 @@ export async function issueEmailVerificationCode(userId: string, email: string) 
 
 export async function consumeEmailVerificationCode(userId: string, suppliedCode: string) {
   const record = await prisma.emailVerificationCode.findUnique({ where: { userId } });
-  if (!record || record.expiresAt <= new Date() || record.attempts >= 5 || !/^\\d{6}$/.test(suppliedCode)) return false;
+  if (!record || record.expiresAt <= new Date() || record.attempts >= 5 || !/^\d{6}$/.test(suppliedCode)) return false;
   const actual = Buffer.from(hashCode(userId, suppliedCode));
   const expected = Buffer.from(record.codeHash);
   const valid = actual.length === expected.length && timingSafeEqual(actual, expected);
