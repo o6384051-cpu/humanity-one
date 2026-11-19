@@ -1,0 +1,31 @@
+{
+  "id": "/",
+  "name": "HUMANITY ONE",
+  "short_name": "HUMANITY ONE",
+  "description": "منصة إنسانية لفرص العمل والتعلم والمبادرات والدعم المجتمعي.",
+  "lang": "ar",
+  "dir": "rtl",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": [
+    "standalone",
+    "minimal-ui"
+  ],
+  "orientation": "any",
+  "background_color": "#080d18",
+  "theme_color": "#080d18",
+  "categories": [
+    "education",
+    "social",
+    "productivity"
+  ],
+  "icons": [
+    {
+      "src": "/icons/humanity-one.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
