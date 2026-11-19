@@ -16,6 +16,8 @@ export default function FounderAdminPage() {
   const [form, setForm] = useState({ name: "", email: "", password: "", setupSecret: "" });
   const [newUser, setNewUser] = useState({ name: "", email: "", password: "", role: "MODERATOR" });
   const [message, setMessage] = useState("");
+  const [verificationEmail, setVerificationEmail] = useState("");
+  const [verificationCode, setVerificationCode] = useState("");
   const [busy, setBusy] = useState(false);
 
   async function loadUsers() {
@@ -42,8 +44,20 @@ export default function FounderAdminPage() {
         const response = await fetch("/api/auth/login", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(form) });
         const result = await response.json();
         if (!response.ok) throw new Error(result.error || "فشل تسجيل الدخول");
+        if (result.requiresEmailVerification) { setVerificationEmail(result.email || form.email); setMessage("أرسلنا رمز تأكيد إلى بريدك الإلكتروني."); return; }
         setSession(result.user); await loadUsers(); setMessage("تم تسجيل الدخول.");
       }
+    } catch (error) { setMessage(error instanceof Error ? error.message : "حدث خطأ."); }
+    finally { setBusy(false); }
+  }
+
+  async function verifyEmail(e: React.FormEvent) {
+    e.preventDefault(); setBusy(true); setMessage("");
+    try {
+      const response = await fetch("/api/auth/email/verify", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: verificationEmail, code: verificationCode }) });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || "تعذر تأكيد البريد.");
+      setVerificationEmail(""); setVerificationCode(""); setSession(result.user); await loadUsers(); setMessage("تم تأكيد البريد وتسجيل الدخول.");
     } catch (error) { setMessage(error instanceof Error ? error.message : "حدث خطأ."); }
     finally { setBusy(false); }
   }
@@ -78,7 +92,12 @@ export default function FounderAdminPage() {
       <h1 style={{ marginTop: 22 }}>{tr("إدارة HUMANITY ONE")}</h1>
       <p style={{ color: "#9aabc0" }}>{tr("إدارة حسابات المشرفين والصلاحيات — حساب المؤسس هو صاحب السلطة العليا.")}</p>
       {message && <p role="status" style={{ padding: 12, borderRadius: 10, background: "#14283a", border: "1px solid #315568" }}>{tr(message)}</p>}
-      {!session ? <form onSubmit={submitAuth} style={{ maxWidth: 480, display: "grid", gap: 12, padding: 20, background: "#101a2b", borderRadius: 14 }}>
+      {!session ? verificationEmail ? <form onSubmit={verifyEmail} style={{ maxWidth: 480, display: "grid", gap: 12, padding: 20, background: "#101a2b", borderRadius: 14 }}>
+        <p>{tr("أدخل رمز التأكيد المكوّن من 6 أرقام الذي أرسلناه إلى")} {verificationEmail}</p>
+        <Field label="رمز التأكيد" value={verificationCode} onChange={setVerificationCode} />
+        <button disabled={busy || verificationCode.length !== 6} style={primaryStyle}>{busy ? tr("جارٍ التحقق...") : tr("تأكيد البريد والدخول")}</button>
+        <button type="button" disabled={busy} onClick={async () => { setBusy(true); setMessage(""); try { const r = await fetch("/api/auth/email/resend", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: verificationEmail, password: form.password }) }); const d = await r.json().catch(() => ({ error: "تعذر قراءة رد الخادم." })); if (!r.ok) throw new Error(d.error || "تعذر إعادة إرسال الرمز."); setMessage(d.message || "تم طلب إعادة الإرسال."); } catch (error) { setMessage(error instanceof Error ? error.message : "تعذر إعادة إرسال الرمز."); } finally { setBusy(false); } }} style={tabStyle(false)}>{tr("إعادة إرسال الرمز")}</button>
+      </form> : <form onSubmit={submitAuth} style={{ maxWidth: 480, display: "grid", gap: 12, padding: 20, background: "#101a2b", borderRadius: 14 }}>
         <div style={{ display: "flex", gap: 8 }}>
           <button type="button" onClick={() => setMode("login")} style={tabStyle(mode === "login")}>{tr("تسجيل الدخول")}</button>
           <button type="button" onClick={() => setMode("setup")} style={tabStyle(mode === "setup")}>{tr("تأسيس حساب المؤسس")}</button>

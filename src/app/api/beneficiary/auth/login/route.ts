@@ -2,8 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
-import { BENEFICIARY_COOKIE, createBeneficiaryToken } from "@/lib/beneficiary-auth";
 import { rateLimit, rateLimitResponse } from "@/lib/rate-limit";
+import { issueEmailVerificationCode } from "@/lib/email-verification";
+import { BENEFICIARY_COOKIE, createBeneficiaryToken } from "@/lib/beneficiary-auth";
 
 export const runtime = "nodejs";
 
@@ -40,6 +41,12 @@ export async function POST(req: NextRequest) {
     const user = await prisma.user.findUnique({ where: { email: parsed.data.email.toLowerCase() } });
     if (!user || user.role !== "USER" || !(await bcrypt.compare(parsed.data.password, user.passwordHash))) {
       return NextResponse.json({ error: "بيانات الدخول غير صحيحة." }, { status: 401 });
+    }
+
+    if (!user.emailVerifiedAt) {
+      const sent = await issueEmailVerificationCode(user.id, user.email);
+      if (!sent) return NextResponse.json({ error: "تعذر إرسال رمز التأكيد. خدمة البريد غير مهيأة أو متاحة حاليًا." }, { status: 503 });
+      return NextResponse.json({ requiresEmailVerification: true, email: user.email }, { headers: { "Cache-Control": "no-store" } });
     }
 
     const response = NextResponse.json({

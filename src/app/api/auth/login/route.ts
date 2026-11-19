@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
-import { ADMIN_COOKIE, createAdminToken } from "@/lib/admin-auth";
 import { rateLimit, rateLimitResponse } from "@/lib/rate-limit";
+import { issueEmailVerificationCode } from "@/lib/email-verification";
+import { ADMIN_COOKIE, createAdminToken } from "@/lib/admin-auth";
 
 export const runtime = "nodejs";
 
@@ -19,9 +20,21 @@ export async function POST(req: NextRequest) {
     if (!user || !["SUPER_ADMIN", "ADMIN", "MODERATOR"].includes(user.role) || !(await bcrypt.compare(password, user.passwordHash))) {
       return NextResponse.json({ error: "بيانات الدخول غير صحيحة أو لا تملك صلاحية الإدارة." }, { status: 401 });
     }
-    const response = NextResponse.json({ ok: true, user: { id: user.id, name: user.name, email: user.email, role: user.role } }, { headers: { "Cache-Control": "no-store" } });
+    if (!user.emailVerifiedAt) {
+      const sent = await issueEmailVerificationCode(user.id, user.email);
+      if (!sent) return NextResponse.json({ error: "تعذر إرسال رمز التأكيد. خدمة البريد غير مهيأة أو متاحة حاليًا." }, { status: 503 });
+      return NextResponse.json({ requiresEmailVerification: true, email: user.email }, { headers: { "Cache-Control": "no-store" } });
+    }
+
+    const response = NextResponse.json({
+      user: { id: user.id, name: user.name, email: user.email, role: user.role },
+    }, { headers: { "Cache-Control": "no-store" } });
     response.cookies.set(ADMIN_COOKIE, createAdminToken(user.id, user.role as "SUPER_ADMIN" | "ADMIN" | "MODERATOR"), {
-      httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "lax", path: "/", maxAge: 60 * 60 * 8,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      maxAge: 60 * 60 * 8,
     });
     return response;
   } catch (error) {
