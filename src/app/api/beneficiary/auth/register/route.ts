@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
-import { BENEFICIARY_COOKIE, createBeneficiaryToken } from "@/lib/beneficiary-auth";
 import { rateLimit, rateLimitResponse } from "@/lib/rate-limit";
 import { issueEmailVerificationCode } from "@/lib/email-verification";
 
