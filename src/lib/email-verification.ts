@@ -7,7 +7,7 @@ const hashCode = (userId: string, code: string) =>
 
 async function sendVerificationEmail(email: string, code: string) {
   const gmailUser = process.env.GMAIL_SMTP_USER;
-  const gmailAppPassword = process.env.GMAIL_SMTP_APP_PASSWORD?.replace(/\\s/g, "");
+  const gmailAppPassword = process.env.GMAIL_SMTP_APP_PASSWORD?.replace(/\s/g, "");
 
   if (gmailUser && gmailAppPassword) {
     const transporter = nodemailer.createTransport({
@@ -85,7 +85,7 @@ export async function issueEmailVerificationCode(userId: string, email: string) 
 
 export async function consumeEmailVerificationCode(userId: string, suppliedCode: string) {
   const record = await prisma.emailVerificationCode.findUnique({ where: { userId } });
-  if (!record || record.expiresAt <= new Date() || record.attempts >= 5 || !/^\\d{6}$/.test(suppliedCode)) return false;
+  if (!record || record.expiresAt <= new Date() || record.attempts >= 5 || !/^\d{6}$/.test(suppliedCode)) return false;
   const actual = Buffer.from(hashCode(userId, suppliedCode));
   const expected = Buffer.from(record.codeHash);
   const valid = actual.length === expected.length && timingSafeEqual(actual, expected);
