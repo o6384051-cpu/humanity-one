@@ -96,7 +96,7 @@ export default function FounderAdminPage() {
         <p>{tr("أدخل رمز التأكيد المكوّن من 6 أرقام الذي أرسلناه إلى")} {verificationEmail}</p>
         <Field label="رمز التأكيد" value={verificationCode} onChange={setVerificationCode} />
         <button disabled={busy || verificationCode.length !== 6} style={primaryStyle}>{busy ? tr("جارٍ التحقق...") : tr("تأكيد البريد والدخول")}</button>
-        <button type="button" disabled={busy} onClick={async () => { const r = await fetch("/api/auth/email/resend", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: verificationEmail }) }); const d = await r.json(); setMessage(d.message || d.error || "تم طلب إعادة الإرسال."); }} style={tabStyle(false)}>{tr("إعادة إرسال الرمز")}</button>
+        <button type="button" disabled={busy} onClick={async () => { const r = await fetch("/api/auth/email/resend", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: verificationEmail, password: form.password }) }); const d = await r.json(); setMessage(d.message || d.error || "تم طلب إعادة الإرسال."); }} style={tabStyle(false)}>{tr("إعادة إرسال الرمز")}</button>
       </form> : <form onSubmit={submitAuth} style={{ maxWidth: 480, display: "grid", gap: 12, padding: 20, background: "#101a2b", borderRadius: 14 }}>
         <div style={{ display: "flex", gap: 8 }}>
           <button type="button" onClick={() => setMode("login")} style={tabStyle(mode === "login")}>{tr("تسجيل الدخول")}</button>
