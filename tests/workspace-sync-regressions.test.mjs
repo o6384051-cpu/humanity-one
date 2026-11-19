@@ -43,3 +43,13 @@ test("beneficiary notifications refresh periodically only for signed-in users", 
   assert.match(portal, /if\(!user\)return/);
   assert.match(portal, /setInterval\(\(\)=>\{void refreshNotifications\(\)\},30000\)/);
 });
+
+test("cookie-authenticated workspace writes reject cross-origin and origin-less requests", () => {
+  assert.match(route, /function hasSameOrigin\(req: NextRequest\): boolean/);
+  assert.match(route, /const expectedOrigin = req\.nextUrl\.origin/);
+  assert.match(route, /req\.headers\.get\("origin"\)/);
+  assert.match(route, /new URL\(origin\)\.origin === expectedOrigin/);
+  assert.match(route, /req\.headers\.get\("referer"\)/);
+  assert.match(route, /if \(!referer\) return false/);
+  assert.match(route, /if \(!hasSameOrigin\(req\)\)[\s\S]*status: 403/);
+});
