@@ -49,6 +49,7 @@ export default function Dashboard() {
           <Link href="/agents"><Users size={18} />{tr("فريق الوكلاء","Agent Team")}</Link>
           <Link href="/memory"><BookOpen size={18} />{tr("الذاكرة والخصوصية","Memory & Privacy")}</Link>
           <Link href="/admin"><ShieldCheck size={18} />{tr("إدارة المنظومة","Administration")}</Link>
+          <Link href="/settings" className="ho-settings"><Settings size={18} />{tr("الإعدادات","Settings")}</Link>
           <Link href="/mail"><Mail size={18} />{tr("مركز المراسلات","Internal Mail")}</Link>
           <Link href="/opportunities"><HeartHandshake size={18} />{tr("مركز الفرص الإنسانية","Humanitarian Opportunities")}</Link>
           <Link href="/verified-sources"><BookOpen size={18} />{tr("دليل المصادر الموثوقة","Verified Resources")}</Link>
@@ -70,7 +71,6 @@ export default function Dashboard() {
             <ShieldCheck size={18} />
             <div><b>{tr("بيانات محمية","Data protected")}</b><small>{tr("خصوصيتك أولويتنا","Your privacy comes first")}</small></div>
           </div>
-          <Link href="/settings" className="ho-settings"><Settings size={18} />{tr("الإعدادات","Settings")}</Link>
           <div className="ho-version"><span>{tr("الإصدار 1.0.0","Version 1.0.0")}</span><span>2026</span></div>
         </div>
       </aside>
