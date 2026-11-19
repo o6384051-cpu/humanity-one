@@ -9,6 +9,29 @@ export const dynamic = "force-dynamic";
 
 const MAX_REQUEST_BYTES = 1_100_000;
 
+// Cookie-authenticated writes must originate from this exact application origin.
+// Browsers send Origin for PUT requests; Referer is a compatibility fallback.
+// Missing, malformed, opaque, or cross-origin values fail closed.
+function hasSameOrigin(req: NextRequest): boolean {
+  const expectedOrigin = req.nextUrl.origin;
+  const origin = req.headers.get("origin");
+  if (origin !== null) {
+    try {
+      return new URL(origin).origin === expectedOrigin;
+    } catch {
+      return false;
+    }
+  }
+
+  const referer = req.headers.get("referer");
+  if (!referer) return false;
+  try {
+    return new URL(referer).origin === expectedOrigin;
+  } catch {
+    return false;
+  }
+}
+
 async function readBoundedJson(req: NextRequest): Promise<{ tooLarge: boolean; value: unknown }> {
   const declaredLength = Number(req.headers.get("content-length"));
   if (Number.isFinite(declaredLength) && declaredLength > MAX_REQUEST_BYTES) {
@@ -85,6 +108,10 @@ export async function GET(req: NextRequest) {
 }
 
 export async function PUT(req: NextRequest) {
+  if (!hasSameOrigin(req)) {
+    return NextResponse.json({ error: "مصدر الطلب غير موثوق." }, { status: 403, headers: { "Cache-Control": "no-store" } });
+  }
+
   const user = await getBeneficiarySession();
   if (!user) return NextResponse.json({ error: "سجّل الدخول بحساب المستفيد أولًا." }, { status: 401 });
 
