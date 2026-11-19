@@ -51,7 +51,7 @@ humanityone.contact@gmail.com
   return <main dir="rtl" style={{ minHeight: "100vh", background: "#07131d", color: "#e8f2f5", padding: 20, fontFamily: "Cairo,system-ui,sans-serif" }}>
     <div style={{ maxWidth: 1120, margin: "0 auto", display: "grid", gap: 18 }}>
       <Link href="/admin" style={{ color: "#83d9ce", textDecoration: "none" }}>← العودة إلى لوحة الإدارة</Link>
-      <Link href="/admin/global-organizations/tracking" style={{ ...action, width: "fit-content", textDecoration: "none" }}>فتح سجل المنظمات ومتابعة الدعوات</Link>
+      <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}><Link href="/admin/global-organizations/tracking" style={{ ...action, width: "fit-content", textDecoration: "none" }}>فتح سجل المنظمات ومتابعة الدعوات</Link><Link href="/admin/global-organizations/invitations" style={{ ...action, width: "fit-content", textDecoration: "none" }}>إرسال دعوات جماعية (حتى 100)</Link></div>
       <header>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}><Globe2 size={28} color="#83d9ce"/><h1 style={{ fontSize: 28, margin: 0 }}>مركز استقطاب المنظمات الدولي</h1></div>
         <p style={{ color: "#a9bec7", lineHeight: 1.9 }}>ابحث عن منظمات المجتمع المدني حول العالم، افتح مصادرها الأصلية، ثم تواصل معها بدعوة واضحة ومحترمة للانضمام.</p>
