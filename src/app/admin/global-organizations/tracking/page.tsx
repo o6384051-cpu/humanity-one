@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 
 type Lead = { id:string; organizationName:string; country:string; city:string|null; focusArea:string; website:string|null; contactName:string|null; contactEmail:string|null; sourceUrl:string|null; status:string; notes:string|null; lastContactAt:string|null; createdAt:string; updatedAt:string };
-const statuses:Record<string,string>={DISCOVERED:"تم اكتشافها",CONTACTED:"تم التواصل",RESPONDED:"ردّت",INTERESTED:"مهتمة",APPLICATION:"قدمت طلبًا",VERIFIED:"تم التحقق",DECLINED:"اعتذرت",NO_RESPONSE:"لا يوجد رد"};
+const statuses:Record<string,string>={DISCOVERED:"تم اكتشافها",CONTACTED:"تم التواصل",RESPONDED:"ردّت",INTERESTED:"مهتمة",APPLICATION:"قدمت طلبًا",VERIFIED:"تم التحقق",DECLINED:"اعتذرت",NO_RESPONSE:"لا يوجد رد",DO_NOT_CONTACT:"إيقاف التواصل"};
 const field:React.CSSProperties={width:"100%",padding:11,borderRadius:9,border:"1px solid #38515d",background:"#071923",color:"#e8f2f5"};
 const btn:React.CSSProperties={padding:"10px 14px",borderRadius:9,border:"1px solid #39716b",background:"#12343a",color:"#e8f2f5",cursor:"pointer"};
 export default function GlobalOutreachTrackingPage(){
