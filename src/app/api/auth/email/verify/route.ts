@@ -11,7 +11,7 @@ export const runtime = "nodejs";
 export async function POST(req: NextRequest) {
   const limit = await rateLimit(req, "email-verification-confirm", 8, 15 * 60_000);
   if (!limit.allowed) return rateLimitResponse(limit.retryAfter, limit.unavailable);
-  const parsed = z.object({ email: z.string().trim().email().max(160), code: z.string().regex(/^\\d{6}$/) }).safeParse(await req.json().catch(() => null));
+  const parsed = z.object({ email: z.string().trim().email().max(160), code: z.string().regex(/^\d{6}$/) }).safeParse(await req.json().catch(() => null));
   if (!parsed.success || !process.env.JWT_SECRET) return NextResponse.json({ error: "أدخل البريد ورمز التأكيد المكوّن من 6 أرقام." }, { status: 400 });
   try {
     const user = await prisma.user.findUnique({ where: { email: parsed.data.email.toLowerCase() } });
