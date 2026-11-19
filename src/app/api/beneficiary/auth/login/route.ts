@@ -4,6 +4,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { BENEFICIARY_COOKIE, createBeneficiaryToken } from "@/lib/beneficiary-auth";
 import { rateLimit, rateLimitResponse } from "@/lib/rate-limit";
+import { issueEmailVerificationCode } from "@/lib/email-verification";
 
 export const runtime = "nodejs";
 
@@ -42,17 +43,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "بيانات الدخول غير صحيحة." }, { status: 401 });
     }
 
-    const response = NextResponse.json({
-      user: { id: user.id, name: user.name, email: user.email, role: user.role },
-    }, { headers: { "Cache-Control": "no-store" } });
-    response.cookies.set(BENEFICIARY_COOKIE, createBeneficiaryToken(user.id), {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      path: "/",
-      maxAge: 1209600,
-    });
-    return response;
+    const sent = await issueEmailVerificationCode(user.id, user.email);
+    if (!sent) return NextResponse.json({ error: "تعذر إرسال رمز التأكيد. خدمة البريد غير مهيأة أو متاحة حاليًا." }, { status: 503 });
+    return NextResponse.json({ requiresEmailVerification: true, email: user.email }, { headers: { "Cache-Control": "no-store" } });
   } catch {
     return NextResponse.json({ error: "تعذر تسجيل الدخول." }, { status: 503 });
   }
