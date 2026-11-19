@@ -4,6 +4,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { BENEFICIARY_COOKIE, createBeneficiaryToken } from "@/lib/beneficiary-auth";
 import { rateLimit, rateLimitResponse } from "@/lib/rate-limit";
+import { issueEmailVerificationCode } from "@/lib/email-verification";
 
 export const runtime = "nodejs";
 
@@ -36,15 +37,12 @@ export async function POST(req: NextRequest) {
       select: { id: true, name: true, email: true, role: true },
     });
 
-    const response = NextResponse.json({ user }, { status: 201, headers: { "Cache-Control": "no-store" } });
-    response.cookies.set(BENEFICIARY_COOKIE, createBeneficiaryToken(user.id), {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      path: "/",
-      maxAge: 1209600,
-    });
-    return response;
+    const sent = await issueEmailVerificationCode(user.id, user.email);
+    if (!sent) {
+      await prisma.user.delete({ where: { id: user.id } });
+      return NextResponse.json({ error: "تعذر إرسال رمز التأكيد. حاول لاحقًا." }, { status: 503 });
+    }
+    return NextResponse.json({ requiresEmailVerification: true, email: user.email }, { status: 201, headers: { "Cache-Control": "no-store" } });
   } catch (error: unknown) {
     if (typeof error === "object" && error !== null && "code" in error && error.code === "P2002") {
       return NextResponse.json({ error: "هذا البريد مسجل بالفعل." }, { status: 409 });
