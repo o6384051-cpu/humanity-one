@@ -48,7 +48,7 @@ export default function OrganizationInvitationsPage(){
  const shown=filter==="all"?leads:eligible;
  const allShownSelected=shown.length>0&&shown.every(x=>selected.includes(x.id));
  function toggle(id:string){setSelected(v=>v.includes(id)?v.filter(x=>x!==id):[...v,id]);}
- function toggleShown(){setSelected(v=>allShownSelected?v.filter(id=>!shown.some(x=>x.id===id)):[...new Set([...v,...shown.map(x=>x.id)])].slice(0,100));}
+ function toggleShown(){setSelected(v=>allShownSelected?v.filter(id=>!shown.some(x=>x.id===id)):v.concat(shown.map(x=>x.id).filter(id=>!v.includes(id))).slice(0,100));}
  const chosen=leads.filter(x=>selected.includes(x.id));
  async function send(){
   if(!selected.length||selected.length>100)return;
