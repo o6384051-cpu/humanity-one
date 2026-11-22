@@ -74,7 +74,7 @@ checks pass and the owner approves. A successful artifact creation still require
 separate disposable-database restore test before it is treated as recoverable.
 
 To decrypt a downloaded `.tar.gz.enc` artifact on a trusted machine with Python
-`cryptography==45.0.7` installed, set `BACKUP_ENCRYPTION_PIN` in the local shell
+`cryptography==46.0.4` installed, set `BACKUP_ENCRYPTION_PIN` in the local shell
 without placing its value in the command history, then run:
 
 ```bash
