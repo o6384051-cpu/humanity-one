@@ -42,3 +42,33 @@ Create a separate empty PostgreSQL database whose database name contains `test`,
 ## S3 export limitation
 
 The optional `aws s3 sync` copies current object contents only. It does not preserve bucket policies, IAM permissions, lifecycle/CORS/encryption configuration, object versions, or delete markers. Record and restore those provider settings separately, and reconcile the remote object inventory after export.
+
+
+## GitHub Actions encrypted backup workflow
+
+The manual workflow is `.github/workflows/encrypted-backup.yml`. It runs only through
+`workflow_dispatch`, reads credentials from GitHub Actions secrets, and uploads only
+the authenticated encrypted archive and its SHA-256 checksum as a seven-day artifact.
+It does not deploy, promote, or modify the production application.
+
+Required repository secrets (add them under Settings → Secrets and variables → Actions):
+
+- `HUMANITY_ONE_DATABASE_URL`: direct, non-pooled PostgreSQL connection string for the production database. It is used only for `pg_dump`.
+- `BACKUP_ENCRYPTION_PIN`: at least 12 digits. The workflow derives a key with Scrypt and encrypts using AES-256-GCM; the PIN is never written to the archive or printed by the workflow.
+- `VERCEL_TOKEN`: token used only to inspect the intended Vercel project and export environment files. Vercel Secret-type values are not returned by `vercel env pull`.
+
+The archive is authenticated encryption (Scrypt + AES-256-GCM). A wrong PIN or a modified
+archive fails authentication before extraction. Keep the PIN separately from the artifact;
+if it is lost, the backup cannot be decrypted. A numeric PIN remains weaker than a long
+random passphrase, so use at least 12 unpredictable digits and do not reuse it elsewhere.
+
+This first workflow intentionally skips S3 object storage. The existing script supports
+one optional S3-compatible bucket interactively, but automated storage export must not be
+enabled until the correct bucket endpoint, region, access policy, versioning requirements,
+and credentials are confirmed. The workflow therefore does not claim a complete backup
+of object storage. It also cannot export Vercel Secret-type values.
+
+The workflow must be reviewed and merged before GitHub makes it available as a manual
+workflow from the repository's default branch. Do not merge it until its pull-request CI
+checks pass and the owner approves. A successful artifact creation still requires a
+separate disposable-database restore test before it is treated as recoverable.
