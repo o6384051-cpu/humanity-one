@@ -2,6 +2,7 @@
 # HUMANITY ONE encrypted backup helper. One database, one Vercel project and optional one S3 bucket per run.
 set -Eeuo pipefail
 umask 077
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 REPO_URL="$(printenv HUMANITY_ONE_REPO_URL || printf %s https://github.com/o6384051-cpu/humanity-one.git)"
 OUT_DIR="$(printenv BACKUP_OUTPUT_DIR || printf %s "$PWD")"
@@ -198,7 +199,7 @@ tar -czf "$ARCHIVE" -C "$STAGE" .
 PASS1="${BACKUP_ENCRYPTION_PIN:-}"
 if [[ -z "$PASS1" ]]; then ask_secret "Encryption PIN (at least 12 digits): " PASS1; fi
 if [[ ! "$PASS1" =~ ^[0-9]{12,}$ ]]; then echo "ERROR: encryption PIN must contain at least 12 digits." >&2; exit 1; fi
-BACKUP_ENCRYPTION_PIN="$PASS1" python3 "$PWD/scripts/backup/backup-crypto.py" encrypt "$ARCHIVE" "$ENCRYPTED"
+BACKUP_ENCRYPTION_PIN="$PASS1" python3 "$SCRIPT_DIR/backup-crypto.py" encrypt "$ARCHIVE" "$ENCRYPTED"
 rm -f -- "$ARCHIVE"
 ARCHIVE=""
 
