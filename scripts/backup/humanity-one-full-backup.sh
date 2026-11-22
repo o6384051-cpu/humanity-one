@@ -9,7 +9,7 @@ OUT_DIR="$(printenv BACKUP_OUTPUT_DIR || printf %s "$PWD")"
 WORK_ROOT="$(printenv TMPDIR || printf %s /tmp)"
 STAMP="$(date -u +%Y%m%dT%H%M%SZ)"
 STAGE="" ARCHIVE="" ENCRYPTED="" VERIFY="" VERIFY_DIR="" CHECKSUM=""
-PASS1="" PASS2="" DB_URL="" SUCCESS=0
+PASS1="" DB_URL="" SUCCESS=0
 
 mkdir -p "$OUT_DIR" "$WORK_ROOT"
 OUT_DIR="$(cd "$OUT_DIR" && pwd)"
@@ -27,7 +27,7 @@ cleanup() {
     if [[ -n "$ENCRYPTED" && -f "$ENCRYPTED" ]]; then rm -f -- "$ENCRYPTED"; fi
     if [[ -n "$CHECKSUM" && -f "$CHECKSUM" ]]; then rm -f -- "$CHECKSUM"; fi
   fi
-  unset PASS1 PASS2 DB_URL
+  unset PASS1 DB_URL
   return "$status"
 }
 trap cleanup EXIT
@@ -210,7 +210,7 @@ if ! BACKUP_ENCRYPTION_PIN="$PASS1" python3 "$PWD/scripts/backup/backup-crypto.p
   echo "ERROR: authenticated decryption failed; wrong PIN or damaged archive." >&2
   exit 1
 fi
-unset PASS1 PASS2 BACKUP_ENCRYPTION_PIN
+unset PASS1 BACKUP_ENCRYPTION_PIN
 tar -tzf "$VERIFY" >/dev/null
 VERIFY_DIR="$(mktemp -d "$WORK_ROOT/humanity-one-restore-check.XXXXXX")"
 chmod 700 "$VERIFY_DIR"
