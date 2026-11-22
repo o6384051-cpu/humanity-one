@@ -206,7 +206,7 @@ ARCHIVE=""
 echo "[7/7] Verify encrypted archive and checksums"
 VERIFY="$(mktemp "$WORK_ROOT/humanity-one-verify.XXXXXX")"
 chmod 600 "$VERIFY"
-if ! BACKUP_ENCRYPTION_PIN="$PASS1" python3 "$PWD/scripts/backup/backup-crypto.py" decrypt "$ENCRYPTED" "$VERIFY"; then
+if ! BACKUP_ENCRYPTION_PIN="$PASS1" python3 "$SCRIPT_DIR/backup-crypto.py" decrypt "$ENCRYPTED" "$VERIFY"; then
   echo "ERROR: authenticated decryption failed; wrong PIN or damaged archive." >&2
   exit 1
 fi
