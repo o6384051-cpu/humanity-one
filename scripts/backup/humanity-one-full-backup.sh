@@ -52,6 +52,9 @@ check_space() {
 }
 
 for tool in git tar gzip pg_dump pg_restore vercel sha256sum df awk find sort xargs tee wc tr python3; do need "$tool"; done
+if [[ -n "${GITHUB_TOKEN:-}" ]]; then
+  git config --global credential.helper '!f() { printf "username=x-access-token\\n"; printf "password=%s\\n" "$GITHUB_TOKEN"; }; f'
+fi
 python3 -c "import cryptography" >/dev/null 2>&1 || { echo "ERROR: Python package cryptography is required." >&2; exit 1; }
 check_space "$OUT_DIR"
 check_space "$WORK_ROOT"
