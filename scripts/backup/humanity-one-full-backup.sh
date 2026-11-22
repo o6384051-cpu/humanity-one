@@ -51,7 +51,8 @@ check_space() {
   fi
 }
 
-for tool in git tar gzip openssl pg_dump pg_restore vercel sha256sum df awk find sort xargs tee wc tr python3; do need "$tool"; done
+for tool in git tar gzip pg_dump pg_restore vercel sha256sum df awk find sort xargs tee wc tr python3; do need "$tool"; done
+python3 -c "import cryptography" >/dev/null 2>&1 || { echo "ERROR: Python package cryptography is required." >&2; exit 1; }
 check_space "$OUT_DIR"
 check_space "$WORK_ROOT"
 STAGE="$(mktemp -d "$WORK_ROOT/humanity-one-backup.XXXXXX")"
@@ -72,7 +73,8 @@ git clone "$REPO_URL" "$STAGE/source/humanity-one"
 if git -C "$STAGE/source/humanity-one" lfs version >/dev/null 2>&1; then git -C "$STAGE/source/humanity-one" lfs fetch --all && git -C "$STAGE/source/humanity-one" lfs pull; else echo "Git LFS is unavailable; verify whether the repository uses LFS." > "$STAGE/metadata/git-lfs-warning.txt"; fi
 
 echo "[2/7] PostgreSQL export"
-ask_secret "Production DATABASE_URL (hidden): " DB_URL
+DB_URL="${DATABASE_URL:-}"
+if [[ -z "$DB_URL" ]]; then ask_secret "Production DATABASE_URL (hidden): " DB_URL; fi
 if [[ -z "$DB_URL" ]]; then echo "ERROR: DATABASE_URL is required." >&2; unset DB_URL; exit 1; fi
 
 # Parse the URL locally and put the password in a private .pgpass file.
@@ -163,7 +165,10 @@ versions, delete markers, or provider-side retention settings. Reconcile these
 settings separately and enable provider versioning/retention where appropriate.
 LIMITS
 echo "WARNING: S3 sync copies current objects only, not bucket configuration or object-version history."
-read -r -p "S3 bucket (blank = skip): " S3_BUCKET
+S3_BUCKET=""
+if [[ "${BACKUP_SKIP_S3:-0}" != "1" && -t 0 ]]; then
+  read -r -p "S3 bucket (blank = skip): " S3_BUCKET
+fi
 if [[ -n "$S3_BUCKET" ]]; then
   need aws
   read -r -p "S3 endpoint URL: " S3_ENDPOINT
@@ -187,23 +192,21 @@ ARCHIVE="$OUT_DIR/humanity-one-backup-$STAMP.tar.gz"
 ENCRYPTED="$ARCHIVE.enc"
 CHECKSUM="$ENCRYPTED.sha256"
 tar -czf "$ARCHIVE" -C "$STAGE" .
-ask_secret "Encryption passphrase (20+ characters): " PASS1
-ask_secret "Repeat passphrase: " PASS2
-PASS1_LEN="$(printf '%s' "$PASS1" | wc -c | tr -d ' ')"
-if (( PASS1_LEN < 20 )) || [[ "$PASS1" != "$PASS2" ]]; then echo "ERROR: passphrases mismatch or too short." >&2; exit 1; fi
-printf '%s' "$PASS1" | openssl enc -aes-256-cbc -salt -pbkdf2 -iter 600000 -md sha256 -pass stdin -in "$ARCHIVE" -out "$ENCRYPTED"
+PASS1="${BACKUP_ENCRYPTION_PIN:-}"
+if [[ -z "$PASS1" ]]; then ask_secret "Encryption PIN (at least 12 digits): " PASS1; fi
+if [[ ! "$PASS1" =~ ^[0-9]{12,}$ ]]; then echo "ERROR: encryption PIN must contain at least 12 digits." >&2; exit 1; fi
+BACKUP_ENCRYPTION_PIN="$PASS1" python3 "$PWD/scripts/backup/backup-crypto.py" encrypt "$ARCHIVE" "$ENCRYPTED"
 rm -f -- "$ARCHIVE"
 ARCHIVE=""
 
 echo "[7/7] Verify encrypted archive and checksums"
 VERIFY="$(mktemp "$WORK_ROOT/humanity-one-verify.XXXXXX")"
 chmod 600 "$VERIFY"
-if ! printf '%s' "$PASS1" | openssl enc -d -aes-256-cbc -pbkdf2 -iter 600000 -md sha256 -pass stdin -in "$ENCRYPTED" -out "$VERIFY" 2> "$STAGE/logs/openssl-verify.log"; then
-  echo "ERROR: wrong passphrase or damaged archive." >&2
-  cat "$STAGE/logs/openssl-verify.log" >&2
+if ! BACKUP_ENCRYPTION_PIN="$PASS1" python3 "$PWD/scripts/backup/backup-crypto.py" decrypt "$ENCRYPTED" "$VERIFY"; then
+  echo "ERROR: authenticated decryption failed; wrong PIN or damaged archive." >&2
   exit 1
 fi
-unset PASS1 PASS2
+unset PASS1 PASS2 BACKUP_ENCRYPTION_PIN
 tar -tzf "$VERIFY" >/dev/null
 VERIFY_DIR="$(mktemp -d "$WORK_ROOT/humanity-one-restore-check.XXXXXX")"
 chmod 700 "$VERIFY_DIR"
