@@ -16,10 +16,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 90
     env:
-      DATABASE_URL: ${{ secrets.HUMANITY_ONE_DATABASE_URL }}
-      BACKUP_ENCRYPTION_PIN: ${{ secrets.BACKUP_ENCRYPTION_PIN }}
-      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-      GITHUB_TOKEN: ${{ github.token }}
       HUMANITY_ONE_REPO_URL: https://github.com/o6384051-cpu/humanity-one.git
       BACKUP_SKIP_S3: "1"
       BACKUP_OUTPUT_DIR: ${{ runner.temp }}/humanity-one-backup
@@ -47,6 +43,10 @@ jobs:
 
       - name: Validate required secrets without printing values
         shell: bash
+        env:
+          DATABASE_URL: ${{ secrets.HUMANITY_ONE_DATABASE_URL }}
+          BACKUP_ENCRYPTION_PIN: ${{ secrets.BACKUP_ENCRYPTION_PIN }}
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         run: |
           set -euo pipefail
           [[ -n "$DATABASE_URL" ]] || { echo "::error::Missing repository secret HUMANITY_ONE_DATABASE_URL"; exit 1; }
@@ -55,6 +55,11 @@ jobs:
 
       - name: Run encrypted backup
         shell: bash
+        env:
+          DATABASE_URL: ${{ secrets.HUMANITY_ONE_DATABASE_URL }}
+          BACKUP_ENCRYPTION_PIN: ${{ secrets.BACKUP_ENCRYPTION_PIN }}
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           mkdir -p "$BACKUP_OUTPUT_DIR"
