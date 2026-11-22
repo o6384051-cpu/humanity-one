@@ -72,3 +72,19 @@ The workflow must be reviewed and merged before GitHub makes it available as a m
 workflow from the repository's default branch. Do not merge it until its pull-request CI
 checks pass and the owner approves. A successful artifact creation still requires a
 separate disposable-database restore test before it is treated as recoverable.
+
+To decrypt a downloaded `.tar.gz.enc` artifact on a trusted machine with Python
+`cryptography==45.0.7` installed, set `BACKUP_ENCRYPTION_PIN` in the local shell
+without placing its value in the command history, then run:
+
+```bash
+python3 scripts/backup/backup-crypto.py decrypt humanity-one-backup.tar.gz.enc humanity-one-backup.tar.gz
+tar -tzf humanity-one-backup.tar.gz
+mkdir -m 700 restore-check
+tar -xzf humanity-one-backup.tar.gz -C restore-check
+(cd restore-check && sha256sum -c checksums.txt)
+```
+
+Do not upload the decrypted archive, extracted environment files, or the PIN to GitHub,
+chat, or a public storage location. The self-test in the workflow checks successful
+round-trip decryption and rejects a tampered ciphertext before a backup is attempted.
