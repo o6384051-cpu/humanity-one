@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { ArrowRight, ShieldCheck, Info, Globe2, Map, RefreshCw, PlusCircle, CheckCircle2, Clock3, Lock, Share2 } from "lucide-react";
 
 type Access = { authenticated: boolean; view: "central-admin" | "organization" | "schematic"; role: string; organizationId?: string | null };
