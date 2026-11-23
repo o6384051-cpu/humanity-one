@@ -195,3 +195,30 @@ img, video, canvas, iframe {
   .ho-menu{display:grid;place-items:center;width:40px;height:40px;flex:0 0 40px;border:1px solid var(--line);border-radius:10px;background:#101a2a;color:#d9e6f7}
   .ho-top-left{gap:10px}
 }
+
+
+/* Keep the desktop sidebar frame fixed while allowing its long navigation list to scroll independently. */
+@media (min-width: 761px) {
+  .ho-sidebar {
+    height: 100vh;
+    height: 100dvh;
+    min-height: 0;
+    overflow: hidden;
+  }
+  .ho-nav {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(105, 216, 209, .35) transparent;
+    padding-bottom: 8px;
+  }
+  .ho-nav::-webkit-scrollbar { width: 6px; }
+  .ho-nav::-webkit-scrollbar-track { background: transparent; }
+  .ho-nav::-webkit-scrollbar-thumb {
+    background: rgba(105, 216, 209, .35);
+    border-radius: 8px;
+  }
+  .ho-sidebar-bottom { flex: 0 0 auto; }
+}
