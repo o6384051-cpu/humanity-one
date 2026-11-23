@@ -3,7 +3,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useLanguage, translateText } from '../components/LanguageProvider';
-import { Home, Bot, FolderKanban, CheckSquare, BookOpen, BarChart3, Settings, Search, Bell, Mail, Sun, Leaf, CheckCircle2, Users, Lightbulb, Send, ShieldCheck, HeartHandshake, BadgeInfo, Menu, X } from 'lucide-react';
+import { Home, Bot, FolderKanban, CheckSquare, BookOpen, BarChart3, Settings, Search, Bell, Mail, Sun, Leaf, CheckCircle2, Users, Lightbulb, Send, ShieldCheck, HeartHandshake, BadgeInfo, Menu, X, MapPinned } from 'lucide-react';
 
 export default function Dashboard() {
   const router = useRouter();
@@ -50,6 +50,7 @@ export default function Dashboard() {
           <Link href="/memory"><BookOpen size={18} />{tr("الذاكرة والخصوصية","Memory & Privacy")}</Link>
           <Link href="/admin"><ShieldCheck size={18} />{tr("إدارة المنظومة","Administration")}</Link>
           <Link href="/mail"><Mail size={18} />{tr("مركز المراسلات","Internal Mail")}</Link>
+          <Link href="/radar"><MapPinned size={18} />{tr("الرادار الإنساني","Humanity Radar")}</Link>
           <Link href="/opportunities"><HeartHandshake size={18} />{tr("مركز الفرص الإنسانية","Humanitarian Opportunities")}</Link>
           <Link href="/verified-sources"><BookOpen size={18} />{tr("دليل المصادر الموثوقة","Verified Resources")}</Link>
           <Link href="/organizations"><HeartHandshake size={18} />{tr("شبكة المنظمات والشراكات","Organizations & Partnerships")}</Link>
