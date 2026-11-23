@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { ArrowRight, MapPin, Search, Filter, HeartHandshake, Users, Droplets, GraduationCap, Package, ShieldCheck, Info } from "lucide-react";
+import { ArrowRight, MapPin, Search, Filter, ShieldCheck, Info } from "lucide-react";
 
 type Layer = "needs" | "resources" | "initiatives";
 type RadarPoint = {
@@ -29,7 +29,6 @@ export default function HumanityRadarPage() {
   const [layer, setLayer] = useState<"all" | Layer>("all");
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState(demoPoints[0]);
-  const [showDemo, setShowDemo] = useState(true);
   const visible = useMemo(() => demoPoints.filter((p) =>
     (layer === "all" || p.layer === layer) &&
     [p.title, p.country, p.city, p.category].join(" ").toLowerCase().includes(query.trim().toLowerCase())
