@@ -27,6 +27,8 @@ model User {
   assistanceReviewEvents AssistanceReviewEvent[] @relation("AssistanceReviewActor")
   beneficiaryNotifications BeneficiaryNotification[]
   mailMessages          MailMessage[]
+  verifiedRadarRecords HumanitarianRecord[] @relation("RadarRecordVerifier")
+  radarAuditEvents RadarAuditEvent[] @relation("RadarAuditUser")
 }
 
 model Project {
@@ -278,6 +280,9 @@ model Organization {
   conversationsAsA     OrganizationConversation[] @relation("ConversationOrganizationA")
   conversationsAsB     OrganizationConversation[] @relation("ConversationOrganizationB")
   sentMessages         OrganizationMessage[]
+  ownedRadarRecords HumanitarianRecord[]
+  radarShares RadarRecordShare[]
+  radarAuditEvents RadarAuditEvent[]
 
   @@index([status, name])
 }
@@ -309,4 +314,71 @@ model OrganizationMessage {
 
   @@index([conversationId, createdAt])
   @@index([senderOrganizationId, createdAt])
+}
+
+
+model HumanitarianRecord {
+  id                    String   @id @default(cuid())
+  organizationId        String
+  type                  String
+  title                 String
+  description           String   @db.Text
+  country               String
+  city                  String?
+  area                  String?
+  latitude              Float?
+  longitude             Float?
+  locationPrecision     String   @default("APPROXIMATE")
+  sourceName            String
+  sourceUrl             String?
+  sourceReference       String?
+  observedAt            DateTime
+  verificationStatus    String   @default("PENDING")
+  verifiedAt            DateTime?
+  verifiedByUserId      String?
+  verificationNote      String?  @db.Text
+  sharingMode           String   @default("PRIVATE")
+  status                String   @default("ACTIVE")
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  organization          Organization @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  verifiedBy            User? @relation("RadarRecordVerifier", fields: [verifiedByUserId], references: [id], onDelete: SetNull)
+  shares                RadarRecordShare[]
+  auditEvents           RadarAuditEvent[]
+
+  @@index([organizationId, createdAt])
+  @@index([verificationStatus, observedAt])
+  @@index([sharingMode, verificationStatus, country])
+  @@index([type, status])
+}
+
+model RadarRecordShare {
+  id                    String   @id @default(cuid())
+  recordId              String
+  organizationId        String
+  permission            String   @default("VIEW")
+  createdAt             DateTime @default(now())
+  createdByOrganizationId String
+  record                HumanitarianRecord @relation(fields: [recordId], references: [id], onDelete: Cascade)
+  organization          Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([recordId, organizationId])
+  @@index([organizationId, createdAt])
+}
+
+model RadarAuditEvent {
+  id                    String   @id @default(cuid())
+  recordId              String
+  action                String
+  actorUserId           String?
+  actorOrganizationId   String?
+  details               Json?
+  createdAt             DateTime @default(now())
+  record                HumanitarianRecord @relation(fields: [recordId], references: [id], onDelete: Cascade)
+  actorUser             User? @relation("RadarAuditUser", fields: [actorUserId], references: [id], onDelete: SetNull)
+  actorOrganization     Organization? @relation(fields: [actorOrganizationId], references: [id], onDelete: SetNull)
+
+  @@index([recordId, createdAt])
+  @@index([actorUserId, createdAt])
+  @@index([actorOrganizationId, createdAt])
 }
