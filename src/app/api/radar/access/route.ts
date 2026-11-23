@@ -15,17 +15,17 @@ export async function GET() {
     );
   }
 
-  const organization = await getOrganizationSession();
-  if (organization) {
+  if (admin?.role === "MODERATOR") {
     return NextResponse.json(
-      { authenticated: true, view: "organization", role: "ORGANIZATION", organizationId: organization.id, records: [], dataConnected: false },
+      { authenticated: true, view: "schematic", role: "MODERATOR", organizationId: null, records: [], dataConnected: false },
       { headers: { "Cache-Control": "private, no-store, max-age=0" } }
     );
   }
 
-  if (admin?.role === "MODERATOR") {
+  const organization = await getOrganizationSession();
+  if (organization) {
     return NextResponse.json(
-      { authenticated: true, view: "schematic", role: "MODERATOR", organizationId: null, records: [], dataConnected: false },
+      { authenticated: true, view: "organization", role: "ORGANIZATION", organizationId: organization.id, records: [], dataConnected: false },
       { headers: { "Cache-Control": "private, no-store, max-age=0" } }
     );
   }
