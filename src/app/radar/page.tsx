@@ -61,7 +61,7 @@ export default function HumanityRadarPage() {
           ))}
         </section>
 
-        <div style={{ display: "grid", gridTemplateColumns: "minmax(0,1.8fr) minmax(280px,0.85fr)", gap: 14, alignItems: "start" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(100%,360px),1fr))", gap: 14, alignItems: "start" }}>
           <section style={{ border: "1px solid #294653", borderRadius: 18, overflow: "hidden", background: "#091d29" }}>
             <div style={{ padding: 13, display: "flex", gap: 10, alignItems: "center", borderBottom: "1px solid #294653" }}>
               <Search size={17} color="#82cfc4"/>
@@ -117,7 +117,7 @@ export default function HumanityRadarPage() {
 
         <section style={{ marginTop: 14, border: "1px solid #765b32", background: "#2a2419", borderRadius: 14, padding: 14, display: "flex", gap: 10, alignItems: "start" }}>
           <ShieldCheck size={20} color="#f3c879" style={{ flexShrink: 0, marginTop: 2 }}/>
-          <div style={{ color: "#e8d7b5", fontSize: 12, lineHeight: 1.9 }}><b>شفافية البيانات:</b> جميع النقاط الظاهرة حاليًا أمثلة توضيحية مصطنعة لا تمثل بلاغات أو أزمات أو منظمات حقيقية. لن تُعرض بيانات فعلية إلا بعد ربط مصادر موثوقة، وتوثيق المصدر وتاريخ الرصد وحالة التحقق. لا تُعرض مواقع المستفيدين الأفراد للعامة.</div>
+          <div style={{ color: "#e8d7b5", fontSize: 12, lineHeight: 1.9 }}><b>شفافية البيانات:</b> الخريطة الحالية تخطيطية وليست حدودًا جغرافية دقيقة، وجميع النقاط الظاهرة أمثلة توضيحية مصطنعة لا تمثل بلاغات أو أزمات أو منظمات حقيقية. لن تُعرض بيانات فعلية إلا بعد ربط مصادر موثوقة، وتوثيق المصدر وتاريخ الرصد وحالة التحقق. لا تُعرض مواقع المستفيدين الأفراد للعامة.</div>
         </section>
       </div>
     </main>
