@@ -153,3 +153,17 @@ test("Gemini endpoint never falls back to an OpenAI key", async () => {
   assert.match(route, /process\.env\.AI_API_KEY\s*\|\|\s*process\.env\.OPENAI_API_KEY/);
   assert.match(route, /خدمة Gemini غير مهيأة/);
 });
+
+test("radar source URLs accept only HTTP and HTTPS and reject escaped newline syntax regressions", async () => {
+  const route = await source("src/app/api/radar/records/route.ts");
+  assert.match(route, /protocol === ["']https:|protocol === ["']http:/);
+  assert.match(route, /sourceUrl: z\.string\(\)\.url\(\)/);
+  assert.doesNotMatch(route, /\\\\n\s+try \{/);
+});
+
+test("assistance can be approved directly by every authorized administration role", async () => {
+  const route = await source("src/app/api/admin/assistance/route.ts");
+  assert.match(route, /\["SUPER_ADMIN",\s*"ADMIN",\s*"MODERATOR"\]/);
+  assert.match(route, /z\.enum\(\["IN_REVIEW",\s*"APPROVED",\s*"REJECTED",\s*"CLOSED"\]\)/);
+  assert.doesNotMatch(route, /status !== ["']IN_REVIEW["']/);
+});
