@@ -121,22 +121,6 @@ export default function Dashboard() {
             </div>
           </section>
 
-          {/* ركائز العمل الإنساني */}
-          <section className="ho-stats">
-            <article>
-              <div className="stat-icon blue"><Leaf size={20} /></div>
-              <div><small>{tr("الاستدامة","Sustainability")}</small><b>{tr("أثر طويل الأمد","Long-term impact")}</b></div>
-            </article>
-            <article>
-              <div className="stat-icon violet"><ShieldCheck size={20} /></div>
-              <div><small>{tr("السلامة والكرامة","Safety & dignity")}</small><b>{tr("الإنسان أولًا","People first")}</b></div>
-            </article>
-            <article>
-              <div className="stat-icon mint"><Users size={20} /></div>
-              <div><small>{tr("التعاون","Collaboration")}</small><b>{tr("العمل معًا","Working together")}</b></div>
-            </article>
-          </section>
-
           {/* الخدمات */}
           <div className="ho-section-head">
             <div>
