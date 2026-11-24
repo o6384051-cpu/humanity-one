@@ -58,16 +58,6 @@ export async function PATCH(req: NextRequest) {
       id: z.string().min(1),
       status: z.enum(["IN_REVIEW", "APPROVED", "REJECTED", "CLOSED"]),
       adminNote: z.string().trim().max(1500).optional(),
-    }).superRefine((value, ctx) => {
-      // Approval must carry a meaningful audit note describing how the need was checked.
-      // This documents the human review; it does not replace the review itself.
-      if (value.status === "APPROVED" && (value.adminNote ?? "").trim().length < 20) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          path: ["adminNote"],
-          message: "قبل الموافقة، اكتب ملخصًا لا يقل عن 20 حرفًا يوضح مصدر التحقق وما تم التأكد منه.",
-        });
-      }
     }).safeParse(await req.json());
 
     if (!parsed.success) {
@@ -80,12 +70,6 @@ export async function PATCH(req: NextRequest) {
         select: { status: true, adminNote: true },
       });
       if (!current) return false;
-
-      // Enforce a review stage before approval so a newly submitted request
-      // cannot be approved without first being examined by the team.
-      if (parsed.data.status === "APPROVED" && current.status !== "IN_REVIEW") {
-        return "REVIEW_REQUIRED" as const;
-      }
 
       const nextNote = parsed.data.adminNote === undefined
         ? current.adminNote
@@ -129,11 +113,6 @@ export async function PATCH(req: NextRequest) {
     });
 
     if (!result) return NextResponse.json({ error: "الطلب غير موجود." }, { status: 404 });
-    if (result === "REVIEW_REQUIRED") {
-      return NextResponse.json({
-        error: "يجب نقل الطلب إلى مرحلة «تحت الدراسة» أولًا، ثم توثيق التحقق قبل الموافقة.",
-      }, { status: 409 });
-    }
     return NextResponse.json({ ok: true });
   } catch {
     return NextResponse.json({ error: "تعذر تحديث الطلب أو تسجيل المراجعة." }, { status: 503 });
