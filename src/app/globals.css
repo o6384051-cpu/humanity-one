@@ -222,3 +222,17 @@ img, video, canvas, iframe {
   }
   .ho-sidebar-bottom { flex: 0 0 auto; }
 }
+
+
+/* Compact navigation: keep every destination while reducing first-screen clutter. */
+.ho-sidebar{overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin}
+.ho-nav{gap:4px}
+.ho-nav>a{min-height:40px}
+.ho-nav-group{margin-top:5px;border:1px solid var(--line);border-radius:11px;background:rgba(18,30,48,.55);overflow:hidden}
+.ho-nav-group>summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;padding:11px 13px;color:#a9b9cc;font-size:11px;font-weight:700}
+.ho-nav-group>summary::-webkit-details-marker{display:none}
+.ho-nav-group[open]>summary{color:#68d8d1;border-bottom:1px solid var(--line)}
+.ho-nav-sub{display:grid;gap:2px;padding:5px}
+.ho-nav-sub>a{display:flex;align-items:center;gap:10px;min-height:36px;padding:8px 10px;border-radius:8px;color:#8e9db4;text-decoration:none;font-size:11px}
+.ho-nav-sub>a:hover{background:#15243a;color:#e9f6ff}
+@media(max-height:760px){.ho-sidebar{padding-top:15px;padding-bottom:12px}.ho-brand{padding-bottom:15px}.ho-workspace{margin:12px 0 15px;padding:8px}.ho-nav>a{min-height:36px;padding-top:8px;padding-bottom:8px}.ho-sidebar-bottom{padding-top:8px}}
