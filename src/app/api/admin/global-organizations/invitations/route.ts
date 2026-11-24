@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
   if (!apiKey || !from) return NextResponse.json({ error: "لم يتم إعداد خدمة البريد بعد. أضف RESEND_API_KEY و RESEND_FROM_EMAIL بعد توثيق عنوان الإرسال، ثم أعد المحاولة. لم تُرسل أي رسالة." }, { status: 503 });
 
   try {
-    const uniqueIds = [...new Set(parsed.data.ids)];
+    const uniqueIds = Array.from(new Set(parsed.data.ids));
     const leads = await prisma.organizationLead.findMany({ where: { id: { in: uniqueIds } }, select: { id: true, organizationName: true, contactEmail: true, contactName: true, country: true, status: true } });
     const byId = new Map(leads.map((lead) => [lead.id, lead]));
     const candidates = uniqueIds.map((id) => byId.get(id)).filter((lead): lead is NonNullable<typeof lead> => !!lead);
