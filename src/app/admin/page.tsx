@@ -93,6 +93,7 @@ export default function AdminDashboardPage() {
         </section>
 
         <section style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))", gap: 10 }}>
+          <Link href="/radar" style={{ ...linkStyle, borderColor: "#168b83", background: "linear-gradient(120deg,#123d43,#122438)" }}><b>{tr("خريطة الإدارة — الرادار الجغرافي")}</b><p style={{ color: "#b8cbd4", marginTop: 5, fontSize: 13 }}>{tr("فتح خريطة الإدارة المركزية والبحث الجغرافي والسجلات الموثقة مباشرة من لوحة الإدارة.")}</p></Link>
           <Link href="/admin/telegram" style={linkStyle}><b>{tr("ربط بوت تليجرام")}</b><p style={{ color: "#9aabc0", marginTop: 5, fontSize: 13 }}>{tr("إعداد استقبال رسائل البوت وإشعارات طلبات المنظمات.")}</p></Link>
           <Link href="/admin/organizations" style={linkStyle}><b>{tr("طلبات انضمام المنظمات")}</b><p style={{ color: "#9aabc0", marginTop: 5, fontSize: 13 }}>{tr("مراجعة بيانات المنظمات والتحقق من هويتها وتحديث حالة الطلب.")}</p></Link>
           <Link href="/admin/global-organizations" style={linkStyle}><b>{tr("مركز استقطاب المنظمات الدولي")}</b><p style={{ color: "#9aabc0", marginTop: 5, fontSize: 13 }}>{tr("البحث عالميًا في أدلة المنظمات ومصادر التحقق وتجهيز دعوات الشراكة.")}</p></Link>\n          <Link href="/admin/mail" style={linkStyle}><b>{tr("صندوق المراسلات الداخلي")}</b><p style={{ color: "#9aabc0", marginTop: 5, fontSize: 13 }}>{tr("استقبال رسائل الدعم والمستفيدين والشركاء والرد عليها داخل المنصة.")}</p></Link>
