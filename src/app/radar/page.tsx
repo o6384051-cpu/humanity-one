@@ -9,7 +9,7 @@ type RecordType = "NEED" | "RESOURCE" | "INITIATIVE";
 type SharingMode = "PRIVATE" | "SHARED" | "NETWORK";
 type RadarRecord = {
   id: string; organizationId: string; type: RecordType; title: string; description: string;
-  country: string; city: string | null; area: string | null; sourceName: string; sourceUrl: string | null;
+  country: string; city: string | null; area: string | null; latitude?: number | null; longitude?: number | null; sourceName: string; sourceUrl: string | null;
   observedAt: string; verificationStatus: string; verifiedAt: string | null; verificationNote: string | null;
   sharingMode: SharingMode; createdAt: string; organization: { id: string; name: string };
 };
@@ -138,6 +138,14 @@ export default function HumanityRadarPage() {
   }
 
   const recordsToShow = records;
+  const mapRecords = isAdmin ? records.filter(r => r.verificationStatus === "VERIFIED" && Number.isFinite(r.latitude) && Number.isFinite(r.longitude)) : [];
+  function focusRecordOnMap(record: RadarRecord) {
+    if (typeof record.latitude !== "number" || typeof record.longitude !== "number") return;
+    const lat = record.latitude, lon = record.longitude;
+    const bbox = [lon - 0.6, lat - 0.4, lon + 0.6, lat + 0.4].join(",");
+    setMapUrl(`https://www.openstreetmap.org/export/embed.html?bbox=${encodeURIComponent(bbox)}&layer=mapnik&marker=${lat}%2C${lon}`);
+    setMapSearchMessage(`تم توجيه الخريطة إلى سجل موثق: ${record.title}`);
+  }
 
   async function searchMapLocation(event: React.FormEvent) {
     event.preventDefault();
@@ -191,6 +199,10 @@ export default function HumanityRadarPage() {
           <div style={{ padding: 8, background: "linear-gradient(180deg,#102f3c,#0a202d)" }}>
             <iframe title="الخريطة الجغرافية التفاعلية" src={mapUrl} loading="eager" allowFullScreen referrerPolicy="strict-origin-when-cross-origin" style={{ width: "100%", height: 420, border: 0, borderRadius: 10, background: "#dbe5e8", display: "block" }} />
             <a href={mapUrl} target="_blank" rel="noopener noreferrer" style={{ display: "inline-block", color: "#8edbd0", padding: "8px 10px", fontSize: 12 }}>فتح الخريطة في نافذة مستقلة</a>
+            {isAdmin && mapRecords.length > 0 && <div style={{ marginTop: 8, border: "1px solid #294653", borderRadius: 10, padding: 10 }}>
+              <div style={{ color: "#a9c0c9", fontSize: 12, marginBottom: 8 }}>انتقل إلى موقع سجل موثق (المواقع الدقيقة تظهر للإدارة فقط)</div>
+              <div style={{ display: "flex", gap: 7, flexWrap: "wrap" }}>{mapRecords.map(record => <button key={record.id} type="button" onClick={() => focusRecordOnMap(record)} style={{ ...primary, padding: "7px 10px", fontSize: 12 }}>{record.title}</button>)}</div>
+            </div>}
             <p style={{ color: "#9eb6c0", fontSize: 12, lineHeight: 1.8, margin: "8px 10px" }}>لا نعرض نقاطًا أو مواقع جغرافية إلا من سجلات موثقة. لا تُعرض مواقع المستفيدين الشخصية.</p>
           </div>
         </section>
