@@ -173,6 +173,58 @@ export default function Dashboard() {
             </Link>
           </section>
 
+          {/* مسارات المنصة — تصميم مستوحى من التصور المعتمد */}
+          <section className="ho-pathways" aria-labelledby="ho-pathways-title">
+            <div className="ho-section-head">
+              <div>
+                <div className="ho-section-kicker">{tr("مسارات المنصة","PLATFORM PATHWAYS")}</div>
+                <h2 id="ho-pathways-title">{tr("اختر المسار الذي يخدم هدفك","Choose the path that serves your goal")}</h2>
+                <p>{tr("مساران متكاملان: أدوات تساعدك على التخطيط، ومجتمع يحول المبادرات إلى أثر.","Two connected paths: tools for planning and a community that turns initiatives into impact.")}</p>
+              </div>
+            </div>
+            <div className="ho-path-grid">
+              <article className="ho-path-card ho-path-ai">
+                <div className="ho-path-art" aria-hidden="true"><div className="ho-path-globe"><span>AI</span></div><i className="ho-path-orbit orbit-a"></i><i className="ho-path-orbit orbit-b"></i></div>
+                <div className="ho-path-body">
+                  <span className="ho-path-kicker">{tr("المسار الأول","PATH 01")}</span>
+                  <h3>{tr("الأدوات الذكية وتخطيط المبادرات","Smart tools & initiative planning")}</h3>
+                  <p>{tr("حوّل فكرتك إلى خطة واضحة، واستفد من أدوات إعداد السيرة الذاتية وتخطيط المشروعات وصياغة مقترحات الدعم.","Turn an idea into a clear plan with tools for resumes, small projects, and support proposals.")}</p>
+                  <div className="ho-path-actions">
+                    <Link href="/small-business" className="ho-path-action">{tr("مولّد خطط المشاريع","Project planner")} <span>←</span></Link>
+                    <Link href="/resume" className="ho-path-action">{tr("مساعد السيرة الذاتية","Resume assistant")} <span>←</span></Link>
+                    <Link href="/ai-core" className="ho-path-action">{tr("المساعد الذكي","AI assistant")} <span>←</span></Link>
+                  </div>
+                </div>
+              </article>
+              <article className="ho-path-card ho-path-community">
+                <div className="ho-path-art" aria-hidden="true"><div className="ho-community-globe">♡</div><i className="ho-community-node node-a">♡</i><i className="ho-community-node node-b">•</i><i className="ho-community-node node-c">♡</i></div>
+                <div className="ho-path-body">
+                  <span className="ho-path-kicker">{tr("المسار الثاني","PATH 02")}</span>
+                  <h3>{tr("المجتمع والتطوع والنشرات","Community, volunteering & alerts")}</h3>
+                  <p>{tr("اكتشف فرص التعاون، وتابع الاحتياجات والمبادرات الموثقة، وتواصل مع شبكة المنظمات.","Find ways to collaborate, follow verified needs and initiatives, and connect with organizations.")}</p>
+                  <div className="ho-path-actions">
+                    <Link href="/opportunities" className="ho-path-action">{tr("الفرص الإنسانية","Humanitarian opportunities")} <span>←</span></Link>
+                    <Link href="/organizations" className="ho-path-action">{tr("دليل المنظمات","Organization directory")} <span>←</span></Link>
+                    <Link href="/radar" className="ho-path-action">{tr("الرادار الإنساني","Humanity radar")} <span>←</span></Link>
+                    <Link href="/mail" className="ho-path-action">{tr("التواصل والمراسلات","Messages & contact")} <span>←</span></Link>
+                  </div>
+                </div>
+              </article>
+            </div>
+          </section>
+
+          <section className="ho-quick-access" aria-label={tr("أقسام سريعة","Quick access")}>
+            <div className="ho-section-head"><div><div className="ho-section-kicker">{tr("وصول سريع","QUICK ACCESS")}</div><h2>{tr("أقسام تحتاجها باستمرار","Your essential shortcuts")}</h2></div></div>
+            <div className="ho-quick-grid">
+              <Link href="/radar"><MapPinned size={19}/><span>{tr("الرادار الإنساني","Humanity radar")}</span></Link>
+              <Link href="/opportunities"><HeartHandshake size={19}/><span>{tr("الفرص الإنسانية","Humanitarian opportunities")}</span></Link>
+              <Link href="/organizations"><Users size={19}/><span>{tr("دليل المنظمات","Organization directory")}</span></Link>
+              <Link href="/beneficiary"><Bell size={19}/><span>{tr("طلبات المساعدة","Assistance requests")}</span></Link>
+              <Link href="/mail"><Mail size={19}/><span>{tr("مركز المراسلات","Message center")}</span></Link>
+              <a href="https://t.me/HumanityOneConnectBot" target="_blank" rel="noopener noreferrer"><Send size={19}/><span>{tr("تيليجرام","Telegram")}</span></a>
+            </div>
+          </section>
+
           {/* المساعد الذكي */}
           <div className="ho-lower-grid">
             <section className="ho-assistant-panel">
