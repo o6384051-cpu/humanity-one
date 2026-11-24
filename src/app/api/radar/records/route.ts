@@ -19,7 +19,14 @@ const recordSchema = z.object({
   longitude: z.number().min(-180).max(180).optional().nullable(),
   locationPrecision: z.enum(["CITY", "REGION", "APPROXIMATE"]).default("APPROXIMATE"),
   sourceName: z.string().trim().min(2).max(180),
-  sourceUrl: z.string().url().max(1000).refine((value) => {\n    try { const protocol = new URL(value).protocol; return protocol === "https:" || protocol === "http:"; } catch { return false; }\n  }, "يجب أن يبدأ رابط المصدر بـ http أو https").optional().nullable(),
+  sourceUrl: z.string().url().max(1000).refine((value) => {
+    try {
+      const protocol = new URL(value).protocol;
+      return protocol === "https:" || protocol === "http:";
+    } catch {
+      return false;
+    }
+  }, "يجب أن يبدأ رابط المصدر بـ http أو https").optional().nullable(),
   sourceReference: z.string().trim().max(240).optional().nullable(),
   observedAt: z.string().datetime(),
 }).refine((v) => (v.latitude == null) === (v.longitude == null), {
