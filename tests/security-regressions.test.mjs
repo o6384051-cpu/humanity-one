@@ -158,7 +158,7 @@ test("radar source URLs accept only HTTP and HTTPS and reject escaped newline sy
   const route = await source("src/app/api/radar/records/route.ts");
   assert.match(route, /protocol === ["']https:|protocol === ["']http:/);
   assert.match(route, /sourceUrl: z\.string\(\)\.url\(\)/);
-  assert.doesNotMatch(route, /\\\\n\s+try \{/);
+  assert.doesNotMatch(route, new RegExp(String.raw`\\n\s+try \\{`));
 });
 
 test("assistance can be approved directly by every authorized administration role", async () => {
