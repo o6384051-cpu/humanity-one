@@ -154,7 +154,7 @@ export default function HumanityRadarPage() {
       if (!Number.isFinite(lat) || !Number.isFinite(lon)) throw new Error("نتيجة الموقع غير صالحة.");
       const bbox = [Math.max(-180, lon - 0.6), Math.max(-85, lat - 0.4), Math.min(180, lon + 0.6), Math.min(85, lat + 0.4)].join(",");
       setMapUrl(`https://www.openstreetmap.org/export/embed.html?bbox=${encodeURIComponent(bbox)}&layer=mapnik&marker=${lat}%2C${lon}`);
-      setMapSearchMessage(`تم العثور على: ${place.display_name}${isAdmin ? " — تم تحريك الخريطة إلى الموقع." : " — نتيجة البحث الجغرافي، مع استمرار عرض الخريطة التخطيطية للمنظمات."}`);
+      setMapSearchMessage(`تم العثور على: ${place.display_name} — تم تحريك الخريطة إلى الموقع.`);
     } catch (e) {
       setMapSearchMessage(e instanceof Error ? e.message : "حدث خطأ أثناء البحث.");
     } finally { setMapSearching(false); }
@@ -180,7 +180,7 @@ export default function HumanityRadarPage() {
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(100%,360px),1fr))", gap: 14, alignItems: "start" }}>
         <section style={{ border: "1px solid #294653", borderRadius: 18, overflow: "hidden", background: "#091d29" }}>
-          <div style={{ padding: 13, display: "flex", gap: 10, alignItems: "center", borderBottom: "1px solid #294653", color: "#83d6ca", fontWeight: 800 }}>{isAdmin ? <Globe2 size={18} /> : <Map size={18} />}{isAdmin ? "الخريطة الجغرافية للإدارة المركزية" : "الخريطة التخطيطية"}</div>
+          <div style={{ padding: 13, display: "flex", gap: 10, alignItems: "center", borderBottom: "1px solid #294653", color: "#83d6ca", fontWeight: 800 }}>{isAdmin ? <Globe2 size={18} /> : <Map size={18} />}{"الخريطة الجغرافية التفاعلية"}</div>
           <div style={{ padding: 12, borderBottom: "1px solid #294653", background: "#0c2330" }}>
             <form onSubmit={searchMapLocation} style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
               <input aria-label="ابحث عن دولة أو مدينة أو منطقة على الخريطة" value={mapSearch} onChange={e => setMapSearch(e.target.value)} placeholder="ابحث عن دولة، مدينة، أو منطقة…" style={{ ...field, flex: "1 1 220px" }} />
@@ -189,7 +189,8 @@ export default function HumanityRadarPage() {
             {mapSearchMessage && <p role="status" aria-live="polite" style={{ color: "#a9dcd4", fontSize: 12, lineHeight: 1.8, margin: "8px 2px 0" }}>{mapSearchMessage}</p>}
           </div>
           <div style={{ padding: 8, background: "linear-gradient(180deg,#102f3c,#0a202d)" }}>
-            {isAdmin ? <iframe title="خريطة OpenStreetMap" src={mapUrl} loading="eager" style={{ width: "100%", height: 360, border: 0, borderRadius: 10, background: "#dbe5e8" }} /> : <SchematicMap />}
+            <iframe title="الخريطة الجغرافية التفاعلية" src={mapUrl} loading="eager" allowFullScreen referrerPolicy="strict-origin-when-cross-origin" style={{ width: "100%", height: 420, border: 0, borderRadius: 10, background: "#dbe5e8", display: "block" }} />
+            <a href={mapUrl} target="_blank" rel="noopener noreferrer" style={{ display: "inline-block", color: "#8edbd0", padding: "8px 10px", fontSize: 12 }}>فتح الخريطة في نافذة مستقلة</a>
             <p style={{ color: "#9eb6c0", fontSize: 12, lineHeight: 1.8, margin: "8px 10px" }}>لا نعرض نقاطًا أو مواقع جغرافية إلا من سجلات موثقة. لا تُعرض مواقع المستفيدين الشخصية.</p>
           </div>
         </section>
