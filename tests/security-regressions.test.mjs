@@ -167,3 +167,23 @@ test("assistance can be approved directly by every authorized administration rol
   assert.match(route, /z\.enum\(\["IN_REVIEW",\s*"APPROVED",\s*"REJECTED",\s*"CLOSED"\]\)/);
   assert.doesNotMatch(route, /status !== ["']IN_REVIEW["']/);
 });
+
+
+test("compact navigation keeps every existing destination reachable and scrollable", async () => {
+  const page = await source("src/app/page.tsx");
+  const styles = await source("src/app/globals.css");
+  const destinations = [
+    "/", "/ai-core", "/radar", "/beneficiary", "/opportunities", "/agents",
+    "/memory", "/admin", "/mail", "/verified-sources", "/organizations",
+    "/fees", "/jobs", "/personal-plan", "/resume", "/small-business",
+    "/projects", "/tasks", "/knowledge", "/analytics",
+  ];
+  for (const href of destinations) {
+    assert.ok(page.includes('href="' + href + '"'), "missing navigation destination: " + href);
+  }
+  assert.match(page, /<details className="ho-nav-group">/);
+  assert.match(page, /<summary>.*باقي الخدمات/s);
+  assert.match(page, /closest\("a"\)/);
+  assert.match(styles, /\.ho-sidebar\{overflow-y:auto/);
+  assert.match(styles, /@media\(max-height:760px\)/);
+});
