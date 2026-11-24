@@ -80,7 +80,19 @@ export default function HumanityRadarPage() {
   }), [records]);
 
   async function submitRecord(event: React.FormEvent) {
-    event.preventDefault(); setSaving(true); setError(""); setMessage("");
+    event.preventDefault(); setError(""); setMessage("");
+    const observedDate = new Date(draft.observedAt);
+    if (!draft.observedAt || Number.isNaN(observedDate.getTime())) {
+      setError("اختر تاريخ ووقتًا صحيحين لرصد البيانات."); return;
+    }
+    if (observedDate.getTime() > Date.now() + 5 * 60 * 1000) {
+      setError("تاريخ الرصد لا يمكن أن يكون في المستقبل."); return;
+    }
+    if (draft.sourceUrl) {
+      try { const protocol = new URL(draft.sourceUrl).protocol; if (protocol !== "https:" && protocol !== "http:") throw new Error(); }
+      catch { setError("رابط المصدر يجب أن يبدأ بـ http أو https."); return; }
+    }
+    setSaving(true);
     try {
       const response = await fetch("/api/radar/records", {
         method: "POST", headers: { "Content-Type": "application/json" },
