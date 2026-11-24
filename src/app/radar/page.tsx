@@ -47,7 +47,7 @@ export default function HumanityRadarPage() {
   const [mapSearch, setMapSearch] = useState("");
   const [mapSearching, setMapSearching] = useState(false);
   const [mapSearchMessage, setMapSearchMessage] = useState("");
-  const [mapUrl, setMapUrl] = useState("https://www.openstreetmap.org/export/embed.html?bbox=-180%2C-85%2C180%2C85&layer=mapnik");
+  const [mapUrl, setMapUrl] = useState("https://www.openstreetmap.org/export/embed.html?bbox=31.0%2C29.7%2C32.0%2C30.3&layer=mapnik");
 
   const isAdmin = access?.view === "central-admin";
   const canSubmit = access?.view === "organization";
@@ -189,7 +189,7 @@ export default function HumanityRadarPage() {
             {mapSearchMessage && <p role="status" aria-live="polite" style={{ color: "#a9dcd4", fontSize: 12, lineHeight: 1.8, margin: "8px 2px 0" }}>{mapSearchMessage}</p>}
           </div>
           <div style={{ padding: 8, background: "linear-gradient(180deg,#102f3c,#0a202d)" }}>
-            {isAdmin ? <iframe title="خريطة OpenStreetMap" src={mapUrl} loading="lazy" referrerPolicy="no-referrer" style={{ width: "100%", height: 360, border: 0, borderRadius: 10, background: "#dbe5e8" }} /> : <SchematicMap />}
+            {isAdmin ? <iframe title="خريطة OpenStreetMap" src={mapUrl} loading="eager" style={{ width: "100%", height: 360, border: 0, borderRadius: 10, background: "#dbe5e8" }} /> : <SchematicMap />}
             <p style={{ color: "#9eb6c0", fontSize: 12, lineHeight: 1.8, margin: "8px 10px" }}>لا نعرض نقاطًا أو مواقع جغرافية إلا من سجلات موثقة. لا تُعرض مواقع المستفيدين الشخصية.</p>
           </div>
         </section>
