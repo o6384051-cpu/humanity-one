@@ -256,3 +256,41 @@ img, video, canvas, iframe {
 .ho-quick-grid a{display:flex;align-items:center;gap:10px;min-height:58px;padding:12px;border:1px solid rgba(132,167,197,.18);border-radius:12px;background:linear-gradient(130deg,#122338,#0d1929);color:#dce9f6;text-decoration:none;font-size:11px;font-weight:700;transition:.2s}
 .ho-quick-grid a svg{color:#70d9d6;flex-shrink:0}.ho-quick-grid a:hover{border-color:rgba(94,218,215,.55);transform:translateY(-2px)}
 @media(max-width:760px){.ho-path-grid{grid-template-columns:1fr}.ho-path-art{height:165px}.ho-path-body h3{font-size:17px}.ho-quick-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+
+/* Compact home layout: reduce visual crowding without removing destinations. */
+.ho-pathways{margin:20px 0 18px}
+.ho-path-grid{gap:12px}
+.ho-path-art{height:128px}
+.ho-path-globe,.ho-community-globe{width:104px;height:104px}
+.ho-path-globe span{font-size:24px}
+.ho-path-orbit{width:180px;height:62px}
+.ho-path-body{padding:12px 14px 14px}
+.ho-path-body h3{font-size:16px;margin:4px 0 5px}
+.ho-path-body p{font-size:10px;line-height:1.65;min-height:0;margin:0 0 9px}
+.ho-path-actions{gap:5px}
+.ho-path-action{padding:7px 9px;font-size:10px}
+.ho-quick-access{margin:18px 0 20px}
+.ho-quick-grid{gap:7px}
+.ho-quick-grid a{min-height:46px;padding:9px 10px;font-size:10px}
+.ho-section-head{margin-bottom:12px}
+.ho-services{gap:10px}
+.ho-service-card{padding:14px}
+.ho-lower-grid{gap:12px;margin-top:18px}
+@media(max-width:760px){
+ .ho-pathways{margin:16px 0}
+ .ho-path-grid{gap:10px}
+ .ho-path-art{height:104px}
+ .ho-path-globe,.ho-community-globe{width:82px;height:82px}
+ .ho-path-globe span{font-size:20px}
+ .ho-path-orbit{width:145px;height:50px}
+ .ho-path-body{padding:10px 12px 12px}
+ .ho-path-body h3{font-size:14px}
+ .ho-path-body p{font-size:10px;line-height:1.55}
+ .ho-quick-access{margin:14px 0 16px}
+ .ho-quick-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+ .ho-quick-grid a{min-height:42px;padding:8px;font-size:9px}
+ .ho-services{gap:8px}
+ .ho-service-card{padding:12px}
+ .ho-lower-grid{margin-top:14px}
+}
