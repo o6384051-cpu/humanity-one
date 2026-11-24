@@ -42,28 +42,33 @@ export default function Dashboard() {
         <div className="ho-nav-label">{tr("القائمة الرئيسية","MAIN MENU")}</div>
         
         {/* القائمة المحدثة بالروابط */}
-        <nav className="ho-nav" aria-label={tr("القائمة الرئيسية","Main navigation")} onClick={() => setMobileMenuOpen(false)}>
+        <nav className="ho-nav" aria-label={tr("القائمة الرئيسية","Main navigation")} onClick={(event) => { if ((event.target as HTMLElement).closest("a")) setMobileMenuOpen(false); }}>
           <Link href="/" className="active"><Home size={18} />{tr("الرئيسية","Home")}</Link>
           <Link href="/ai-core"><Bot size={18} />{tr("المساعد الذكي","AI Assistant")}</Link>
-          <Link href="/ai-core"><Bot size={18} />{tr("مركز الذكاء والعمل الإنساني","Humanitarian AI & Action Hub")}</Link>
-          <Link href="/agents"><Users size={18} />{tr("فريق الوكلاء","Agent Team")}</Link>
-          <Link href="/memory"><BookOpen size={18} />{tr("الذاكرة والخصوصية","Memory & Privacy")}</Link>
-          <Link href="/admin"><ShieldCheck size={18} />{tr("إدارة المنظومة","Administration")}</Link>
-          <Link href="/mail"><Mail size={18} />{tr("مركز المراسلات","Internal Mail")}</Link>
           <Link href="/radar"><MapPinned size={18} />{tr("الرادار الإنساني","Humanity Radar")}</Link>
-          <Link href="/opportunities"><HeartHandshake size={18} />{tr("مركز الفرص الإنسانية","Humanitarian Opportunities")}</Link>
-          <Link href="/verified-sources"><BookOpen size={18} />{tr("دليل المصادر الموثوقة","Verified Resources")}</Link>
-          <Link href="/organizations"><HeartHandshake size={18} />{tr("شبكة المنظمات والشراكات","Organizations & Partnerships")}</Link>
           <Link href="/beneficiary"><HeartHandshake size={18} />{tr("منصة المستفيدين وطلبات المساعدة","Beneficiary Support Requests")}</Link>
-          <Link href="/fees"><BadgeInfo size={18} />{tr("الرسوم والخدمات المجانية","Fees & Free Services")}</Link>
-          <Link href="/jobs"><Users size={18} />{tr("سوق العمل","Job Marketplace")}</Link>
-          <Link href="/personal-plan"><CheckSquare size={18} />{tr("خطتي الشخصية","My Personal Plan")}</Link>
-          <Link href="/resume"><BookOpen size={18} />{tr("إنشاء سيرة ذاتية","Build a Resume")}</Link>
-          <Link href="/small-business"><Leaf size={18} />{tr("تخطيط مشروع صغير","Small Business Planner")}</Link>
-          <Link href="/projects"><FolderKanban size={18} />{tr("المشاريع","Projects")}</Link>
-          <Link href="/tasks"><CheckSquare size={18} />{tr("المهام","Tasks")}</Link>
-          <Link href="/knowledge"><BookOpen size={18} />{tr("محرك المعرفة","Knowledge Hub")}</Link>
-          <Link href="/analytics"><BarChart3 size={18} />{tr("التقارير","Analytics")}</Link>
+          <Link href="/opportunities"><HeartHandshake size={18} />{tr("مركز الفرص الإنسانية","Humanitarian Opportunities")}</Link>
+          <details className="ho-nav-group">
+            <summary>{tr("باقي الخدمات","More services")} <span aria-hidden="true">⌄</span></summary>
+            <div className="ho-nav-sub">
+              <Link href="/ai-core"><Bot size={18} />{tr("مركز الذكاء والعمل الإنساني","Humanitarian AI & Action Hub")}</Link>
+              <Link href="/agents"><Users size={18} />{tr("فريق الوكلاء","Agent Team")}</Link>
+              <Link href="/memory"><BookOpen size={18} />{tr("الذاكرة والخصوصية","Memory & Privacy")}</Link>
+              <Link href="/admin"><ShieldCheck size={18} />{tr("إدارة المنظومة","Administration")}</Link>
+              <Link href="/mail"><Mail size={18} />{tr("مركز المراسلات","Internal Mail")}</Link>
+              <Link href="/verified-sources"><BookOpen size={18} />{tr("دليل المصادر الموثوقة","Verified Resources")}</Link>
+              <Link href="/organizations"><HeartHandshake size={18} />{tr("شبكة المنظمات والشراكات","Organizations & Partnerships")}</Link>
+              <Link href="/fees"><BadgeInfo size={18} />{tr("الرسوم والخدمات المجانية","Fees & Free Services")}</Link>
+              <Link href="/jobs"><Users size={18} />{tr("سوق العمل","Job Marketplace")}</Link>
+              <Link href="/personal-plan"><CheckSquare size={18} />{tr("خطتي الشخصية","My Personal Plan")}</Link>
+              <Link href="/resume"><BookOpen size={18} />{tr("إنشاء سيرة ذاتية","Build a Resume")}</Link>
+              <Link href="/small-business"><Leaf size={18} />{tr("تخطيط مشروع صغير","Small Business Planner")}</Link>
+              <Link href="/projects"><FolderKanban size={18} />{tr("المشاريع","Projects")}</Link>
+              <Link href="/tasks"><CheckSquare size={18} />{tr("المهام","Tasks")}</Link>
+              <Link href="/knowledge"><BookOpen size={18} />{tr("محرك المعرفة","Knowledge Hub")}</Link>
+              <Link href="/analytics"><BarChart3 size={18} />{tr("التقارير","Analytics")}</Link>
+            </div>
+          </details>
         </nav>
 
         <div className="ho-sidebar-bottom">
