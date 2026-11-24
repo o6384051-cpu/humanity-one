@@ -70,7 +70,7 @@ export default function OrganizationInvitationsPage(){
  <h2 style={{margin:0}}>إعداد الرسالة</h2>
  <label style={{display:"grid",gap:5}}>عنوان الرسالة<input value={subject} onChange={e=>setSubject(e.target.value)} maxLength={180} style={field}/></label>
  <label style={{display:"grid",gap:5}}>نص الدعوة<textarea value={body} onChange={e=>setBody(e.target.value)} rows={13} maxLength={10000} style={{...field,lineHeight:1.8}}/></label>
- <small style={{color:"#9fb6bf"}}>يمكن استخدام {{organizationName}} داخل النص لإدراج اسم كل منظمة تلقائيًا.</small>
+ <small style={{color:"#9fb6bf"}}>يمكن استخدام {"{{organizationName}}"} داخل النص لإدراج اسم كل منظمة تلقائيًا.</small>
  </section>
  <section style={{...card,display:"grid",gap:10}}>
  <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",gap:8,flexWrap:"wrap"}}><h2 style={{margin:0}}>قائمة المنظمات ({leads.length})</h2><div style={{display:"flex",gap:8,flexWrap:"wrap"}}><select value={filter} onChange={e=>setFilter(e.target.value)} style={{...field,width:"auto"}}><option value="eligible">لديها بريد وقابلة للتواصل</option><option value="all">كل السجلات</option></select><button type="button" onClick={toggleShown} style={button}>{allShownSelected?"إلغاء تحديد الظاهر":"تحديد الظاهر"}</button></div></div>
