@@ -222,3 +222,37 @@ img, video, canvas, iframe {
   }
   .ho-sidebar-bottom { flex: 0 0 auto; }
 }
+
+
+/* HUMANITY ONE pathway dashboard */
+.ho-pathways{margin:34px 0 28px}
+.ho-pathways .ho-section-head p{font-size:11px;color:#94a8bf;margin:5px 0 0;line-height:1.8}
+.ho-path-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:17px}
+.ho-path-card{overflow:hidden;border:1px solid rgba(89,207,213,.32);border-radius:17px;background:linear-gradient(155deg,#101f32,#0b1726);box-shadow:0 12px 35px rgba(0,0,0,.18)}
+.ho-path-community{border-color:rgba(225,190,112,.36)}
+.ho-path-art{height:190px;position:relative;overflow:hidden;display:grid;place-items:center;background:radial-gradient(circle at 50% 48%,rgba(42,181,218,.28),transparent 36%),linear-gradient(135deg,#071727,#102f49 55%,#091725)}
+.ho-path-art:before,.ho-path-art:after{content:"";position:absolute;border:1px solid rgba(105,221,229,.25);border-radius:50%;width:290px;height:115px;transform:rotate(-22deg)}
+.ho-path-art:after{width:230px;height:160px;transform:rotate(34deg);border-style:dashed}
+.ho-path-globe{width:142px;height:142px;border-radius:50%;display:grid;place-items:center;border:1px solid rgba(119,232,245,.8);background:radial-gradient(circle at 35% 30%,#287f9d,#0b2945 65%,#071a2c);box-shadow:0 0 42px rgba(52,207,232,.28),inset 0 0 28px rgba(78,218,232,.2);z-index:1}
+.ho-path-globe span{font-size:30px;font-weight:900;color:#a9f8ff;text-shadow:0 0 18px #48d8ed}
+.ho-path-orbit{position:absolute;width:225px;height:80px;border:1px solid rgba(93,229,240,.48);border-radius:50%;z-index:2}
+.orbit-a{transform:rotate(55deg)}.orbit-b{transform:rotate(-55deg);border-color:rgba(228,193,111,.45)}
+.ho-path-community .ho-path-art{background:radial-gradient(circle at 50% 50%,rgba(222,164,75,.2),transparent 40%),linear-gradient(135deg,#100f17,#1e2632 55%,#0b1725)}
+.ho-community-globe{width:150px;height:150px;border-radius:50%;display:grid;place-items:center;color:#ffd48a;font-size:64px;background:radial-gradient(circle at 38% 30%,#35516a,#101d2d 68%);border:1px solid rgba(240,196,112,.65);box-shadow:0 0 38px rgba(231,177,88,.22);z-index:1}
+.ho-community-node{position:absolute;z-index:3;width:27px;height:27px;border-radius:50%;display:grid;place-items:center;color:#ffcf80;border:1px solid rgba(255,210,135,.5);background:#1c2b36;box-shadow:0 0 15px rgba(255,195,104,.28);font-style:normal}
+.node-a{top:25px;left:22%}.node-b{right:20%;top:42px}.node-c{bottom:24px;right:27%}
+.ho-path-body{padding:18px 20px 20px}
+.ho-path-kicker{font-size:9px;font-weight:900;letter-spacing:1.3px;color:#66dce0}
+.ho-path-community .ho-path-kicker{color:#e8c47f}
+.ho-path-body h3{font-size:19px;margin:6px 0 7px;color:#f2f6ff}
+.ho-path-body p{font-size:11px;line-height:1.9;color:#9eafc4;min-height:43px;margin:0 0 13px}
+.ho-path-actions{display:grid;gap:7px}
+.ho-path-action{display:flex;justify-content:space-between;align-items:center;text-decoration:none;color:#bceef0;border:1px solid rgba(86,209,215,.22);background:rgba(38,147,164,.08);border-radius:9px;padding:9px 11px;font-size:11px;font-weight:700;transition:.2s}
+.ho-path-action:hover{border-color:#5bd7d8;background:rgba(38,147,164,.17);transform:translateX(-2px)}
+.ho-path-community .ho-path-action{color:#f0d59e;border-color:rgba(229,190,117,.22);background:rgba(174,125,50,.07)}
+.ho-path-community .ho-path-action:hover{border-color:#dfbd78;background:rgba(174,125,50,.15)}
+.ho-quick-access{margin:30px 0 34px}
+.ho-quick-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.ho-quick-grid a{display:flex;align-items:center;gap:10px;min-height:58px;padding:12px;border:1px solid rgba(132,167,197,.18);border-radius:12px;background:linear-gradient(130deg,#122338,#0d1929);color:#dce9f6;text-decoration:none;font-size:11px;font-weight:700;transition:.2s}
+.ho-quick-grid a svg{color:#70d9d6;flex-shrink:0}.ho-quick-grid a:hover{border-color:rgba(94,218,215,.55);transform:translateY(-2px)}
+@media(max-width:760px){.ho-path-grid{grid-template-columns:1fr}.ho-path-art{height:165px}.ho-path-body h3{font-size:17px}.ho-quick-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
