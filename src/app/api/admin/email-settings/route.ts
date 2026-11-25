@@ -12,7 +12,7 @@ async function authorized() {
 
 export async function GET() {
   const admin = await authorized();
-  if (!admin) return NextResponse.json({ error: "هذه الإعدادات متاحة لحساب المؤسس فقط." }, { status: 403 });
+  if (!admin) return NextResponse.json({ error: "These settings are available to the founder account only." }, { status: 403 });
   const apiKeyConfigured = Boolean(process.env.RESEND_API_KEY);
   const fromEmail = process.env.RESEND_FROM_EMAIL || "";
   return NextResponse.json({
@@ -26,18 +26,18 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   const admin = await authorized();
-  if (!admin) return NextResponse.json({ error: "هذه الوظيفة متاحة لحساب المؤسس فقط." }, { status: 403 });
+  if (!admin) return NextResponse.json({ error: "This feature is available to the founder account only." }, { status: 403 });
 
   const parsed = z.object({
     recipient: z.string().trim().email().max(254),
     confirm: z.literal(true),
   }).safeParse(await req.json().catch(() => null));
-  if (!parsed.success) return NextResponse.json({ error: "أدخل بريدًا إلكترونيًا صحيحًا وأكد الاختبار." }, { status: 400 });
+  if (!parsed.success) return NextResponse.json({ error: "Enter a valid email address and confirm the test." }, { status: 400 });
 
   const apiKey = process.env.RESEND_API_KEY;
   const from = process.env.RESEND_FROM_EMAIL;
   if (!apiKey || !from) {
-    return NextResponse.json({ error: "خدمة البريد غير مكتملة. اضبط RESEND_API_KEY و RESEND_FROM_EMAIL في Vercel Production بعد توثيق عنوان المرسل." }, { status: 503 });
+    return NextResponse.json({ error: "Email service configuration is incomplete. Set RESEND_API_KEY and RESEND_FROM_EMAIL in the relevant Vercel environment after verifying the sender address." }, { status: 503 });
   }
 
   try {
@@ -47,24 +47,24 @@ export async function POST(req: NextRequest) {
       body: JSON.stringify({
         from,
         to: [parsed.data.recipient],
-        subject: "اختبار خدمة البريد — HUMANITY ONE",
-        text: "هذه رسالة اختبار من HUMANITY ONE للتأكد من أن خدمة البريد تقبل الإرسال. لم يتم إرسال أي دعوة لمنظمة.",
-        html: "<div dir=\"rtl\" style=\"font-family:Arial,sans-serif;line-height:1.8\"><h2>اختبار خدمة البريد — HUMANITY ONE</h2><p>هذه رسالة اختبار للتأكد من أن خدمة البريد تقبل الإرسال.</p><p>لم يتم إرسال أي دعوة لمنظمة.</p></div>",
+        subject: "HUMANITY ONE Email Service Test",
+        text: "This is a test email from HUMANITY ONE to confirm that the email service accepts messages. No organization invitation was sent.",
+        html: "<div dir=\"rtl\" style=\"font-family:Arial,sans-serif;line-height:1.8\"><h2>HUMANITY ONE Email Service Test</h2><p>هذه رسالة اختبار للتأكد من أن خدمة البريد تقبل الإرسال.</p><p>لم يتم إرسال أي دعوة لمنظمة.</p></div>",
         reply_to: "humanityone.contact@gmail.com",
       }),
       cache: "no-store",
     });
     const result = await response.json().catch(() => ({}));
     if (!response.ok) {
-      return NextResponse.json({ error: "رفض مزود البريد الاختبار. راجع توثيق عنوان المرسل وحالة مفتاح الخدمة في Resend.", providerMessage: String(result?.message || "") }, { status: 502 });
+      return NextResponse.json({ error: "The email provider rejected the test. Check the sender verification and API key status in Resend.", providerMessage: String(result?.message || "") }, { status: 502 });
     }
     return NextResponse.json({
       ok: true,
       accepted: true,
-      message: "قبل مزود البريد رسالة الاختبار. هذا لا يثبت وصولها إلى صندوق الوارد؛ تحقق من البريد وتقارير Resend.",
+      message: "The email provider accepted the test message. This does not confirm inbox delivery; check the recipient’s mailbox and Resend logs.",
       providerId: typeof result?.id === "string" ? result.id : null,
     }, { headers: { "Cache-Control": "no-store, private" } });
   } catch {
-    return NextResponse.json({ error: "تعذر الاتصال بمزود البريد. حاول لاحقًا." }, { status: 502 });
+    return NextResponse.json({ error: "Unable to connect to the email provider. Please try again later." }, { status: 502 });
   }
 }
