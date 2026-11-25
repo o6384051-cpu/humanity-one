@@ -49,7 +49,7 @@ export async function POST(req: NextRequest) {
         to: [parsed.data.recipient],
         subject: "HUMANITY ONE Email Service Test",
         text: "This is a test email from HUMANITY ONE to confirm that the email service accepts messages. No organization invitation was sent.",
-        html: "<div dir=\"rtl\" style=\"font-family:Arial,sans-serif;line-height:1.8\"><h2>HUMANITY ONE Email Service Test</h2><p>هذه رسالة اختبار للتأكد من أن خدمة البريد تقبل الإرسال.</p><p>لم يتم إرسال أي دعوة لمنظمة.</p></div>",
+        html: "<div dir=\"rtl\" style=\"font-family:Arial,sans-serif;line-height:1.8\"><h2>HUMANITY ONE Email Service Test</h2><p>This is a test email to confirm that the email service accepts messages.</p><p>No organization invitation was sent.</p></div>",
         reply_to: "humanityone.contact@gmail.com",
       }),
       cache: "no-store",
