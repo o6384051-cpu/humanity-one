@@ -187,3 +187,11 @@ test("compact navigation keeps every existing destination reachable and scrollab
   assert.match(styles, /\.ho-sidebar\{overflow-y:auto/);
   assert.match(styles, /@media\(max-height:760px\)/);
 });
+
+
+test("founder email test is rate-limited and provider errors stay sanitized", async () => {
+  const route = await source("src/app/api/admin/email-settings/route.ts");
+  assert.match(route, /rateLimit\(req, "admin-email-test", 3, 60 \* 60 \* 1000, admin\.id\)/);
+  assert.match(route, /rateLimitResponse\(limit\.retryAfter, limit\.unavailable\)/);
+  assert.doesNotMatch(route, /providerMessage/);
+});
