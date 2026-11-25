@@ -47,7 +47,7 @@ export default function AdminEmailSettingsPage(){
     <li>Add <b>RESEND_API_KEY</b> using the secret API key from your Resend account.</li>
     <li>Add <b>RESEND_FROM_EMAIL</b> with a sender address verified by Resend, such as HUMANITY ONE using a verified domain.</li>
     <li>Save both variables for the environment you are testing, then redeploy that environment.</li>
-    <li>ارجع إلى هذه الصفحة واضغط «Refresh Status».</li>
+    <li>Return to this page and select “Refresh Status.”</li>
    </ol>
    <p style={{color:"#f2c879",fontSize:13,lineHeight:1.8,margin:0}}>Security: Never enter your Resend API key here or share it in chat. Store it as a secret environment variable in Vercel. It is never displayed in the browser.</p>
   </section>
