@@ -56,7 +56,7 @@ export default function AdminEmailSettingsPage(){
    <form onSubmit={test} style={{display:"grid",gap:10}}>
     <label style={{display:"grid",gap:6}}>البريد الإلكتروني الذي سيستقبل الاختبار<input type="email" required maxLength={254} value={recipient} onChange={e=>setRecipient(e.target.value)} placeholder="example@email.com" style={field}/></label>
     <p style={{color:"#a9bec7",fontSize:13,lineHeight:1.8,margin:0}}>ستُرسل رسالة اختبار واحدة فقط إلى هذا العنوان. لن تُرسل دعوات للمنظمات ولن تتغير بياناتها.</p>
-    <button type="submit" disabled={sending||!recipient.trim()||!status?.ready} style={{...button,opacity:sending||!recipient.trim()||!status?.ready?0.55:1}}>{sending?"جارٍ إرسال الاختبار...":"إرسال رسالة اختبار"}</button>
+    <button type="submit" disabled={sending||!recipient.trim()} aria-label="إرسال رسالة اختبار" style={{...button,minHeight:48,minWidth:190,opacity:sending||!recipient.trim()?0.55:1,display:"inline-flex",alignItems:"center",justifyContent:"center",appearance:"none",WebkitAppearance:"none"}}>{sending?"جارٍ إرسال الاختبار...":"إرسال رسالة اختبار"}</button>
    </form>
   </section>
   <p style={{color:"#9fb6bf",fontSize:12,lineHeight:1.8}}>نجاح الاختبار يعني أن Resend قبل الرسالة؛ يجب التأكد من وصولها فعليًا إلى صندوق البريد ومراجعة تقارير المزود. إرسال دعوات المنظمات يظل إجراءً منفصلًا يتطلب تأكيدًا صريحًا.</p>
