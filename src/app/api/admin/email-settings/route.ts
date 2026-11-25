@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { getAdminSession } from "@/lib/admin-auth";
+import { rateLimit, rateLimitResponse } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -27,6 +28,9 @@ export async function GET() {
 export async function POST(req: NextRequest) {
   const admin = await authorized();
   if (!admin) return NextResponse.json({ error: "This feature is available to the founder account only." }, { status: 403 });
+
+  const limit = await rateLimit(req, "admin-email-test", 3, 60 * 60 * 1000, admin.id);
+  if (!limit.allowed) return rateLimitResponse(limit.retryAfter, limit.unavailable);
 
   const parsed = z.object({
     recipient: z.string().trim().email().max(254),
@@ -56,7 +60,7 @@ export async function POST(req: NextRequest) {
     });
     const result = await response.json().catch(() => ({}));
     if (!response.ok) {
-      return NextResponse.json({ error: "The email provider rejected the test. Check the sender verification and API key status in Resend.", providerMessage: String(result?.message || "") }, { status: 502 });
+      return NextResponse.json({ error: "The email provider rejected the test. Check the sender verification and API key status in Resend." }, { status: 502 });
     }
     return NextResponse.json({
       ok: true,
