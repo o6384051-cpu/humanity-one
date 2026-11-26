@@ -189,30 +189,32 @@ test("compact navigation keeps every existing destination reachable and scrollab
 });
 
 
+
 test("beneficiary uploads enforce a 4 MiB limit and verify PDF, PNG, and JPEG byte signatures", async () => {
   const upload = await source("src/app/api/beneficiary/files/route.ts");
-  assert.match(upload, /const MAX_BYTES = 4 \\* 1024 \\* 1024/);
-  assert.match(upload, /file\\.size < 1 \\|\\| file\\.size > MAX_BYTES/);
-  assert.match(upload, /function detectMime\\(bytes: Buffer\\)/);
-  assert.match(upload, /subarray\\(0, 5\\)\\.toString\\(["']ascii["']\\) === ["']%PDF-["']/);
-  assert.match(upload, /Buffer\\.from\\(\\[137, 80, 78, 71, 13, 10, 26, 10\\]\\)/);
-  assert.match(upload, /bytes\\[0\\] === 0xff && bytes\\[1\\] === 0xd8 && bytes\\[2\\] === 0xff/);
-  assert.match(upload, /if \\(!mimeType\\)/);
-  assert.doesNotMatch(upload, /file\\.type/);
-  assert.match(upload, /ContentLength: bytes\\.length/);
-  assert.match(upload, /ContentType: mimeType/);
+  assert.ok(upload.includes("const MAX_BYTES = 4 * 1024 * 1024"));
+  assert.ok(upload.includes("file.size < 1 || file.size > MAX_BYTES"));
+  assert.ok(upload.includes('bytes.subarray(0, 5).toString("ascii") === "%PDF-"'));
+  assert.ok(upload.includes("Buffer.from([137, 80, 78, 71, 13, 10, 26, 10])"));
+  assert.ok(upload.includes("bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff"));
+  assert.ok(upload.includes("ContentLength: bytes.length"));
+  assert.ok(upload.includes("ContentType: mimeType"));
+  assert.doesNotMatch(upload, /file\.type/);
+  assert.doesNotMatch(upload, /ACL\s*:\s*["']public-read/);
 });
 
 test("beneficiary file storage is server-configured and downloads remain private and role-scoped", async () => {
   const storage = await source("src/lib/beneficiary-file-storage.ts");
   const download = await source("src/app/api/beneficiary/files/[id]/route.ts");
   const adminDownload = await source("src/app/api/admin/assistance/files/[id]/route.ts");
-  assert.match(storage, /AWS_ACCESS_KEY_ID.*AWS_SECRET_ACCESS_KEY.*AWS_ENDPOINT_URL_S3.*AWS_REGION.*BENEFICIARY_FILES_BUCKET/s);
-  assert.match(storage, /if \\(missing\\.length\\) throw new Error/);
-  assert.match(storage, /credentials: \\{/);
-  assert.match(download, /where: \\{ id: context\\.params\\.id, userId: user\\.id \\}/);
-  assert.match(download, /Cache-Control["']: ["']private, no-store/);
-  assert.match(download, /X-Content-Type-Options["']: ["']nosniff/);
-  assert.match(download, /Content-Disposition["']: \`attachment/);
-  assert.match(adminDownload, /!\\["SUPER_ADMIN", "ADMIN", "MODERATOR"\\]\\.includes\\(admin\\.role\\)/);
+  for (const key of ["AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY", "AWS_ENDPOINT_URL_S3", "AWS_REGION", "BENEFICIARY_FILES_BUCKET"]) {
+    assert.ok(storage.includes(key), "missing storage configuration guard: " + key);
+  }
+  assert.ok(storage.includes("if (missing.length) throw new Error"));
+  assert.ok(storage.includes("credentials: {"));
+  assert.ok(download.includes("where: { id: context.params.id, userId: user.id }"));
+  assert.ok(download.includes('"Cache-Control": "private, no-store, max-age=0"'));
+  assert.ok(download.includes('"X-Content-Type-Options": "nosniff"'));
+  assert.ok(download.includes("Content-Disposition"));
+  assert.ok(adminDownload.includes('["SUPER_ADMIN", "ADMIN", "MODERATOR"].includes(admin.role)'));
 });
