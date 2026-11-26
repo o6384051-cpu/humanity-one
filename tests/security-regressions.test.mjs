@@ -218,3 +218,26 @@ test("beneficiary file storage is server-configured and downloads remain private
   assert.ok(download.includes("Content-Disposition"));
   assert.ok(adminDownload.includes('["SUPER_ADMIN", "ADMIN", "MODERATOR"].includes(admin.role)'));
 });
+
+
+test("organization conversations and messages are restricted to their two participating organizations", async () => {
+  const route = await source("src/app/api/organization/messages/route.ts");
+  assert.ok(route.includes("OR: [{ organizationAId: organization.id }, { organizationBId: organization.id }]"));
+  assert.ok(route.includes("where: { id: conversationId, OR: [{ organizationAId: organization.id }, { organizationBId: organization.id }] }"));
+  assert.ok(route.includes("senderOrganizationId: organization.id"));
+  assert.ok(route.includes('where: { id: recipientId, status: "ACTIVE", passwordHash: { not: null } }'));
+  assert.ok(route.includes("if (!recipient || recipient.id === organization.id)"));
+  assert.ok(route.includes('"Cache-Control": "no-store, private"'));
+});
+
+test("radar records expose organization coordinates only to central admins and enforce verified sharing ownership", async () => {
+  const records = await source("src/app/api/radar/records/route.ts");
+  const sharing = await source("src/app/api/radar/records/[id]/share/route.ts");
+  assert.ok(records.includes("latitude: isCentralAdmin, longitude: isCentralAdmin"));
+  assert.ok(records.includes('{ verificationStatus: "VERIFIED", sharingMode: "NETWORK" }'));
+  assert.ok(records.includes('shares: { some: { organizationId: organization!.id, permission: "VIEW" } }'));
+  assert.ok(sharing.includes('if (sharingMode === "NETWORK" && !isAdmin)'));
+  assert.ok(sharing.includes("record.organizationId !== organization!.id"));
+  assert.ok(sharing.includes('record.verificationStatus !== "VERIFIED"'));
+  assert.ok(sharing.includes('permission: "VIEW"'));
+});
