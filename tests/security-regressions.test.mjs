@@ -125,7 +125,9 @@ test("every internal mail administration operation requires an admin session", a
   const route = await source("src/app/api/admin/mail/route.ts");
   const checks = route.split("const admin = await getAdminSession();").length - 1;
   assert.equal(checks, 3);
-  assert.ok(route.includes('if (!admin) return NextResponse.json({ error: "غير مصرح." }, { status: 401 })'));
+  const permissionChecks = route.match(/hasAdminPermission\\(admin, ["']MANAGE_MAIL["']\\)/g) || [];
+  assert.equal(permissionChecks.length, 3, "GET, POST, and PATCH must each require MANAGE_MAIL");
+  assert.match(route, /if \\(!admin \\|\\| !hasAdminPermission\\(admin, ["']MANAGE_MAIL["']\\)\\)/);
   assert.ok(route.includes("if (!parent || parent.parentId)"));
   assert.ok(route.includes("parentId: null"));
   assert.ok(route.includes('"Cache-Control": "no-store, private"'));
