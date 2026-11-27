@@ -47,7 +47,7 @@ export async function PATCH(req: NextRequest) {
     const id = typeof body.id === "string" ? body.id : "";
     const role = body.role;
     const allowedPermissions = ["VIEW_DASHBOARD", "VIEW_BENEFICIARIES", "MANAGE_ASSISTANCE", "MANAGE_ORGANIZATIONS", "MANAGE_MAIL"];
-    const permissions = Array.isArray(body.permissions) ? [...new Set(body.permissions.filter((p: unknown) => allowedPermissions.includes(String(p))))] : undefined;
+    const permissions = Array.isArray(body.permissions) ? body.permissions.filter((p: unknown, index: number, values: unknown[]) => allowedPermissions.includes(String(p)) && values.indexOf(p) === index) : undefined;
     if (!id || (role !== undefined && !["ADMIN", "MODERATOR", "USER"].includes(role)) || (body.permissions !== undefined && !Array.isArray(body.permissions))) return NextResponse.json({ error: "البيانات غير صالحة." }, { status: 400 });
     const target = await prisma.user.findUnique({ where: { id }, select: { id: true, role: true } });
     if (!target || target.role === "SUPER_ADMIN") return NextResponse.json({ error: "لا يمكن تعديل حساب مؤسس." }, { status: 403 });
