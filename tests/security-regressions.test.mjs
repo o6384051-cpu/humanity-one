@@ -189,6 +189,7 @@ test("desktop navigation shows every destination while mobile keeps the expandab
   assert.match(page, /<div className={`ho-nav-sub\$\{servicesOpen \? " is-open" : ""\}`}/);
   assert.match(page, /setServicesOpen\(\(open\) => !open\)/);
   assert.match(page, /closest\("a"\)/);
-  assert.match(styles, /@media \(min-width: 761px\)[\s\S]*?\.ho-nav-sub \{ display: grid !important; \}/);\n  assert.match(styles, /@media \(max-width: 760px\)[\s\S]*?\.ho-nav-sub\.is-open \{ display: grid; \}/);\n  assert.match(styles, /\.ho-sidebar\{overflow-y:auto/);
+  assert.match(styles, /@media \(min-width: 761px\)[\s\S]*?\.ho-nav-sub \{ display: grid !important; \}/);
+  assert.match(styles, /@media \(max-width: 760px\)[\s\S]*?\.ho-nav-sub\.is-open \{ display: grid; \}/);\n  assert.match(styles, /\.ho-sidebar\{overflow-y:auto/);
   assert.match(styles, /@media\(max-height:760px\)/);
 });
