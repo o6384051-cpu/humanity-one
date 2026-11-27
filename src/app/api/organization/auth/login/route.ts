@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
     return response;
   }
 
-  const member = await prisma.organizationMember.findUnique({ where: { email }, include: { organization: { select: { id: true, name: true, email: true, status: true } } });
+  const member = await prisma.organizationMember.findUnique({ where: { email }, include: { organization: { select: { id: true, name: true, email: true, status: true } } } });
   if (!member || member.status !== "ACTIVE" || member.organization.status !== "ACTIVE" || !(await bcrypt.compare(password, member.passwordHash))) {
     return NextResponse.json({ error: "بيانات الدخول غير صحيحة أو الحساب غير نشط." }, { status: 401 });
   }
