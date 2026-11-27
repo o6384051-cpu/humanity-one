@@ -129,7 +129,7 @@ function Field({ label, value, onChange, type = "text" }: { label: string; value
         value={value}
         type={isPassword && visible ? "text" : type}
         onChange={e => onChange(e.target.value)}
-        autoComplete={isPassword ? "current-password" : undefined}
+        autoComplete={isPassword ? "current-password" : type === "email" ? "username" : undefined}
         style={{ ...fieldStyle, paddingLeft: isPassword ? 48 : 11 }}
       />
       {isPassword && <button
