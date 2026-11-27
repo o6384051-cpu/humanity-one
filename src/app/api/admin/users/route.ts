@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
     const password = typeof body.password === "string" ? body.password : "";
     const role = body.role;
     const allowedPermissions = ["VIEW_DASHBOARD", "VIEW_BENEFICIARIES", "MANAGE_ASSISTANCE", "MANAGE_ORGANIZATIONS", "MANAGE_MAIL"];
-    const permissions = Array.isArray(body.permissions) ? [...new Set(body.permissions.filter((p: unknown) => allowedPermissions.includes(String(p))))] : (role === "MODERATOR" ? ["VIEW_DASHBOARD"] : []);
+    const permissions = Array.isArray(body.permissions) ? Array.from(new Set(body.permissions.filter((p: unknown) => allowedPermissions.includes(String(p)))) ) : (role === "MODERATOR" ? ["VIEW_DASHBOARD"] : []);
     if (!/^\S+@\S+\.\S+$/.test(email) || !name || password.length < 12 || !["ADMIN", "MODERATOR"].includes(role)) {
       return NextResponse.json({ error: "تحقق من البيانات. كلمة المرور 12 حرفًا على الأقل، والدور إداري أو مشرف." }, { status: 400 });
     }
