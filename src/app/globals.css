@@ -273,13 +273,6 @@ img, video, canvas, iframe {
 .ho-nav-sub{min-width:0}
 
 
-/* Desktop: show all service links without requiring an accordion click. */
-@media (min-width: 761px) {
-  .ho-nav-group-toggle { cursor: default; }
-  .ho-nav-sub { display: grid !important; }
-}
-/* Mobile: retain the compact expandable services section. */
-@media (max-width: 760px) {
-  .ho-nav-sub { display: none; }
-  .ho-nav-sub.is-open { display: grid; }
-}
+/* Keep the services section expandable on both desktop and mobile. */
+.ho-nav-sub { display: none; }
+.ho-nav-sub.is-open { display: grid; }
