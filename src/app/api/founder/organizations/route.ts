@@ -28,6 +28,8 @@ export async function POST(req: NextRequest) {
   if (!organizationId || !/^\S+@\S+\.\S+$/.test(email) || !name || password.length < 12) return NextResponse.json({ error: "تحقق من المنظمة والاسم والبريد وكلمة المرور (12 حرفًا على الأقل)." }, { status: 400 });
   const organization = await prisma.organization.findUnique({ where: { id: organizationId }, select: { id: true } });
   if (!organization) return NextResponse.json({ error: "المنظمة غير موجودة." }, { status: 404 });
+  const [existingOrganization, existingUser] = await Promise.all([prisma.organization.findUnique({ where: { email }, select: { id: true } }), prisma.user.findUnique({ where: { email }, select: { id: true } })]);
+  if (existingOrganization || existingUser) return NextResponse.json({ error: "هذا البريد مرتبط بحساب آخر بالفعل." }, { status: 409 });
   try {
     const member = await prisma.organizationMember.create({ data: { organizationId, email, name, passwordHash: await bcrypt.hash(password, 12), role, permissions }, select: { id: true, organizationId: true, name: true, email: true, role: true, permissions: true, status: true } });
     return NextResponse.json({ member }, { status: 201 });

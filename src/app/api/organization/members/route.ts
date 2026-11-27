@@ -25,6 +25,8 @@ export async function POST(req: NextRequest) {
   const role = body?.role === "MANAGER" ? "MANAGER" : "SUPERVISOR";
   const permissions = Array.isArray(body?.permissions) ? body.permissions.filter((p: unknown) => ["VIEW_DATA", "MANAGE_MEMBERS", "MANAGE_RECORDS"].includes(String(p))) : ["VIEW_DATA"];
   if (!/^\S+@\S+\.\S+$/.test(email) || !name || password.length < 12) return NextResponse.json({ error: "أدخل اسمًا وبريدًا صحيحًا وكلمة مرور لا تقل عن 12 حرفًا." }, { status: 400 });
+  const [existingOrganization, existingUser] = await Promise.all([prisma.organization.findUnique({ where: { email }, select: { id: true } }), prisma.user.findUnique({ where: { email }, select: { id: true } })]);
+  if (existingOrganization || existingUser) return NextResponse.json({ error: "هذا البريد مرتبط بحساب آخر بالفعل." }, { status: 409 });
   try {
     const passwordHash = await bcrypt.hash(password, 12);
     const member = await prisma.organizationMember.create({ data: { organizationId: session.organizationId, email, name, passwordHash, role, permissions }, select: { id: true, email: true, name: true, role: true, permissions: true, status: true } });
