@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { GetObjectCommand } from "@aws-sdk/client-s3";
 import { prisma } from "@/lib/prisma";
-import { getAdminSession } from "@/lib/admin-auth";
+import { getAdminSession, hasAdminPermission } from "@/lib/admin-auth";
 import { beneficiaryBucket, beneficiaryS3 } from "@/lib/beneficiary-file-storage";
 
 export const runtime = "nodejs";
@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
 
 export async function GET(_req: Request, context: { params: { id: string } }) {
   const admin = await getAdminSession();
-  if (!admin || !["SUPER_ADMIN", "ADMIN", "MODERATOR"].includes(admin.role)) {
+  if (!admin || !hasAdminPermission(admin, "MANAGE_ASSISTANCE")) {
     return NextResponse.json({ error: "غير مصرح." }, { status: 403 });
   }
 

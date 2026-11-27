@@ -16,6 +16,7 @@ model User {
   passwordResetExpiresAt DateTime?
   avatar              String?
   role                String               @default("USER")
+  permissions         String[]             @default([])
   createdAt           DateTime             @default(now())
   projects            Project[]
   tasks               Task[]

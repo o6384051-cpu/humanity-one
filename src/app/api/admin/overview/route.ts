@@ -1,13 +1,13 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { getAdminSession } from "@/lib/admin-auth";
+import { getAdminSession, hasAdminPermission } from "@/lib/admin-auth";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function GET() {
   const actor = await getAdminSession();
-  if (!actor || !["SUPER_ADMIN", "ADMIN", "MODERATOR"].includes(actor.role)) {
+  if (!actor || !hasAdminPermission(actor, "VIEW_DASHBOARD")) {
     return NextResponse.json({ error: "غير مصرح. سجّل الدخول بحساب إداري." }, { status: 403 });
   }
 

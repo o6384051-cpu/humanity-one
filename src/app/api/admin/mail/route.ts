@@ -1,14 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
-import { getAdminSession } from "@/lib/admin-auth";
+import { getAdminSession, hasAdminPermission } from "@/lib/admin-auth";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function GET() {
   const admin = await getAdminSession();
-  if (!admin) return NextResponse.json({ error: "غير مصرح." }, { status: 401 });
+  if (!admin || !hasAdminPermission(admin, "MANAGE_MAIL")) return NextResponse.json({ error: "غير مصرح." }, { status: 403 });
   try {
     const messages = await prisma.mailMessage.findMany({ where: { parentId: null }, orderBy: { createdAt: "desc" }, take: 100, include: { replies: { orderBy: { createdAt: "asc" } } } });
     return NextResponse.json({ messages }, { headers: { "Cache-Control": "no-store, private" } });
