@@ -14,6 +14,7 @@ export default function Dashboard() {
   const [assistantQuery, setAssistantQuery] = useState('');
   const [lightMode, setLightMode] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [servicesOpen, setServicesOpen] = useState(false);
 
   const openAssistant = (query: string) => {
     const value = query.trim();
@@ -48,9 +49,9 @@ export default function Dashboard() {
           <Link href="/radar"><MapPinned size={18} />{tr("الرادار الإنساني","Humanity Radar")}</Link>
           <Link href="/beneficiary"><HeartHandshake size={18} />{tr("منصة المستفيدين وطلبات المساعدة","Beneficiary Support Requests")}</Link>
           <Link href="/opportunities"><HeartHandshake size={18} />{tr("مركز الفرص الإنسانية","Humanitarian Opportunities")}</Link>
-          <details className="ho-nav-group">
-            <summary>{tr("باقي الخدمات","More services")} <span aria-hidden="true">⌄</span></summary>
-            <div className="ho-nav-sub">
+          <div className="ho-nav-group">
+            <button type="button" className="ho-nav-group-toggle" aria-expanded={servicesOpen} aria-controls="ho-more-services" onClick={() => setServicesOpen((open) => !open)}>{tr("باقي الخدمات","More services")} <span className={servicesOpen ? "is-open" : ""} aria-hidden="true">⌄</span></button>
+            {servicesOpen && <div className="ho-nav-sub" id="ho-more-services">
               <Link href="/ai-core"><Bot size={18} />{tr("مركز الذكاء والعمل الإنساني","Humanitarian AI & Action Hub")}</Link>
               <Link href="/agents"><Users size={18} />{tr("فريق الوكلاء","Agent Team")}</Link>
               <Link href="/memory"><BookOpen size={18} />{tr("الذاكرة والخصوصية","Memory & Privacy")}</Link>
@@ -67,8 +68,8 @@ export default function Dashboard() {
               <Link href="/tasks"><CheckSquare size={18} />{tr("المهام","Tasks")}</Link>
               <Link href="/knowledge"><BookOpen size={18} />{tr("محرك المعرفة","Knowledge Hub")}</Link>
               <Link href="/analytics"><BarChart3 size={18} />{tr("التقارير","Analytics")}</Link>
-            </div>
-          </details>
+            </div>}
+          </div>
         </nav>
 
         <div className="ho-sidebar-bottom">
