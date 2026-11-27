@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { getAdminSession } from "@/lib/admin-auth";
+import { getAdminSession, hasAdminPermission } from "@/lib/admin-auth";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
   const admin = await getAdminSession();
-  if (!admin || !["SUPER_ADMIN", "ADMIN", "MODERATOR"].includes(admin.role)) {
+  if (!admin || !hasAdminPermission(admin, "VIEW_BENEFICIARIES")) {
     return NextResponse.json({ error: "غير مصرح." }, { status: 403 });
   }
   const q = (req.nextUrl.searchParams.get("q") || "").trim().slice(0, 100);

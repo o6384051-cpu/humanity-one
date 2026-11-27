@@ -1,15 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
-import { getAdminSession } from "@/lib/admin-auth";
+import { getAdminSession, hasAdminPermission } from "@/lib/admin-auth";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-const roles = ["SUPER_ADMIN", "ADMIN", "MODERATOR"];
+
 const statusValues = ["DISCOVERED", "CONTACTED", "RESPONDED", "INTERESTED", "APPLICATION", "VERIFIED", "DECLINED", "NO_RESPONSE", "DO_NOT_CONTACT"] as const;
 async function authorized() {
   const admin = await getAdminSession();
-  return admin && roles.includes(admin.role) ? admin : null;
+  return admin && hasAdminPermission(admin, "MANAGE_ORGANIZATIONS") ? admin : null;
 }
 const createSchema = z.object({
   organizationName: z.string().trim().min(2).max(180),

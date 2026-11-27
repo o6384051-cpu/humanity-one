@@ -2,15 +2,15 @@ import { NextRequest, NextResponse } from "next/server";
 import { createHash, randomBytes } from "crypto";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
-import { getAdminSession } from "@/lib/admin-auth";
+import { getAdminSession, hasAdminPermission } from "@/lib/admin-auth";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-const roles = ["SUPER_ADMIN", "ADMIN", "MODERATOR"];
+
 
 export async function GET() {
   const admin = await getAdminSession();
-  if (!admin || !roles.includes(admin.role)) return NextResponse.json({ error: "غير مصرح. سجّل الدخول بحساب إداري." }, { status: 403 });
+  if (!admin || !hasAdminPermission(admin, "MANAGE_ORGANIZATIONS")) return NextResponse.json({ error: "غير مصرح. سجّل الدخول بحساب إداري." }, { status: 403 });
   try {
     const applications = await prisma.mailMessage.findMany({
       where: { department: "partners", parentId: null },
@@ -33,7 +33,7 @@ const approvalSchema = z.object({
 
 export async function PATCH(req: NextRequest) {
   const admin = await getAdminSession();
-  if (!admin || !roles.includes(admin.role)) return NextResponse.json({ error: "غير مصرح." }, { status: 403 });
+  if (!admin || !hasAdminPermission(admin, "MANAGE_ORGANIZATIONS")) return NextResponse.json({ error: "غير مصرح." }, { status: 403 });
   const parsed = z.object({
     id: z.string().min(1),
     status: z.enum(["IN_REVIEW", "APPROVED", "REJECTED", "CLOSED"]),

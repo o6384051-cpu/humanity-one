@@ -16,6 +16,7 @@ model User {
   passwordResetExpiresAt DateTime?
   avatar              String?
   role                String               @default("USER")
+  permissions         String[]             @default([])
   createdAt           DateTime             @default(now())
   projects            Project[]
   tasks               Task[]
@@ -283,6 +284,7 @@ model Organization {
   ownedRadarRecords HumanitarianRecord[]
   radarShares RadarRecordShare[]
   radarAuditEvents RadarAuditEvent[]
+  members OrganizationMember[]
 
   @@index([status, name])
 }
@@ -381,4 +383,21 @@ model RadarAuditEvent {
   @@index([recordId, createdAt])
   @@index([actorUserId, createdAt])
   @@index([actorOrganizationId, createdAt])
+}
+
+
+model OrganizationMember {
+  id             String   @id @default(cuid())
+  organizationId String
+  email          String   @unique
+  name           String
+  passwordHash   String
+  role           String   @default("SUPERVISOR")
+  permissions    String[] @default(["VIEW_DATA"])
+  status         String   @default("ACTIVE")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, status])
 }

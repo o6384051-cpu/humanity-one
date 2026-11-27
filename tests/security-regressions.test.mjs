@@ -125,7 +125,9 @@ test("every internal mail administration operation requires an admin session", a
   const route = await source("src/app/api/admin/mail/route.ts");
   const checks = route.split("const admin = await getAdminSession();").length - 1;
   assert.equal(checks, 3);
-  assert.ok(route.includes('if (!admin) return NextResponse.json({ error: "غير مصرح." }, { status: 401 })'));
+  const permissionChecks = route.match(/hasAdminPermission\(admin,\s*["']MANAGE_MAIL["']\)/g) || [];
+  assert.equal(permissionChecks.length, 3, "GET, POST, and PATCH must each require MANAGE_MAIL");
+  assert.match(route, /if \(!admin \|\| !hasAdminPermission\(admin, ["']MANAGE_MAIL["']\)\)/);
   assert.ok(route.includes("if (!parent || parent.parentId)"));
   assert.ok(route.includes("parentId: null"));
   assert.ok(route.includes('"Cache-Control": "no-store, private"'));
@@ -163,7 +165,8 @@ test("radar source URLs accept only HTTP and HTTPS and reject escaped newline sy
 
 test("assistance can be approved directly by every authorized administration role", async () => {
   const route = await source("src/app/api/admin/assistance/route.ts");
-  assert.match(route, /\["SUPER_ADMIN",\s*"ADMIN",\s*"MODERATOR"\]/);
+  const permissionChecks = route.match(/hasAdminPermission\(admin, ["']MANAGE_ASSISTANCE["']\)/g) || [];
+  assert.equal(permissionChecks.length, 2, "GET and PATCH must require MANAGE_ASSISTANCE");
   assert.match(route, /z\.enum\(\["IN_REVIEW",\s*"APPROVED",\s*"REJECTED",\s*"CLOSED"\]\)/);
   assert.doesNotMatch(route, /status !== ["']IN_REVIEW["']/);
 });

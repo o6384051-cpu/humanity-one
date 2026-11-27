@@ -1,16 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
-import { getAdminSession } from "@/lib/admin-auth";
+import { getAdminSession, hasAdminPermission } from "@/lib/admin-auth";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const allowedRoles = ["SUPER_ADMIN", "ADMIN", "MODERATOR"];
+
 
 export async function GET() {
   const admin = await getAdminSession();
-  if (!admin || !allowedRoles.includes(admin.role)) {
+  if (!admin || !hasAdminPermission(admin, "MANAGE_ASSISTANCE")) {
     return NextResponse.json({ error: "غير مصرح." }, { status: 403 });
   }
 
@@ -49,7 +49,7 @@ export async function GET() {
 
 export async function PATCH(req: NextRequest) {
   const admin = await getAdminSession();
-  if (!admin || !allowedRoles.includes(admin.role)) {
+  if (!admin || !hasAdminPermission(admin, "MANAGE_ASSISTANCE")) {
     return NextResponse.json({ error: "غير مصرح." }, { status: 403 });
   }
 

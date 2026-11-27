@@ -19,6 +19,7 @@ export async function POST(request: NextRequest, context: { params: { id: string
   const isAdmin = Boolean(admin && (admin.role === "SUPER_ADMIN" || admin.role === "ADMIN"));
   const organization = isAdmin ? null : await getOrganizationSession();
   if (!isAdmin && !organization) return NextResponse.json({ error: "يلزم تسجيل الدخول" }, { status: 401, headers: noStore });
+  if (organization && !organization.permissions.includes("*") && !organization.permissions.includes("MANAGE_RECORDS")) return NextResponse.json({ error: "تعديل مشاركة السجلات يتطلب صلاحية إدارة السجلات." }, { status: 403, headers: noStore });
 
   const parsed = schema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: "إعدادات المشاركة غير صحيحة" }, { status: 400, headers: noStore });

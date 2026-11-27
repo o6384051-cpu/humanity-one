@@ -1,14 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
-import { getAdminSession } from "@/lib/admin-auth";
+import { getAdminSession, hasAdminPermission } from "@/lib/admin-auth";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function GET() {
   const admin = await getAdminSession();
-  if (!admin) return NextResponse.json({ error: "غير مصرح." }, { status: 401 });
+  if (!admin || !hasAdminPermission(admin, "MANAGE_MAIL")) return NextResponse.json({ error: "غير مصرح." }, { status: 403 });
   try {
     const messages = await prisma.mailMessage.findMany({ where: { parentId: null }, orderBy: { createdAt: "desc" }, take: 100, include: { replies: { orderBy: { createdAt: "asc" } } } });
     return NextResponse.json({ messages }, { headers: { "Cache-Control": "no-store, private" } });
@@ -17,7 +17,7 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   const admin = await getAdminSession();
-  if (!admin) return NextResponse.json({ error: "غير مصرح." }, { status: 401 });
+  if (!admin || !hasAdminPermission(admin, "MANAGE_MAIL")) return NextResponse.json({ error: "غير مصرح." }, { status: 403 });
   const parsed = z.object({ parentId: z.string().min(1), body: z.string().trim().min(2).max(5000) }).safeParse(await req.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: "الرد غير صالح." }, { status: 400 });
   try {
@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
 
 export async function PATCH(req: NextRequest) {
   const admin = await getAdminSession();
-  if (!admin) return NextResponse.json({ error: "غير مصرح." }, { status: 401 });
+  if (!admin || !hasAdminPermission(admin, "MANAGE_MAIL")) return NextResponse.json({ error: "غير مصرح." }, { status: 403 });
   const parsed = z.object({ id: z.string().min(1), status: z.enum(["NEW", "IN_PROGRESS", "CLOSED"]) }).safeParse(await req.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: "التحديث غير صالح." }, { status: 400 });
   try {

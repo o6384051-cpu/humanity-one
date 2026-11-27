@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useLanguage, translateText } from "../../components/LanguageProvider";
 
-type User = { id: string; name: string | null; email: string; role: string; createdAt?: string };
+type User = { id: string; name: string | null; email: string; role: string; permissions?: string[]; createdAt?: string };
 type SessionUser = { id: string; name: string | null; email: string; role: string };
 
 export default function FounderAdminPage() {
@@ -14,7 +14,7 @@ export default function FounderAdminPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [mode, setMode] = useState<"login" | "setup">("login");
   const [form, setForm] = useState({ name: "", email: "", password: "", setupSecret: "" });
-  const [newUser, setNewUser] = useState({ name: "", email: "", password: "", role: "MODERATOR" });
+  const [newUser, setNewUser] = useState({ name: "", email: "", password: "", role: "MODERATOR", permissions: ["VIEW_DASHBOARD"] as string[] });
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
 
@@ -54,11 +54,15 @@ export default function FounderAdminPage() {
       const response = await fetch("/api/admin/users", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(newUser) });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || "تعذر إضافة المشرف");
-      setNewUser({ name: "", email: "", password: "", role: "MODERATOR" }); await loadUsers(); setMessage("تمت إضافة الحساب.");
+      setNewUser({ name: "", email: "", password: "", role: "MODERATOR", permissions: ["VIEW_DASHBOARD"] }); await loadUsers(); setMessage("تمت إضافة الحساب.");
     } catch (error) { setMessage(error instanceof Error ? error.message : "حدث خطأ."); }
     finally { setBusy(false); }
   }
 
+  async function changePermissions(id: string, permissions: string[]) {
+    const response = await fetch("/api/admin/users", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id, permissions }) });
+    const data = await response.json(); setMessage(response.ok ? "تم تحديث صلاحيات المشرف." : data.error); if (response.ok) await loadUsers();
+  }
   async function changeRole(id: string, role: string) {
     const response = await fetch("/api/admin/users", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id, role }) });
     const data = await response.json(); setMessage(response.ok ? "تم تحديث الصلاحية." : data.error); if (response.ok) await loadUsers();
@@ -75,7 +79,7 @@ export default function FounderAdminPage() {
   return <main dir="rtl" style={{ minHeight: "100vh", padding: 24, background: "#080d18", color: "#e8edf7", fontFamily: "Cairo, sans-serif" }}>
     <div style={{ maxWidth: 900, margin: "0 auto" }}>
       <a href="/" style={{ color: "#63d8d0" }}>{tr("← العودة للرئيسية")}</a>
-      <h1 style={{ marginTop: 22 }}>{tr("إدارة HUMANITY ONE")}</h1>
+      <h1 style={{ marginTop: 22 }}>{tr("إدارة HUMANITY ONE")}</h1><p><a href="/founder/organizations" style={{ color: "#63d8d0" }}>إدارة جميع المنظمات ومشرفيها ←</a></p>
       <p style={{ color: "#9aabc0" }}>{tr("إدارة حسابات المشرفين والصلاحيات — حساب المؤسس هو صاحب السلطة العليا.")}</p>
       {message && <p role="status" style={{ padding: 12, borderRadius: 10, background: "#14283a", border: "1px solid #315568" }}>{tr(message)}</p>}
       {!session ? <form onSubmit={submitAuth} style={{ maxWidth: 480, display: "grid", gap: 12, padding: 20, background: "#101a2b", borderRadius: 14 }}>
@@ -97,14 +101,14 @@ export default function FounderAdminPage() {
           <Field label="الاسم" value={newUser.name} onChange={v => setNewUser({ ...newUser, name: v })} />
           <Field label="البريد الإلكتروني" value={newUser.email} onChange={v => setNewUser({ ...newUser, email: v })} type="email" />
           <Field label="كلمة مرور مؤقتة (12 حرفًا على الأقل)" value={newUser.password} onChange={v => setNewUser({ ...newUser, password: v })} type="password" />
-          <select value={newUser.role} onChange={e => setNewUser({ ...newUser, role: e.target.value })} style={fieldStyle}><option value="MODERATOR">{tr("مشرف")}</option><option value="ADMIN">{tr("إداري")}</option></select>
+          <select value={newUser.role} onChange={e => setNewUser({ ...newUser, role: e.target.value })} style={fieldStyle}><option value="MODERATOR">{tr("مشرف")}</option><option value="ADMIN">{tr("إداري")}</option></select>{newUser.role === "MODERATOR" && <fieldset style={{ border: "1px solid #304359", borderRadius: 8, padding: 10 }}><legend>{tr("صلاحيات المشرف")}</legend>{permissionOptions.map(p => <label key={p.value} style={{ display: "block", padding: 4 }}><input type="checkbox" checked={newUser.permissions.includes(p.value)} onChange={e => setNewUser({ ...newUser, permissions: e.target.checked ? [...newUser.permissions, p.value] : newUser.permissions.filter(x => x !== p.value) })} /> {tr(p.label)}</label>)}</fieldset>}
           <button disabled={busy} style={primaryStyle}>{tr("إضافة الحساب")}</button>
         </form>}
         <div style={{ padding: 20, background: "#101a2b", borderRadius: 14, overflowX: "auto" }}>
           <h2>{tr("فريق الإدارة")}</h2>
           <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 500 }}>
             <thead><tr><th style={cellStyle}>{tr("الاسم")}</th><th style={cellStyle}>{tr("البريد")}</th><th style={cellStyle}>{tr("الدور")}</th>{session.role === "SUPER_ADMIN" && <th style={cellStyle}>{tr("الإجراءات")}</th>}</tr></thead>
-            <tbody>{users.map(user => <tr key={user.id}><td style={cellStyle}>{user.name || "—"}</td><td style={cellStyle}>{user.email}</td><td style={cellStyle}>{user.role === "SUPER_ADMIN" ? tr("المؤسس") : user.role === "ADMIN" ? tr("إداري") : tr("مشرف")}</td>{session.role === "SUPER_ADMIN" && <td style={cellStyle}>{user.role !== "SUPER_ADMIN" && <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}><select aria-label={tr("تغيير الدور")} value={user.role} onChange={e => changeRole(user.id, e.target.value)} style={fieldStyle}><option value="MODERATOR">{tr("مشرف")}</option><option value="ADMIN">{tr("إداري")}</option><option value="USER">{tr("إلغاء صلاحية الإدارة")}</option></select><button onClick={() => removeUser(user.id)} style={{ ...tabStyle(false), color: "#ff9c9c" }}>{tr("حذف")}</button></div>}</td>}</tr>)}</tbody>
+            <tbody>{users.map(user => <tr key={user.id}><td style={cellStyle}>{user.name || "—"}</td><td style={cellStyle}>{user.email}</td><td style={cellStyle}>{user.role === "SUPER_ADMIN" ? tr("المؤسس") : user.role === "ADMIN" ? tr("إداري") : tr("مشرف")}</td>{session.role === "SUPER_ADMIN" && <td style={cellStyle}>{user.role !== "SUPER_ADMIN" && <div style={{ display: "grid", gap: 8, minWidth: 220 }}><select aria-label={tr("تغيير الدور")} value={user.role} onChange={e => changeRole(user.id, e.target.value)} style={fieldStyle}><option value="MODERATOR">{tr("مشرف")}</option><option value="ADMIN">{tr("إداري")}</option><option value="USER">{tr("إلغاء صلاحية الإدارة")}</option></select><button onClick={() => removeUser(user.id)} style={{ ...tabStyle(false), color: "#ff9c9c" }}>{tr("حذف")}</button>{user.role === "MODERATOR" && <select multiple size={5} aria-label={tr("صلاحيات المشرف")} value={user.permissions || []} onChange={e => changePermissions(user.id, Array.from(e.target.selectedOptions).map(o => o.value))} style={fieldStyle}>{permissionOptions.map(p => <option key={p.value} value={p.value}>{tr(p.label)}</option>)}</select>}</div>}</td>}</tr>)}</tbody>
           </table>
         </div>
       </section>}
@@ -143,6 +147,7 @@ function Field({ label, value, onChange, type = "text" }: { label: string; value
     </span>
   </label>;
 }
+const permissionOptions = [{ value: "VIEW_DASHBOARD", label: "عرض لوحة المتابعة" }, { value: "VIEW_BENEFICIARIES", label: "عرض بيانات المستفيدين" }, { value: "MANAGE_ASSISTANCE", label: "مراجعة طلبات المساعدة والمرفقات" }, { value: "MANAGE_ORGANIZATIONS", label: "إدارة طلبات وسجل المنظمات" }, { value: "MANAGE_MAIL", label: "إدارة المراسلات" }];
 const fieldStyle: React.CSSProperties = { width: "100%", padding: 11, color: "#edf5ff", background: "#0b1422", border: "1px solid #304359", borderRadius: 8 };
 const primaryStyle: React.CSSProperties = { padding: 12, border: 0, borderRadius: 9, background: "#55d3ca", color: "#08212a", fontWeight: 800, cursor: "pointer" };
 const tabStyle = (active: boolean): React.CSSProperties => ({ padding: "9px 12px", border: "1px solid #304359", borderRadius: 8, background: active ? "#1b3948" : "#0b1422", color: "#e8edf7", cursor: "pointer" });

@@ -17,13 +17,18 @@ export async function getAdminSession() {
     if (!payload.sub || !["SUPER_ADMIN", "ADMIN", "MODERATOR"].includes(payload.role)) return null;
     const user = await prisma.user.findUnique({
       where: { id: payload.sub },
-      select: { id: true, email: true, name: true, role: true },
+      select: { id: true, email: true, name: true, role: true, permissions: true },
     });
     if (!user || user.role !== payload.role) return null;
     return user;
   } catch {
     return null;
   }
+}
+
+export function hasAdminPermission(user: { role: string; permissions?: string[] }, permission: string) {
+  if (user.role === "SUPER_ADMIN" || user.role === "ADMIN") return true;
+  return user.role === "MODERATOR" && Boolean(user.permissions?.includes(permission));
 }
 
 export function createAdminToken(userId: string, role: AdminRole) {

@@ -15,6 +15,7 @@ export async function GET() {
   if (!isAdmin && !organization) {
     return NextResponse.json({ error: "يلزم تسجيل الدخول" }, { status: 401, headers: { "Cache-Control": "private, no-store, max-age=0" } });
   }
+  if (organization && !organization.permissions.includes("*") && !organization.permissions.includes("VIEW_DATA")) return NextResponse.json({ error: "لا تملك صلاحية عرض دليل المنظمات." }, { status: 403 });
 
   const organizations = await prisma.organization.findMany({
     where: { status: "ACTIVE" },

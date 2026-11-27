@@ -11,6 +11,7 @@ export async function GET(_request: Request, context: { params: { id: string } }
   const isAdmin = Boolean(admin && (admin.role === "SUPER_ADMIN" || admin.role === "ADMIN"));
   const organization = isAdmin ? null : await getOrganizationSession();
   if (!isAdmin && !organization) return NextResponse.json({ error: "يلزم تسجيل الدخول" }, { status: 401, headers: { "Cache-Control": "no-store" } });
+  if (organization && !organization.permissions.includes("*") && !organization.permissions.includes("VIEW_DATA")) return NextResponse.json({ error: "لا تملك صلاحية عرض سجل المراجعة." }, { status: 403 });
 
   const record = await prisma.humanitarianRecord.findUnique({
     where: { id: context.params.id },
