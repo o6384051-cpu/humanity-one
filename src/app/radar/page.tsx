@@ -168,8 +168,8 @@ export default function HumanityRadarPage() {
     } finally { setMapSearching(false); }
   }
 
-  return <main dir="rtl" style={{ minHeight: "100vh", padding: "clamp(16px,3vw,34px)", color: "#e8f3f5", background: "radial-gradient(circle at 80% 0%,#153747 0,#081923 48%,#06121b 100%)" }}>
-    <div style={{ maxWidth: 1440, margin: "0 auto" }}>
+  return <main dir="rtl" style={{ minHeight: "100vh", padding: isAdmin ? "8px" : "clamp(16px,3vw,34px)", color: "#e8f3f5", background: "radial-gradient(circle at 80% 0%,#153747 0,#081923 48%,#06121b 100%)" }}>
+    <div style={{ width: "100%", maxWidth: isAdmin ? "none" : 1440, margin: "0 auto", display: "grid", gap: isAdmin ? 8 : 14 }}>
       <Link href="/" style={{ display: "inline-flex", alignItems: "center", gap: 8, color: "#8edbd0", textDecoration: "none", marginBottom: 20 }}><ArrowRight size={17} /> العودة إلى HUMANITY ONE</Link>
       <header style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "end", gap: 16, marginBottom: 20 }}>
         <div><div style={{ color: "#79d7c8", fontSize: 12, fontWeight: 800, letterSpacing: 1 }}>HUMANITY ONE / INTELLIGENCE</div><h1 style={{ fontSize: "clamp(28px,4vw,42px)", margin: "8px 0", lineHeight: 1.25 }}>الرادار الإنساني</h1><p style={{ color: "#a9c0c9", margin: 0, lineHeight: 1.8 }}>منظومة موحدة لتسجيل الاحتياجات والموارد والمبادرات، مع توثيق المصدر والتحقق وحماية الخصوصية.</p></div>
@@ -186,8 +186,8 @@ export default function HumanityRadarPage() {
         {[["إجمالي السجلات", counts.total], ["بانتظار التحقق", counts.pending], ["سجلات موثقة", counts.verified]].map(([label, value]) => <div key={String(label)} style={panel}><small style={{ color: "#9eb6c0" }}>{label}</small><div style={{ fontSize: 28, fontWeight: 900, marginTop: 5 }}>{value}</div></div>)}
       </section>
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(100%,360px),1fr))", gap: 14, alignItems: "start" }}>
-        <section style={{ border: "1px solid #294653", borderRadius: 18, overflow: "hidden", background: "#091d29" }}>
+      <div style={{ display: "grid", gridTemplateColumns: isAdmin ? "minmax(0,1fr)" : "repeat(auto-fit,minmax(min(100%,360px),1fr))", gap: isAdmin ? 8 : 14, alignItems: "start" }}>
+        <section style={{ width: "100%", minWidth: 0, border: "1px solid #294653", borderRadius: isAdmin ? 10 : 18, overflow: "hidden", background: "#091d29" }}>
           <div style={{ padding: 13, display: "flex", gap: 10, alignItems: "center", borderBottom: "1px solid #294653", color: "#83d6ca", fontWeight: 800 }}>{isAdmin ? <Globe2 size={18} /> : <Map size={18} />}{"الخريطة الجغرافية التفاعلية"}</div>
           <div style={{ padding: 12, borderBottom: "1px solid #294653", background: "#0c2330" }}>
             <form onSubmit={searchMapLocation} style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
@@ -196,8 +196,8 @@ export default function HumanityRadarPage() {
             </form>
             {mapSearchMessage && <p role="status" aria-live="polite" style={{ color: "#a9dcd4", fontSize: 12, lineHeight: 1.8, margin: "8px 2px 0" }}>{mapSearchMessage}</p>}
           </div>
-          <div style={{ padding: 8, background: "linear-gradient(180deg,#102f3c,#0a202d)" }}>
-            <iframe title="الخريطة الجغرافية التفاعلية" src={mapUrl} loading="eager" allowFullScreen referrerPolicy="strict-origin-when-cross-origin" style={{ width: "100%", height: 420, border: 0, borderRadius: 10, background: "#dbe5e8", display: "block" }} />
+          <div style={{ padding: isAdmin ? 2 : 8, background: "linear-gradient(180deg,#102f3c,#0a202d)" }}>
+            <iframe title="الخريطة الجغرافية التفاعلية" src={mapUrl} loading="eager" allowFullScreen referrerPolicy="strict-origin-when-cross-origin" style={{ width: "100%", height: isAdmin ? "clamp(560px, calc(100vh - 190px), 980px)" : 420, minHeight: isAdmin ? "70vh" : 260, border: 0, borderRadius: isAdmin ? 6 : 10, background: "#dbe5e8", display: "block" }} />
             <a href={mapUrl} target="_blank" rel="noopener noreferrer" style={{ display: "inline-block", color: "#8edbd0", padding: "8px 10px", fontSize: 12 }}>فتح الخريطة في نافذة مستقلة</a>
             {isAdmin && mapRecords.length > 0 && <div style={{ marginTop: 8, border: "1px solid #294653", borderRadius: 10, padding: 10 }}>
               <div style={{ color: "#a9c0c9", fontSize: 12, marginBottom: 8 }}>انتقل إلى موقع سجل موثق (المواقع الدقيقة تظهر للإدارة فقط)</div>
