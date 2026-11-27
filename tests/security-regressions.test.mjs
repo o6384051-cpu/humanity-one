@@ -165,7 +165,8 @@ test("radar source URLs accept only HTTP and HTTPS and reject escaped newline sy
 
 test("assistance can be approved directly by every authorized administration role", async () => {
   const route = await source("src/app/api/admin/assistance/route.ts");
-  assert.match(route, /\["SUPER_ADMIN",\s*"ADMIN",\s*"MODERATOR"\]/);
+  const permissionChecks = route.match(/hasAdminPermission\(admin, ["']MANAGE_ASSISTANCE["']\)/g) || [];
+  assert.equal(permissionChecks.length, 2, "GET and PATCH must require MANAGE_ASSISTANCE");
   assert.match(route, /z\.enum\(\["IN_REVIEW",\s*"APPROVED",\s*"REJECTED",\s*"CLOSED"\]\)/);
   assert.doesNotMatch(route, /status !== ["']IN_REVIEW["']/);
 });
