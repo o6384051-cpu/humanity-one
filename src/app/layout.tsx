@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { LanguageProvider, LanguageSwitcher } from "../components/LanguageProvider";
 import PWAClient from "../components/PWAClient";
+import RadarQuickAccess from "../components/RadarQuickAccess";
 
 const siteUrl = "https://humanity-one-wc35.vercel.app";
 const socialImage = "/opengraph-image";
@@ -27,5 +28,5 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  return <html lang="ar" dir="rtl" suppressHydrationWarning><body><LanguageProvider><LanguageSwitcher />{children}<PWAClient /></LanguageProvider></body></html>;
+  return <html lang="ar" dir="rtl" suppressHydrationWarning><body><LanguageProvider><LanguageSwitcher />{children}<RadarQuickAccess /><PWAClient /></LanguageProvider></body></html>;
 }
