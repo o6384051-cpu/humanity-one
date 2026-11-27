@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
     const password = typeof body.password === "string" ? body.password : "";
     const role = body.role;
     const allowedPermissions = ["VIEW_DASHBOARD", "VIEW_BENEFICIARIES", "MANAGE_ASSISTANCE", "MANAGE_ORGANIZATIONS", "MANAGE_MAIL"];
-    const permissions = Array.isArray(body.permissions) ? Array.from(new Set(body.permissions.filter((p: unknown) => allowedPermissions.includes(String(p)))) ) : (role === "MODERATOR" ? ["VIEW_DASHBOARD"] : []);
+    const permissions = Array.isArray(body.permissions) ? Array.from(new Set<string>(body.permissions.map((p: unknown) => String(p)).filter((p: string) => allowedPermissions.includes(p)))) : (role === "MODERATOR" ? ["VIEW_DASHBOARD"] : []);
     if (!/^\S+@\S+\.\S+$/.test(email) || !name || password.length < 12 || !["ADMIN", "MODERATOR"].includes(role)) {
       return NextResponse.json({ error: "تحقق من البيانات. كلمة المرور 12 حرفًا على الأقل، والدور إداري أو مشرف." }, { status: 400 });
     }
@@ -51,7 +51,7 @@ export async function PATCH(req: NextRequest) {
     if (!id || (role !== undefined && !["ADMIN", "MODERATOR", "USER"].includes(role)) || (body.permissions !== undefined && !Array.isArray(body.permissions))) return NextResponse.json({ error: "البيانات غير صالحة." }, { status: 400 });
     const target = await prisma.user.findUnique({ where: { id }, select: { id: true, role: true } });
     if (!target || target.role === "SUPER_ADMIN") return NextResponse.json({ error: "لا يمكن تعديل حساب مؤسس." }, { status: 403 });
-    const updated = await prisma.user.update({ where: { id }, data: { ...(role !== undefined ? { role } : {}), ...(permissions !== undefined ? { permissions } : {}) }, select: { id: true, name: true, email: true, role: true, permissions: true } });
+    const updated = await prisma.user.update({ where: { id }, data: { ...(role !== undefined ? { role } : {}), ...(role === "USER" ? { permissions: [] } : permissions !== undefined ? { permissions } : {}) }, select: { id: true, name: true, email: true, role: true, permissions: true } });
     return NextResponse.json({ user: updated });
   } catch {
     return NextResponse.json({ error: "تعذر تحديث الصلاحية." }, { status: 500 });
