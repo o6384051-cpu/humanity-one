@@ -1,0 +1,6 @@
+"use client";
+import {useEffect,useState} from "react";
+type Summary={actor:{name:string|null;email:string;role:string};stats:{organizations:number;pendingAssistance:number;jobsPending:number}};
+export default function SupervisorPage(){const [data,setData]=useState<Summary|null>(null),[error,setError]=useState("");
+useEffect(()=>{fetch("/api/supervisor/overview").then(async r=>{const d=await r.json();if(!r.ok)throw new Error(d.error||"غير مصرح");setData(d);}).catch(e=>setError(e.message));},[]);
+return <main dir="rtl" style={{minHeight:"100vh",padding:24,background:"#08131d",color:"#e8f0f8",fontFamily:"Cairo,sans-serif"}}><div style={{maxWidth:900,margin:"auto"}}><a href="/" style={{color:"#7bd8cf"}}>← الرئيسية</a><h1>مساحة مشرف HUMANITY ONE</h1>{error&&<p role="alert">{error}</p>}{data&&<><p>مرحبًا {data.actor.name||data.actor.email} — دورك: {data.actor.role}</p><p>هذه لوحة متابعة محدودة. سلطة المؤسس العليا محفوظة على كل المنظمات والمشرفين.</p><div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(180px,1fr))",gap:12}}>{[["المنظمات",data.stats.organizations],["طلبات مساعدة قيد الانتظار",data.stats.pendingAssistance],["وظائف قيد المراجعة",data.stats.jobsPending]].map(([k,v])=><section key={String(k)} style={{padding:18,background:"#102333",borderRadius:12}}><b>{k}</b><h2>{v}</h2></section>)}</div></>}</div></main>}

@@ -12,13 +12,19 @@ export async function POST(req: NextRequest) {
   const email = typeof body?.email === "string" ? body.email.trim().toLowerCase() : "";
   const password = typeof body?.password === "string" ? body.password : "";
   if (!email || password.length < 10) return NextResponse.json({ error: "أدخل البريد وكلمة المرور." }, { status: 400 });
+
   const organization = await prisma.organization.findUnique({ where: { email } });
-  if (!organization || organization.status !== "ACTIVE" || !organization.passwordHash || !(await bcrypt.compare(password, organization.passwordHash))) {
-    return NextResponse.json({ error: "بيانات الدخول غير صحيحة أو لم يتم تفعيل حساب المنظمة بعد." }, { status: 401 });
+  if (organization?.status === "ACTIVE" && organization.passwordHash && await bcrypt.compare(password, organization.passwordHash)) {
+    const response = NextResponse.json({ ok: true, organization: { id: organization.id, name: organization.name, email: organization.email }, actorType: "OWNER" }, { headers: { "Cache-Control": "no-store" } });
+    response.cookies.set(ORGANIZATION_COOKIE, createOrganizationToken(organization.id), { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "lax", path: "/", maxAge: 60 * 60 * 12 });
+    return response;
   }
-  const response = NextResponse.json({ ok: true, organization: { id: organization.id, name: organization.name, email: organization.email } }, { headers: { "Cache-Control": "no-store" } });
-  response.cookies.set(ORGANIZATION_COOKIE, createOrganizationToken(organization.id), {
-    httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "lax", path: "/", maxAge: 60 * 60 * 12,
-  });
+
+  const member = await prisma.organizationMember.findUnique({ where: { email }, include: { organization: { select: { id: true, name: true, email: true, status: true } } });
+  if (!member || member.status !== "ACTIVE" || member.organization.status !== "ACTIVE" || !(await bcrypt.compare(password, member.passwordHash))) {
+    return NextResponse.json({ error: "بيانات الدخول غير صحيحة أو الحساب غير نشط." }, { status: 401 });
+  }
+  const response = NextResponse.json({ ok: true, organization: { id: member.organization.id, name: member.organization.name, email: member.email }, actorType: "MEMBER", role: member.role }, { headers: { "Cache-Control": "no-store" } });
+  response.cookies.set(ORGANIZATION_COOKIE, createOrganizationToken(member.organizationId, member.id), { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "lax", path: "/", maxAge: 60 * 60 * 12 });
   return response;
 }

@@ -75,7 +75,7 @@ export default function FounderAdminPage() {
   return <main dir="rtl" style={{ minHeight: "100vh", padding: 24, background: "#080d18", color: "#e8edf7", fontFamily: "Cairo, sans-serif" }}>
     <div style={{ maxWidth: 900, margin: "0 auto" }}>
       <a href="/" style={{ color: "#63d8d0" }}>{tr("← العودة للرئيسية")}</a>
-      <h1 style={{ marginTop: 22 }}>{tr("إدارة HUMANITY ONE")}</h1>
+      <h1 style={{ marginTop: 22 }}>{tr("إدارة HUMANITY ONE")}</h1><p><a href="/founder/organizations" style={{ color: "#63d8d0" }}>إدارة جميع المنظمات ومشرفيها ←</a></p>
       <p style={{ color: "#9aabc0" }}>{tr("إدارة حسابات المشرفين والصلاحيات — حساب المؤسس هو صاحب السلطة العليا.")}</p>
       {message && <p role="status" style={{ padding: 12, borderRadius: 10, background: "#14283a", border: "1px solid #315568" }}>{tr(message)}</p>}
       {!session ? <form onSubmit={submitAuth} style={{ maxWidth: 480, display: "grid", gap: 12, padding: 20, background: "#101a2b", borderRadius: 14 }}>
