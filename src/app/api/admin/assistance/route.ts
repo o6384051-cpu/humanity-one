@@ -49,7 +49,7 @@ export async function GET() {
 
 export async function PATCH(req: NextRequest) {
   const admin = await getAdminSession();
-  if (!admin || !allowedRoles.includes(admin.role)) {
+  if (!admin || !hasAdminPermission(admin, "MANAGE_ASSISTANCE")) {
     return NextResponse.json({ error: "غير مصرح." }, { status: 403 });
   }
 

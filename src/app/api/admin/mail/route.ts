@@ -17,7 +17,7 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   const admin = await getAdminSession();
-  if (!admin) return NextResponse.json({ error: "غير مصرح." }, { status: 401 });
+  if (!admin || !hasAdminPermission(admin, "MANAGE_MAIL")) return NextResponse.json({ error: "غير مصرح." }, { status: 403 });
   const parsed = z.object({ parentId: z.string().min(1), body: z.string().trim().min(2).max(5000) }).safeParse(await req.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: "الرد غير صالح." }, { status: 400 });
   try {
@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
 
 export async function PATCH(req: NextRequest) {
   const admin = await getAdminSession();
-  if (!admin) return NextResponse.json({ error: "غير مصرح." }, { status: 401 });
+  if (!admin || !hasAdminPermission(admin, "MANAGE_MAIL")) return NextResponse.json({ error: "غير مصرح." }, { status: 403 });
   const parsed = z.object({ id: z.string().min(1), status: z.enum(["NEW", "IN_PROGRESS", "CLOSED"]) }).safeParse(await req.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: "التحديث غير صالح." }, { status: 400 });
   try {

@@ -33,7 +33,7 @@ const approvalSchema = z.object({
 
 export async function PATCH(req: NextRequest) {
   const admin = await getAdminSession();
-  if (!admin || !roles.includes(admin.role)) return NextResponse.json({ error: "غير مصرح." }, { status: 403 });
+  if (!admin || !hasAdminPermission(admin, "MANAGE_ORGANIZATIONS")) return NextResponse.json({ error: "غير مصرح." }, { status: 403 });
   const parsed = z.object({
     id: z.string().min(1),
     status: z.enum(["IN_REVIEW", "APPROVED", "REJECTED", "CLOSED"]),

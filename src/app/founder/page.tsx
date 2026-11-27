@@ -59,7 +59,11 @@ export default function FounderAdminPage() {
     finally { setBusy(false); }
   }
 
-  async function changePermissions(id: string, permissions: string[]) {\n    const response = await fetch("/api/admin/users", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id, permissions }) });\n    const data = await response.json(); setMessage(response.ok ? "تم تحديث صلاحيات المشرف." : data.error); if (response.ok) await loadUsers();\n  }\n  async function changeRole(id: string, role: string) {
+  async function changePermissions(id: string, permissions: string[]) {
+    const response = await fetch("/api/admin/users", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id, permissions }) });
+    const data = await response.json(); setMessage(response.ok ? "تم تحديث صلاحيات المشرف." : data.error); if (response.ok) await loadUsers();
+  }
+  async function changeRole(id: string, role: string) {
     const response = await fetch("/api/admin/users", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id, role }) });
     const data = await response.json(); setMessage(response.ok ? "تم تحديث الصلاحية." : data.error); if (response.ok) await loadUsers();
   }
@@ -143,7 +147,8 @@ function Field({ label, value, onChange, type = "text" }: { label: string; value
     </span>
   </label>;
 }
-const permissionOptions = [{ value: "VIEW_DASHBOARD", label: "عرض لوحة المتابعة" }, { value: "VIEW_BENEFICIARIES", label: "عرض بيانات المستفيدين" }, { value: "MANAGE_ASSISTANCE", label: "مراجعة طلبات المساعدة والمرفقات" }, { value: "MANAGE_ORGANIZATIONS", label: "إدارة طلبات وسجل المنظمات" }, { value: "MANAGE_MAIL", label: "إدارة المراسلات" }];\nconst fieldStyle: React.CSSProperties = { width: "100%", padding: 11, color: "#edf5ff", background: "#0b1422", border: "1px solid #304359", borderRadius: 8 };
+const permissionOptions = [{ value: "VIEW_DASHBOARD", label: "عرض لوحة المتابعة" }, { value: "VIEW_BENEFICIARIES", label: "عرض بيانات المستفيدين" }, { value: "MANAGE_ASSISTANCE", label: "مراجعة طلبات المساعدة والمرفقات" }, { value: "MANAGE_ORGANIZATIONS", label: "إدارة طلبات وسجل المنظمات" }, { value: "MANAGE_MAIL", label: "إدارة المراسلات" }];
+const fieldStyle: React.CSSProperties = { width: "100%", padding: 11, color: "#edf5ff", background: "#0b1422", border: "1px solid #304359", borderRadius: 8 };
 const primaryStyle: React.CSSProperties = { padding: 12, border: 0, borderRadius: 9, background: "#55d3ca", color: "#08212a", fontWeight: 800, cursor: "pointer" };
 const tabStyle = (active: boolean): React.CSSProperties => ({ padding: "9px 12px", border: "1px solid #304359", borderRadius: 8, background: active ? "#1b3948" : "#0b1422", color: "#e8edf7", cursor: "pointer" });
 const cellStyle: React.CSSProperties = { padding: 10, textAlign: "right", borderBottom: "1px solid #2a3b50", fontSize: 13 };
