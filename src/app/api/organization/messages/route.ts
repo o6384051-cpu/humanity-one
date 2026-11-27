@@ -11,6 +11,7 @@ const orgSelect = { id: true, name: true, country: true, focusArea: true } as co
 export async function GET(req: NextRequest) {
   const organization = await getOrganizationSession();
   if (!organization) return NextResponse.json({ error: "سجّل الدخول بحساب منظمتك المعتمد." }, { status: 401 });
+  if (!organization.permissions.includes("*") && !organization.permissions.includes("VIEW_DATA")) return NextResponse.json({ error: "لا تملك صلاحية الاطلاع على مراسلات المنظمة." }, { status: 403 });
   const conversationId = req.nextUrl.searchParams.get("conversationId");
   try {
     const conversations = await prisma.organizationConversation.findMany({
