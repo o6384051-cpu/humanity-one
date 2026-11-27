@@ -184,8 +184,10 @@ test("compact navigation keeps every existing destination reachable and scrollab
   for (const href of destinations) {
     assert.ok(page.includes('href="' + href + '"'), "missing navigation destination: " + href);
   }
-  assert.match(page, /<details className="ho-nav-group">/);
-  assert.match(page, /<summary>.*باقي الخدمات/s);
+  assert.match(page, /className="ho-nav-group-toggle"/);
+  assert.match(page, /aria-expanded={servicesOpen}/);
+  assert.match(page, /\{servicesOpen && <div className="ho-nav-sub"/);
+  assert.match(page, /setServicesOpen\(\(open\) => !open\)/);
   assert.match(page, /closest\("a"\)/);
   assert.match(styles, /\.ho-sidebar\{overflow-y:auto/);
   assert.match(styles, /@media\(max-height:760px\)/);
