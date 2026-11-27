@@ -44,6 +44,7 @@ export async function GET() {
   if (!isCentralAdmin && !organization) {
     return NextResponse.json({ error: "يلزم تسجيل الدخول" }, { status: 401, headers: noStore });
   }
+  if (organization && !organization.permissions.includes("*") && !organization.permissions.includes("VIEW_DATA")) return NextResponse.json({ error: "لا تملك صلاحية عرض بيانات الرادار." }, { status: 403, headers: noStore });
 
   const where = isCentralAdmin
     ? { status: "ACTIVE" }
@@ -78,6 +79,7 @@ export async function POST(request: NextRequest) {
   if (!organization) {
     return NextResponse.json({ error: "تسجيل دخول منظمة نشطة مطلوب لإضافة سجل" }, { status: 401, headers: noStore });
   }
+  if (!organization.permissions.includes("*") && !organization.permissions.includes("MANAGE_RECORDS")) return NextResponse.json({ error: "إضافة السجلات تتطلب صلاحية إدارة السجلات." }, { status: 403, headers: noStore });
 
   const body = recordSchema.safeParse(await request.json().catch(() => null));
   if (!body.success) {
