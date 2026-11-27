@@ -187,3 +187,14 @@ test("compact navigation keeps every existing destination reachable and scrollab
   assert.match(styles, /\.ho-sidebar\{overflow-y:auto/);
   assert.match(styles, /@media\(max-height:760px\)/);
 });
+
+
+
+test("Prisma includes existing email-verification and workspace tables", async () => {
+  const schema = await source("prisma/schema.prisma");
+  assert.match(schema, /model User \{[\s\S]*?emailVerifiedAt\s+DateTime\?/);
+  assert.match(schema, /emailVerificationCode\s+EmailVerificationCode\?/);
+  assert.match(schema, /workspace\s+UserWorkspace\?/);
+  assert.match(schema, /model EmailVerificationCode \{[\s\S]*?userId\s+String\s+@unique[\s\S]*?codeHash\s+String[\s\S]*?expiresAt\s+DateTime[\s\S]*?attempts\s+Int\s+@default\(0\)[\s\S]*?user\s+User\s+@relation\(fields:\s*\[userId\],\s*references:\s*\[id\],\s*onDelete:\s*Cascade\)/);
+  assert.match(schema, /model UserWorkspace \{[\s\S]*?userId\s+String\s+@unique[\s\S]*?data\s+Json\s+@default\("\{\}"\)[\s\S]*?language\s+String\s+@default\("ar"\)[\s\S]*?theme\s+String\s+@default\("dark"\)[\s\S]*?updatedAt\s+DateTime\s+@updatedAt[\s\S]*?user\s+User\s+@relation\(fields:\s*\[userId\],\s*references:\s*\[id\],\s*onDelete:\s*Cascade\)/);
+});

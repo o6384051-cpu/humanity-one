@@ -14,6 +14,7 @@ model User {
   passwordHash        String
   passwordResetTokenHash String?
   passwordResetExpiresAt DateTime?
+  emailVerifiedAt     DateTime?
   avatar              String?
   role                String               @default("USER")
   createdAt           DateTime             @default(now())
@@ -27,6 +28,8 @@ model User {
   assistanceReviewEvents AssistanceReviewEvent[] @relation("AssistanceReviewActor")
   beneficiaryNotifications BeneficiaryNotification[]
   mailMessages          MailMessage[]
+  emailVerificationCode EmailVerificationCode?
+  workspace             UserWorkspace?
   verifiedRadarRecords HumanitarianRecord[] @relation("RadarRecordVerifier")
   radarAuditEvents RadarAuditEvent[] @relation("RadarAuditUser")
 }
@@ -381,4 +384,27 @@ model RadarAuditEvent {
   @@index([recordId, createdAt])
   @@index([actorUserId, createdAt])
   @@index([actorOrganizationId, createdAt])
+}
+
+
+model EmailVerificationCode {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  codeHash  String
+  expiresAt DateTime
+  attempts  Int      @default(0)
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([expiresAt])
+}
+
+model UserWorkspace {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  data      Json     @default("{}")
+  language  String   @default("ar")
+  theme     String   @default("dark")
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
