@@ -172,7 +172,7 @@ test("assistance can be approved directly by every authorized administration rol
 });
 
 
-test("compact navigation keeps every existing destination reachable and scrollable", async () => {
+test("desktop navigation shows every destination while mobile keeps the expandable services control", async () => {
   const page = await source("src/app/page.tsx");
   const styles = await source("src/app/globals.css");
   const destinations = [
@@ -186,9 +186,11 @@ test("compact navigation keeps every existing destination reachable and scrollab
   }
   assert.match(page, /className="ho-nav-group-toggle"/);
   assert.match(page, /aria-expanded={servicesOpen}/);
-  assert.match(page, /\{servicesOpen && <div className="ho-nav-sub"/);
+  assert.match(page, /<div className={`ho-nav-sub\$\{servicesOpen \? " is-open" : ""\}`}/);
   assert.match(page, /setServicesOpen\(\(open\) => !open\)/);
   assert.match(page, /closest\("a"\)/);
+  assert.match(styles, /@media \(min-width: 761px\)[\s\S]*?\.ho-nav-sub \{ display: grid !important; \}/);
+  assert.match(styles, /@media \(max-width: 760px\)[\s\S]*?\.ho-nav-sub\.is-open \{ display: grid; \}/);
   assert.match(styles, /\.ho-sidebar\{overflow-y:auto/);
   assert.match(styles, /@media\(max-height:760px\)/);
 });

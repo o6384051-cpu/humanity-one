@@ -51,7 +51,7 @@ export default function Dashboard() {
           <Link href="/opportunities"><HeartHandshake size={18} />{tr("مركز الفرص الإنسانية","Humanitarian Opportunities")}</Link>
           <div className="ho-nav-group">
             <button type="button" className="ho-nav-group-toggle" aria-expanded={servicesOpen} aria-controls="ho-more-services" onClick={() => setServicesOpen((open) => !open)}>{tr("باقي الخدمات","More services")} <span className={servicesOpen ? "is-open" : ""} aria-hidden="true">⌄</span></button>
-            {servicesOpen && <div className="ho-nav-sub" id="ho-more-services">
+            <div className={`ho-nav-sub${servicesOpen ? " is-open" : ""}`} id="ho-more-services">
               <Link href="/ai-core"><Bot size={18} />{tr("مركز الذكاء والعمل الإنساني","Humanitarian AI & Action Hub")}</Link>
               <Link href="/agents"><Users size={18} />{tr("فريق الوكلاء","Agent Team")}</Link>
               <Link href="/memory"><BookOpen size={18} />{tr("الذاكرة والخصوصية","Memory & Privacy")}</Link>
@@ -68,7 +68,7 @@ export default function Dashboard() {
               <Link href="/tasks"><CheckSquare size={18} />{tr("المهام","Tasks")}</Link>
               <Link href="/knowledge"><BookOpen size={18} />{tr("محرك المعرفة","Knowledge Hub")}</Link>
               <Link href="/analytics"><BarChart3 size={18} />{tr("التقارير","Analytics")}</Link>
-            </div>}
+            </div>
           </div>
         </nav>
 
